@@ -125,7 +125,7 @@ hr { border: none; border-top: 1px dashed var(--line); margin: 2rem 0; }
 .site-footer { border-top: 1px solid var(--line); padding: 1.1rem 1.1rem 2rem;
   margin-top: 2rem; color: var(--fg-dim); font-size: 0.92rem; }
 .site-footer a { color: var(--amber); }
-.footer-primary, .footer-matrix { max-width: none; margin: 0.2rem 0; }
+.footer-primary, .footer-matrix, .footer-dash { max-width: none; margin: 0.2rem 0; }
 .cursor { color: var(--fg); animation: blink 1.1s step-end infinite; }
 @keyframes blink { 50% { opacity: 0; } }
 

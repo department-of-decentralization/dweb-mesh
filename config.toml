@@ -16,3 +16,5 @@ minify_html = false
 matrix_room = "#dweb-mesh:dod.ngo"
 matrix_url = "https://matrix.to/#/#dweb-mesh:dod.ngo"
 mesh_nest_location = "tent 5"
+dashboard_url = "https://dweb.potatomesh.net"
+dashboard_label = "dweb.potatomesh.net"
