@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}404 &middot; SIGNAL LOST{% endblock title %}
+{% block content %}
+<section class="splash">
+  <h1 class="splash-title">404<br>SIGNAL&nbsp;LOST</h1>
+  <p class="splash-sub">NO ROUTE TO THAT NODE.</p>
+  <p class="splash-cta"><a class="btn" href="{{ get_url(path='@/_index.md') }}">&#9654; BACK TO BASE</a></p>
+</section>
+{% endblock content %}

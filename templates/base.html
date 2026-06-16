@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{{ config.title }}{% endblock title %}</title>
+  <meta name="description" content="{% block description %}{{ config.description }}{% endblock description %}">
+  <link rel="stylesheet" href="{{ get_url(path='css/style.css') }}">
+</head>
+<body>
+<a class="skip-link" href="#main">skip to content</a>
+
+<header class="site-header">
+  <a class="brand" href="{{ get_url(path='@/_index.md') }}">&#9626; DWEB&middot;MESH &#9630;</a>
+  <nav class="site-nav" aria-label="Primary">
+    <a href="{{ get_url(path='@/start/_index.md') }}">START</a>
+    <a href="{{ get_url(path='@/settings/_index.md') }}">SETTINGS</a>
+    <a href="{{ get_url(path='@/devices/_index.md') }}">DEVICES</a>
+    <a href="{{ get_url(path='@/meshcore/_index.md') }}">MESHCORE</a>
+    <a href="{{ get_url(path='@/meshtastic/_index.md') }}">MESHTASTIC</a>
+    <a href="{{ get_url(path='@/reticulum/_index.md') }}">RETICULUM</a>
+    <a href="{{ get_url(path='@/mesh-nest/_index.md') }}">MESH&middot;NEST</a>
+    <a href="{{ get_url(path='@/agenda/_index.md') }}">AGENDA</a>
+    <a href="{{ get_url(path='@/about/_index.md') }}">ABOUT</a>
+  </nav>
+</header>
+
+<main id="main" class="site-main">
+{% block content %}{% endblock content %}
+</main>
+
+<footer class="site-footer">
+  <p class="footer-primary">
+    <span class="cursor">&#9608;</span> MESH&nbsp;NEST &middot; {{ config.extra.mesh_nest_location | upper }} &mdash;
+    when LoRa fails, this is how you reach a human.
+  </p>
+  <p class="footer-matrix">
+    MATRIX&nbsp;FALLBACK: <a href="{{ config.extra.matrix_url | safe }}">{{ config.extra.matrix_room }}</a>
+  </p>
+</footer>
+
+{% block scripts %}{% endblock scripts %}
+</body>
+</html>

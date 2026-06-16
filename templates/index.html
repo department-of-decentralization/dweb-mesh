@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}JOIN THE MESH &middot; {{ config.title }}{% endblock title %}
+{% block content %}
+<section class="splash">
+  <h1 class="splash-title">JOIN<br>THE<br>MESH</h1>
+  <p class="splash-sub">DWEB CAMP 2026 &middot; LoRa &middot; OFFLINE-FIRST</p>
+  <p class="splash-cta"><a class="btn" href="{{ get_url(path='@/start/_index.md') }}">&#9654; START HERE</a></p>
+</section>
+{% endblock content %}

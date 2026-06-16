@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}{{ section.title }} &middot; {{ config.title }}{% endblock title %}
+{% block description %}{{ section.description | default(value=config.description) }}{% endblock description %}
+{% block content %}
+<article class="doc">
+  <h1>{{ section.title }}</h1>
+  {{ section.content | safe }}
+  {% if section.subsections or section.pages %}
+  <nav class="subnav" aria-label="In this section">
+    <h2>IN THIS SECTION</h2>
+    <ul>
+    {% for sub in section.subsections %}
+      {% set subsec = get_section(path=sub) %}
+      <li><a href="{{ subsec.permalink }}">{{ subsec.title }}</a>
+        {%- if subsec.description %} &mdash; {{ subsec.description }}{% endif %}</li>
+    {% endfor %}
+    {% for page in section.pages %}
+      <li><a href="{{ page.permalink }}">{{ page.title }}</a>
+        {%- if page.description %} &mdash; {{ page.description }}{% endif %}</li>
+    {% endfor %}
+    </ul>
+  </nav>
+  {% endif %}
+</article>
+{% endblock content %}

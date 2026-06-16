@@ -1,0 +1,18 @@
+# DWeb Camp 2026 Mesh — Zola config.
+# base_url = "/" → host-less root paths; the same build works at GitHub Pages
+# (mesh.dod.ngo) and on the offline Freifunk host, with no DNS dependency.
+# See SPEC.md D2. To deploy under a subpath: `zola build --base-url /sub/`.
+base_url = "/"
+title = "DWeb Camp 2026 Mesh"
+description = "Join the camp LoRa mesh. Offline-first node docs."
+default_language = "en"
+
+compile_sass = false
+build_search_index = false
+generate_feeds = false
+minify_html = false
+
+[extra]
+matrix_room = "#dweb-mesh:dod.ngo"
+matrix_url = "https://matrix.to/#/#dweb-mesh:dod.ngo"
+mesh_nest_location = "tent 5"

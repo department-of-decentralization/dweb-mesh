@@ -47,23 +47,33 @@ External *assets* (auto-fetched: CSS, JS, fonts, images, iframes, analytics) are
 **forbidden**. External *hyperlinks* (`<a href>`: the Matrix link, device "where to
 buy", cited sources) are **allowed** — they are click-throughs, not page assets.
 
+Scans target only browser-loaded files (`*.html *.css *.js *.svg *.xml`). Prose
+docs (`*.md`/`*.txt` — bundled font licenses & `SOURCES.md`) may legitimately name
+a host (an OFL license cites `scripts.sil.org`) and are exempt. The canonical gate
+is `scripts/check-offline.sh`; the greps below are the same checks, by hand.
+
 ```sh
-# (a) No external assets in HTML (script/link/img/source/video/audio/iframe/embed):
-grep -rEoin '<(link|script|img|source|video|audio|iframe|embed)\b[^>]*\b(src|href)=["'"'"']https?://' public/
+INC="--include=*.html --include=*.css --include=*.js --include=*.svg --include=*.xml"
+
+# (a) No external assets (script/link/img/source/video/audio/iframe/embed):
+grep -rEoin $INC '<(link|script|img|source|video|audio|iframe|embed)\b[^>]*\b(src|href)=["'"'"']https?://' public/
 #   Expect: NO output.
 
 # (b) No external CSS imports / url():
-grep -rEin '(@import|url\()\s*["'"'"']?https?://' public/
+grep -rEin $INC '(@import|url\()\s*["'"'"']?https?://' public/
 #   Expect: NO output.
 
-# (c) No analytics / tracking / CDN hosts anywhere:
-grep -rEin 'google-analytics|googletagmanager|gtag|plausible|matomo|fonts\.(googleapis|gstatic)|cdn\.|jsdelivr|unpkg|cloudflare' public/
+# (c) No analytics / tracking / CDN hosts:
+grep -rEin $INC 'google-analytics|googletagmanager|gtag|plausible|matomo|fonts\.(googleapis|gstatic)|cdnjs|jsdelivr|unpkg|cloudflare' public/
 #   Expect: NO output.
 
-# (d) Inventory of external hyperlinks for human review (must be intentional):
-grep -rEohin '<a\b[^>]*href=["'"'"']https?://[^"'"'"']*' public/ | sort -u
-#   Expect: ONLY matrix.to (footer), device vendor buy links, and dated source
-#           citations. No surprises.
+# (d) Inventory external hyperlinks for human review (must be intentional):
+grep -rEohin --include=*.html '<a\b[^>]*href=["'"'"']https?://[^"'"'"']*' public/ | sort -u
+#   Expect: ONLY matrix.to (footer), device vendor buy links, dated source citations.
+
+# Canonical gate (run this):
+scripts/check-offline.sh
+#   Expect: OK: no external asset references in 'public'.
 ```
 - [ ] Pass
 
