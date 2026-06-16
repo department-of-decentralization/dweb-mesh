@@ -1,6 +1,6 @@
 # SPEC — DWeb Camp 2026 Mesh Documentation Site
 
-Status: **CONFIRMED 2026-06-16 — all 12 decisions accepted.** Domain: `dweb.dod.ngo` (root `/`).
+Status: **CONFIRMED 2026-06-16 — all 12 decisions accepted.** Domain: `mesh.dod.ngo` (root `/`).
 Last updated: 2026-06-16.
 
 ---
@@ -32,7 +32,7 @@ I will re-verify this list at every later checkpoint to prevent drift.
 | # | Decision | Choice |
 |---|----------|--------|
 | **D1** | **Generator** | **Zola** (mandated by brief §2). Single Rust binary, no `node_modules`. *Verified present: `zola 0.22.1`.* |
-| **D2** | **Dual-root / URLs** | **Single source, single build, `base_url = "/"`** → **host-less root-absolute paths** (`/start/`, `/css/…`): links carry **no domain**, so the same artifact works at GH Pages *and* on the offline Freifunk host with **no DNS dependency**. **Custom domain `dweb.dod.ngo`** (committed `CNAME`) serves GH Pages at root; **the same build is the Freifunk manual drop**. One build, both targets. *(If ever subpath-scoped, `base_url` is the single switch + rebuild — all refs go through `get_url`. Link checker keeps refs honest.)* |
+| **D2** | **Dual-root / URLs** | **Single source, single build, `base_url = "/"`** → **host-less root-absolute paths** (`/start/`, `/css/…`): links carry **no domain**, so the same artifact works at GH Pages *and* on the offline Freifunk host with **no DNS dependency**. **Custom domain `mesh.dod.ngo`** (committed `CNAME`) serves GH Pages at root; **the same build is the Freifunk manual drop**. One build, both targets. *(If ever subpath-scoped, `base_url` is the single switch + rebuild — all refs go through `get_url`. Link checker keeps refs honest.)* |
 | **D3** | **Self-contained** | **Zero external references.** No CDN, webfont, external JS, analytics, remote anything. Enforced by a grep gate in ACCEPTANCE. Every byte ships in the repo. |
 | **D4** | **Typography** | **Bundled OFL pixel font for display/chrome** (candidate: *Press Start 2P*) **+ bundled OFL monospace for body & the `/settings/` card** (candidate: a small legible OFL mono, final pick at build). Both self-hosted (`woff2`), subset where it helps payload. |
 | **D5** | **Content depth** | **Hybrid.** Real, **dated + sourced** instructions for *stable* procedures (e.g. Meshtastic web-flasher flow, Reticulum `pip` install); **visible TBC placeholders** for *volatile / camp-private* items (Meshcore firmware specifics, exact presets, PSK). Light web research for the stable parts; team reviews before camp. |

@@ -79,7 +79,7 @@ grep -rEohin '<a\b[^>]*href=["'"'"']https?://[^"'"'"']*' public/ | sort -u
 
 ```sh
 # Internal nav/asset refs are host-less root paths (carry no domain):
-grep -rEoin 'href=["'"'"']https?://dweb\.dod\.ngo' public/    # Expect: NO output (links are "/…", not absolute-with-host)
+grep -rEoin 'href=["'"'"']https?://mesh\.dod\.ngo' public/    # Expect: NO output (links are "/…", not absolute-with-host)
 
 # Subpath capability (the D2 switch) actually works:
 zola build --base-url /dweb-mesh/ -o public_sub
@@ -92,8 +92,8 @@ rm -rf public_sub
 ## 5. Footer on every page  *(brief §13.5; D7)*
 
 ```sh
-# Every HTML page mentions the tent-5 location:
-grep -rL "tent 5" public/ --include='*.html'      # Expect: NO output (every file matches)
+# Every HTML page mentions the tent-5 location (case-insensitive; footer renders "TENT 5"):
+grep -riL "tent 5" public/ --include='*.html'     # Expect: NO output (every file matches)
 
 # The Matrix fallback link is present and correct:
 grep -rEoq 'href="https://matrix\.to/#/#dweb-mesh:dod\.ngo"' public/ && echo "matrix OK"   # Expect: matrix OK
@@ -166,7 +166,7 @@ grep -riE 'TBC|placeholder|supplied by the team' public/settings/   # Expect: pr
 | **S3** | No framework / no node_modules (D6) | `! test -d node_modules ; ls public/*.js` | only the tiny counter JS; no bundler output |
 | **S4** | Stack hierarchy labelled (D8) | grep hubs | "PRIMARY"/"SUPPORTED"/"EDUCATIONAL" visible on meshcore/meshtastic/reticulum |
 | **S5** | AI host inline, not a route (D9) | `! test -d public/meshcore/services/ai* ` ; grep services page | AI host appears as a line item under `/meshcore/services/`, no own page |
-| **S6** | CNAME + CI present (D10) | `cat CNAME ; ls .github/workflows/` | `CNAME` = `dweb.dod.ngo`; a workflow builds Zola → Pages; Freifunk noted manual |
+| **S6** | CNAME + CI present (D10) | `cat CNAME ; ls .github/workflows/` | `CNAME` = `mesh.dod.ngo`; a workflow builds Zola → Pages; Freifunk noted manual |
 
 ---
 

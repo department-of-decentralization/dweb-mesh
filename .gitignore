@@ -1,0 +1,15 @@
+# Zola build output (CI/Freifunk regenerate it; never commit)
+/public/
+/public_sub/
+/static/processed_images/
+
+# Personal Claude settings (team rules live in .claude/settings.json)
+.claude/settings.local.json
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.idea/
+.vscode/
