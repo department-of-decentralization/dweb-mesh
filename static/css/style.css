@@ -112,6 +112,15 @@ hr { border: none; border-top: 1px dashed var(--line); margin: 2rem 0; }
 .splash-sub { display: inline-block; color: var(--fg-dim); letter-spacing: 0.12em; margin: 0 auto 2rem; }
 .splash-cta { margin-top: 1.5rem; }
 
+/* splash HUD / live counters (game-interface framing) */
+.hud { display: flex; justify-content: center; gap: 1.2rem; flex-wrap: wrap; margin: 0 auto 0.8rem; }
+.hud-item { border: 1px solid var(--line); background: var(--panel); padding: 0.7rem 1.1rem; min-width: 8.5rem; }
+.hud-label { display: block; font-size: 0.8rem; color: var(--fg-dim); letter-spacing: 0.1em; }
+.hud-value { display: block; font-family: "Press Start 2P", monospace; font-size: 1.4rem;
+  color: var(--amber); margin-top: 0.55rem; text-shadow: 0 0 8px rgba(255,178,74,0.5); }
+.hud-sync { color: var(--fg-dim); font-size: 0.82rem; margin: 0.2rem 0 2rem; }
+.hud-sync #stat-updated { color: var(--fg); }
+
 /* footer */
 .site-footer { border-top: 1px solid var(--line); padding: 1.1rem 1.1rem 2rem;
   margin-top: 2rem; color: var(--fg-dim); font-size: 0.92rem; }
