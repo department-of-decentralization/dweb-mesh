@@ -154,6 +154,13 @@ hr { border: none; border-top: 1px dashed var(--line); margin: 2rem 0; }
 .device .specs { color: var(--fg-dim); font-size: 0.8rem; margin: 0.4rem 0 0; }
 .device .buy { margin: 0.8rem 0 0; }
 
+/* tables (agenda, any doc table) */
+.doc table { border-collapse: collapse; width: 100%; margin: 1.3rem 0; }
+.doc th, .doc td { border: 1px solid var(--line); padding: 0.55rem 0.8rem;
+  text-align: left; vertical-align: top; }
+.doc th { background: var(--panel); color: var(--fg-dim); letter-spacing: 0.08em; font-weight: normal; }
+.doc td { max-width: none; }
+
 /* responsive / motion */
 @media (max-width: 640px) {
   body { font-size: 15px; }
