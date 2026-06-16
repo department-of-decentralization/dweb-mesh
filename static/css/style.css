@@ -129,6 +129,31 @@ hr { border: none; border-top: 1px dashed var(--line); margin: 2rem 0; }
 .cursor { color: var(--fg); animation: blink 1.1s step-end infinite; }
 @keyframes blink { 50% { opacity: 0; } }
 
+/* doc components: callouts, settings card, device grid */
+.doc blockquote { border-left: 3px solid var(--amber); background: var(--panel);
+  margin: 1.3rem 0; padding: 0.7rem 1rem; color: var(--fg); }
+.doc blockquote p { max-width: none; margin: 0.3rem 0; }
+.doc blockquote a { color: var(--amber); }
+.muted { color: var(--fg-dim); font-size: 0.82rem; }
+
+.refcard { border: 2px solid var(--line); background: var(--panel); max-width: 30rem; margin: 1.3rem 0; }
+.refcard-row { display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+  padding: 0.65rem 0.95rem; border-bottom: 1px dashed var(--line); }
+.refcard-row:last-child { border-bottom: none; }
+.refcard-k { color: var(--fg-dim); letter-spacing: 0.08em; }
+.tbc { color: var(--amber); border: 1px dashed var(--amber); padding: 0.05rem 0.5rem;
+  letter-spacing: 0.12em; font-size: 0.85rem; }
+
+.devices { display: grid; grid-template-columns: 1fr; gap: 1rem; margin: 1.3rem 0; max-width: none; }
+@media (min-width: 760px) { .devices { grid-template-columns: repeat(3, 1fr); } }
+.device { border: 1px solid var(--line); background: var(--panel); padding: 1rem;
+  display: flex; flex-direction: column; }
+.device h3 { margin: 0 0 0.6rem; }
+.device p { max-width: none; }
+.device .pick { color: var(--amber); margin: 0 0 0.6rem; }
+.device .specs { color: var(--fg-dim); font-size: 0.8rem; margin: 0.4rem 0 0; }
+.device .buy { margin: 0.8rem 0 0; }
+
 /* responsive / motion */
 @media (max-width: 640px) {
   body { font-size: 15px; }
