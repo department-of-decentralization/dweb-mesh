@@ -175,7 +175,7 @@ grep -riE 'TBC|placeholder|supplied by the team' public/settings/   # Expect: pr
 |---|-----------|--------|--------|
 | **S1** | Fonts bundled + local (D4) | `ls public/fonts/` ; `grep -rE '@font-face' public/ -l` | ≥2 `woff2` in repo; `@font-face` `url()` are local paths |
 | **S2** | Small payload (D3) | `du -sh public/ ; du -sh public/fonts/` | Total in low MB; fonts subset, not multi-MB |
-| **S3** | No framework / no node_modules (D6) | `! test -d node_modules ; ls public/*.js` | only the tiny counter JS; no bundler output |
+| **S3** | No framework / no node_modules (D6) | `! test -d node_modules ; find public -name '*.js'` | only the tiny counter JS (`public/js/counters.js`); no bundler output |
 | **S4** | Stack hierarchy labelled (D8) | grep hubs | "PRIMARY"/"SUPPORTED"/"EDUCATIONAL" visible on meshcore/meshtastic/reticulum |
 | **S5** | AI host inline, not a route (D9) | `! test -d public/meshcore/services/ai* ` ; grep services page | AI host appears as a line item under `/meshcore/services/`, no own page |
 | **S6** | CNAME + CI present (D10) | `cat CNAME ; ls .github/workflows/` | `CNAME` = `mesh.dod.ngo`; a workflow builds Zola → Pages; Freifunk noted manual |
@@ -190,7 +190,7 @@ below, **in addition to** §1–§10 and S1–S6 (regression line at the end). B
 
 ### LP-1 — Collapsible nav is CSS-only  *(F1; protects S3, D3)*
 ```sh
-ls public/*.js                                   # Expect: ONLY public/counters.js
+find public -name '*.js'                         # Expect: ONLY public/js/counters.js (no nav JS added)
 grep -rEl '<script' public/ --include='*.html'   # Expect: ONLY public/index.html (the counter)
 grep -Eic 'type=["'"'"']?checkbox' public/index.html   # Expect: >=1 (nav toggle is a checkbox, not JS)
 ```

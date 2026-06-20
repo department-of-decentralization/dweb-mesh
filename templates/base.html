@@ -11,8 +11,11 @@
 <a class="skip-link" href="#main">skip to content</a>
 
 <header class="site-header">
-  <a class="brand" href="{{ get_url(path='@/_index.md') }}">&#9626; DWEB&middot;MESH &#9630;</a>
+  <input type="checkbox" id="nav-toggle" class="nav-toggle">
+  <a class="brand brand-home" href="{{ get_url(path='@/_index.md') }}" aria-label="DWEB MESH home">&#9626; DWEB&middot;MESH &#9630;</a>
+  <label class="brand brand-toggle" for="nav-toggle" aria-label="DWEB MESH menu" title="Menu">&#9626; DWEB&middot;MESH &#9630;</label>
   <nav class="site-nav" aria-label="Primary">
+    <a class="nav-home" href="{{ get_url(path='@/_index.md') }}">HOME</a>
     <a href="{{ get_url(path='@/start/_index.md') }}">START</a>
     <a href="{{ get_url(path='@/settings/_index.md') }}">SETTINGS</a>
     <a href="{{ get_url(path='@/devices/_index.md') }}">DEVICES</a>
@@ -32,7 +35,7 @@
 <footer class="site-footer">
   <ul class="footer-row">
     <li>MATRIX: <a href="{{ config.extra.matrix_url | safe }}">{{ config.extra.matrix_room }}</a></li>
-    <li>{{ config.extra.mesh_nest_location | upper }}: (<a href="{{ get_url(path='@/mesh-nest/_index.md') }}">MESH&nbsp;NEST</a>)</li>
+    <li>{{ config.extra.mesh_nest_location | upper }}: <a href="{{ get_url(path='@/mesh-nest/_index.md') }}">MESH&nbsp;NEST</a></li>
     <li>MESHCORE {{ config.extra.meshcore_channel }}</li>
     <li>DASHBOARD: <a href="{{ config.extra.dashboard_url | safe }}">{{ config.extra.dashboard_label }}</a></li>
   </ul>
