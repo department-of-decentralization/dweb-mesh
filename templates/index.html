@@ -3,7 +3,6 @@
 {% block content %}
 <section class="splash">
   <h1 class="splash-title">JOIN<br>THE<br>MESH</h1>
-  <p class="splash-sub">DWEB CAMP 2026 &middot; LoRa &middot; OFFLINE-FIRST</p>
 
   <div class="hud" aria-label="Live mesh stats">
     <div class="hud-item">
@@ -15,9 +14,9 @@
       <span class="hud-value" id="stat-messages">&mdash;</span>
     </div>
   </div>
-  <p class="hud-sync">LAST&nbsp;SYNC: <span id="stat-updated">&mdash;</span></p>
 
-  <p class="splash-cta"><a class="btn" href="{{ get_url(path='@/start/_index.md') }}">&#9654; START HERE</a></p>
+  <p class="splash-cta"><a class="btn" href="{{ get_url(path='@/start/_index.md') }}">&#9654; START</a></p>
+  <p class="splash-buy"><a href="{{ config.extra.tickets_url | safe }}">BUY DEVICE &#8599;</a></p>
 </section>
 {% endblock content %}
 {% block scripts %}

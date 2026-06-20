@@ -109,8 +109,11 @@ hr { border: none; border-top: 1px dashed var(--line); margin: 2rem 0; }
 .splash-title { font-family: "Press Start 2P", monospace;
   font-size: clamp(1.8rem, 9vw, 3.4rem); color: var(--fg); margin: 0 0 1.4rem;
   line-height: 1.2; text-shadow: 0 0 10px rgba(65,255,138,0.6); }
-.splash-sub { display: inline-block; color: var(--fg-dim); letter-spacing: 0.12em; margin: 0 auto 2rem; }
-.splash-cta { margin-top: 1.5rem; }
+.splash-cta { margin-top: 1.5rem; margin-bottom: 0; }
+.splash-buy { margin: 1rem 0 0; }
+.splash-buy a { font-family: "Press Start 2P", monospace; font-size: 0.6rem;
+  color: var(--fg-dim); text-decoration: none; letter-spacing: 0.08em; text-shadow: none; }
+.splash-buy a:hover, .splash-buy a:focus { color: var(--bg); background: var(--fg); }
 
 /* splash HUD / live counters (game-interface framing) */
 .hud { display: flex; justify-content: center; gap: 1.2rem; flex-wrap: wrap; margin: 0 auto 0.8rem; }
@@ -118,8 +121,6 @@ hr { border: none; border-top: 1px dashed var(--line); margin: 2rem 0; }
 .hud-label { display: block; font-size: 0.8rem; color: var(--fg-dim); letter-spacing: 0.1em; }
 .hud-value { display: block; font-family: "Press Start 2P", monospace; font-size: 1.4rem;
   color: var(--amber); margin-top: 0.55rem; text-shadow: 0 0 8px rgba(255,178,74,0.5); }
-.hud-sync { color: var(--fg-dim); font-size: 0.82rem; margin: 0.2rem 0 2rem; }
-.hud-sync #stat-updated { color: var(--fg); }
 
 /* footer — single compact row of four items (F4) */
 .site-footer { border-top: 1px solid var(--line); padding: 0.9rem 1.1rem 1.4rem;

@@ -209,7 +209,7 @@ grep -Eic 'type=["'"'"']?checkbox' public/index.html   # Expect: >=1 (nav toggle
 
 ### LP-4 — Splash trimmed to the funnel  *(F2)*
 ```sh
-grep -ic 'OFFLINE-FIRST'      public/index.html   # Expect: 0 (sub-line removed)
+grep -c  'splash-sub'         public/index.html   # Expect: 0 (DWEB CAMP/LoRa/OFFLINE-FIRST sub-line removed; note: 'Offline-first' legitimately remains in the <meta description>)
 grep -ic 'SYNC'               public/index.html   # Expect: 0 (LAST SYNC line removed)
 grep -c  'START HERE'         public/index.html   # Expect: 0 (CTA renamed to START)
 grep -ic 'JOIN'               public/index.html   # Expect: >=1 (JOIN THE MESH kept)

@@ -32,7 +32,7 @@
 <footer class="site-footer">
   <ul class="footer-row">
     <li>MATRIX: <a href="{{ config.extra.matrix_url | safe }}">{{ config.extra.matrix_room }}</a></li>
-    <li><a href="{{ get_url(path='@/mesh-nest/_index.md') }}">{{ config.extra.mesh_nest_location | upper }} (MESH&nbsp;NEST)</a></li>
+    <li>{{ config.extra.mesh_nest_location | upper }}: (<a href="{{ get_url(path='@/mesh-nest/_index.md') }}">MESH&nbsp;NEST</a>)</li>
     <li>MESHCORE {{ config.extra.meshcore_channel }}</li>
     <li>DASHBOARD: <a href="{{ config.extra.dashboard_url | safe }}">{{ config.extra.dashboard_label }}</a></li>
   </ul>
