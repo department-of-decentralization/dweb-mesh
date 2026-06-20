@@ -95,7 +95,7 @@ hr { border: none; border-top: 1px dashed var(--line); margin: 2rem 0; }
 /* toggle checkbox: visually hidden but keyboard-focusable (no JS) */
 .nav-toggle { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
   border: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-.brand-toggle { cursor: pointer; }
+.brand-toggle { cursor: pointer; margin-left: auto; }
 .nav-toggle:focus-visible ~ .brand-toggle { outline: 2px solid var(--amber); outline-offset: 3px; }
 
 /* narrow (default): brand is the toggle; nav is a dropdown shown on :checked */
