@@ -108,8 +108,10 @@ grep -riL "tent 5" public/ --include='*.html'     # Expect: NO output (every fil
 # The Matrix fallback link is present and correct:
 grep -rEoq 'href="https://matrix\.to/#/#dweb-mesh:dod\.ngo"' public/ && echo "matrix OK"   # Expect: matrix OK
 ```
-- **Expect:** every page carries Mesh Nest / tent 5 + the working Matrix link with
-  the "when LoRa fails, this is how you reach a human" framing.
+- **Expect:** every page carries Mesh Nest / tent 5 + the working Matrix link.
+  *(Amended by Feature: Landing Page Structure → F4: the "when LoRa fails, this is
+  how you reach a human" framing is no longer required; the footer is the compact
+  four-item row. The two grep checks above are unchanged and still authoritative.)*
 - [ ] Pass
 
 ## 6. All site-map routes exist and route correctly  *(brief §13.6; SPEC §2)*
@@ -180,7 +182,83 @@ grep -riE 'TBC|placeholder|supplied by the team' public/settings/   # Expect: pr
 
 ---
 
+## Feature: Landing Page Structure  *(SPEC.md → Feature: Landing Page Structure, F1–F4)*
+
+Added 2026-06-20. A zero-context reviewer judges the landing shell with **LP-1…LP-7**
+below, **in addition to** §1–§10 and S1–S6 (regression line at the end). Build first
+(`zola build`), then serve `public/` at root per §0.
+
+### LP-1 — Collapsible nav is CSS-only  *(F1; protects S3, D3)*
+```sh
+ls public/*.js                                   # Expect: ONLY public/counters.js
+grep -rEl '<script' public/ --include='*.html'   # Expect: ONLY public/index.html (the counter)
+grep -Eic 'type=["'"'"']?checkbox' public/index.html   # Expect: >=1 (nav toggle is a checkbox, not JS)
+```
+- **Expect:** the nav collapse uses a hidden checkbox + CSS; no nav JavaScript; no second file in `public/*.js`.
+- [ ] Pass
+
+### LP-2 — Nav responsive: inline wide, logo-toggled menu narrow  *(F1)*
+- **Verify:** on the root server, load any page at a **wide** viewport → all nav items show inline and the `DWEB·MESH` brand links to `/`. Shrink **below** the collapse width → nav items hide; activating the **logo** reveals the menu; the menu includes a **HOME** entry routing to `/`.
+- **Expect:** both states; no horizontal overflow when narrow; brand = home link wide, = toggle narrow.
+- [ ] Pass
+
+### LP-3 — Nav toggle keyboard-operable and offline  *(F1; D3)*
+- **Verify:** networking disabled, narrow viewport: Tab to the toggle, press Space/Enter → menu opens/closes. Devtools Network shows **no** request from the header.
+- **Expect:** keyboard works; zero network.
+- [ ] Pass
+
+### LP-4 — Splash trimmed to the funnel  *(F2)*
+```sh
+grep -ic 'OFFLINE-FIRST'      public/index.html   # Expect: 0 (sub-line removed)
+grep -ic 'SYNC'               public/index.html   # Expect: 0 (LAST SYNC line removed)
+grep -c  'START HERE'         public/index.html   # Expect: 0 (CTA renamed to START)
+grep -ic 'JOIN'               public/index.html   # Expect: >=1 (JOIN THE MESH kept)
+grep -c  'id="stat-nodes"'    public/index.html   # Expect: 1 (node counter kept)
+grep -c  'id="stat-messages"' public/index.html   # Expect: 1 (message counter kept)
+```
+- **Expect:** JOIN THE MESH + node/message counters stay; the sub-line, LAST SYNC, and "HERE" are gone; CTA reads **START**.
+- [ ] Pass
+
+### LP-5 — BUY DEVICE external hyperlink  *(F3; extends §2d)*
+```sh
+grep -Eo 'href=["'"'"']https://dwebcamp\.org/tickets' public/index.html   # Expect: present
+scripts/check-offline.sh                                                  # Expect: OK (no external ASSET)
+# §2(d) external-link inventory now allows exactly: matrix.to, device vendor links, citations, dwebcamp.org/tickets:
+grep -rEohin --include=*.html '<a\b[^>]*href=["'"'"']https?://[^"'"'"']*' public/ | sort -u
+```
+- **Expect:** BUY DEVICE points to `https://dwebcamp.org/tickets`; it is a hyperlink, not an asset; `check-offline.sh` still passes; the only **new** external-link inventory entry is `dwebcamp.org/tickets`.
+- [ ] Pass
+
+### LP-6 — Single-line footer, four items, D7 amended  *(F4)*
+```sh
+grep -ic 'dweb-mesh:dod.ngo' public/index.html   # Expect: >=1 (Matrix)
+grep -ic 'tent 5'            public/index.html    # Expect: >=1 (Mesh Nest)
+grep -c  '#dwebcamp'         public/index.html    # Expect: >=1 (Meshcore channel)
+grep -ic 'potatomesh'        public/index.html    # Expect: >=1 (Dashboard)
+grep -ric 'when LoRa fails'  public/              # Expect: 0  (D7 phrasing dropped EVERYWHERE)
+# §5 regression still holds (footer on every page):
+grep -riL 'tent 5' public/ --include='*.html'                                   # Expect: NO output
+grep -rEoq 'href="https://matrix\.to/#/#dweb-mesh:dod\.ngo"' public/ && echo OK # Expect: OK
+```
+- **Expect:** footer carries Matrix · Tent 5 (Mesh Nest) · Meshcore #dwebcamp · Dashboard on **every** page; the old phrasing appears nowhere; tent 5 + Matrix link still on every page.
+- [ ] Pass
+
+### LP-7 — Footer responsive  *(F4)*
+- **Verify:** on the root server, **wide** viewport → the four items render on a **single row** with vertical-line separators between them. **Narrow** viewport → they wrap to **at most four stacked lines**.
+- **Expect:** one row wide; ≤4 lines narrow.
+- [ ] Pass
+
+### Regression — prior criteria still pass
+All of **§1–§10 and S1–S6 must still pass** after this feature. Specifically at risk:
+- **§5 (footer):** rewritten — keeps `tent 5` + the exact Matrix href on every page; **§5 is amended** (note added there) to drop the "when LoRa fails…" framing requirement.
+- **S3 (no extra JS):** the nav adds **no** JS file (LP-1).
+- **§2 / §2(d):** no new asset; the only new external hyperlink is BUY DEVICE (LP-5).
+- **§8 (counters):** still read `stats.json` / degrade gracefully after the LAST SYNC line is removed (LP-4 keeps the counter elements).
+- [ ] Pass (no regression in §1–§10, S1–S6)
+
+---
+
 ## Verdict
 
-A build is **ACCEPTED** only when boxes 1–10 and S1–S6 are all ticked.
+A build is **ACCEPTED** only when boxes 1–10, S1–S6, and LP-1–LP-7 are all ticked.
 Record the date, the Zola version, and any waived item with its justification.

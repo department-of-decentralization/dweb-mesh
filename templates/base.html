@@ -30,16 +30,12 @@
 </main>
 
 <footer class="site-footer">
-  <p class="footer-primary">
-    <span class="cursor">&#9608;</span> MESH&nbsp;NEST &middot; {{ config.extra.mesh_nest_location | upper }} &mdash;
-    when LoRa fails, this is how you reach a human.
-  </p>
-  <p class="footer-matrix">
-    MATRIX&nbsp;FALLBACK: <a href="{{ config.extra.matrix_url | safe }}">{{ config.extra.matrix_room }}</a>
-  </p>
-  <p class="footer-dash">
-    MESH&nbsp;MAP: <a href="{{ config.extra.dashboard_url | safe }}">{{ config.extra.dashboard_label }}</a>
-  </p>
+  <ul class="footer-row">
+    <li>MATRIX: <a href="{{ config.extra.matrix_url | safe }}">{{ config.extra.matrix_room }}</a></li>
+    <li><a href="{{ get_url(path='@/mesh-nest/_index.md') }}">{{ config.extra.mesh_nest_location | upper }} (MESH&nbsp;NEST)</a></li>
+    <li>MESHCORE {{ config.extra.meshcore_channel }}</li>
+    <li>DASHBOARD: <a href="{{ config.extra.dashboard_url | safe }}">{{ config.extra.dashboard_label }}</a></li>
+  </ul>
 </footer>
 
 {% block scripts %}{% endblock scripts %}

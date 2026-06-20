@@ -37,7 +37,7 @@ I will re-verify this list at every later checkpoint to prevent drift.
 | **D4** | **Typography** | **Bundled OFL pixel font for display/chrome** (candidate: *Press Start 2P*) **+ bundled OFL monospace for body & the `/settings/` card** (candidate: a small legible OFL mono, final pick at build). Both self-hosted (`woff2`), subset where it helps payload. |
 | **D5** | **Content depth** | **Hybrid.** Real, **dated + sourced** instructions for *stable* procedures (e.g. Meshtastic web-flasher flow, Reticulum `pip` install); **visible TBC placeholders** for *volatile / camp-private* items (Meshcore firmware specifics, exact presets, PSK). Light web research for the stable parts; team reviews before camp. |
 | **D6** | **Live counters** | Vanilla JS (no framework, local, tiny) fetches **`./stats.json`** (site-root relative). **Commit a sample** `stats.json` = `{nodes:0, messages:0, updated:<ISO>}`. On any fetch failure → **static placeholder**, no spinner, no error spew. Mesh Nest box overwrites the file live. |
-| **D7** | **Footer (every page)** | Lives in the base template. **Mesh Nest, tent 5** + **Matrix `#dweb-mesh:dod.ngo` → `https://matrix.to/#/#dweb-mesh:dod.ngo`**. Phrasing: *"when LoRa fails, this is how you reach a human."* |
+| **D7** | **Footer (every page)** *[amended by F4]* | Lives in the base template. **Mesh Nest, tent 5** + **Matrix `#dweb-mesh:dod.ngo` → `https://matrix.to/#/#dweb-mesh:dod.ngo`**. ~~Phrasing: *"when LoRa fails, this is how you reach a human."*~~ **Superseded by F4** — compact single-line four-item footer, phrasing dropped. Footer-on-every-page + tent 5 + Matrix link remain load-bearing. |
 | **D8** | **Three stacks, no bridges** | Parallel + independent; **stated on each stack page**. **Meshcore = PRIMARY**, **Meshtastic = SUPPORTED** (explicit: *no services run here*), **Reticulum = EDUCATIONAL** (workshops only, no bridges). |
 | **D9** | **AI host** | **Inline line item** under `/meshcore/services/` (not its own page). "blackbox," Meshcore-tailored. Default **usage-over-internals**; public detail depth **TBC** (team fills). |
 | **D10** | **CI / deploy** | **GitHub Actions** builds with Zola → **GitHub Pages** on push to `main` (`base_url` overridable as workflow input). **Freifunk = manual drop, no sync.** |
@@ -155,3 +155,23 @@ and is *not* repeated per page.
 
 Full, testable criteria live in **`ACCEPTANCE.md`** (written in Phase 1 after this
 spec is confirmed). It mirrors brief §13 and is reviewable with zero session context.
+
+---
+
+## Feature: Landing Page Structure
+
+Added 2026-06-20. Gives the existing splash/aesthetic a proper **responsive shell**:
+a media-aware nav, a trimmed hero funnel, and a compact single-line footer. Scoped to
+the landing shell (base template + `/` splash); route *content* is unchanged.
+Decisions **F1–F4**; **F4 amends D7**. *Pending explicit sign-off (see gate below).*
+
+| # | Decision | Choice |
+|---|----------|--------|
+| **F1** | **Collapsible nav (CSS-only)** | Primary nav collapses, below a content-driven width, into a **logo-triggered menu**. Mechanism: a **hidden checkbox + CSS sibling selectors** — **zero JS, no external assets** (upholds D3/D11; **S3 unchanged**). The `DWEB·MESH` brand is a **home link at wide widths and the menu toggle at narrow widths** (a breakpoint-swapped link/label pair, since one element can't be both `<a>` and `<label>`). The collapsed menu carries a **HOME** entry so narrow screens can still reach `/`. Replaces the current `flex-wrap` nav. Toggle is keyboard-operable (the checkbox stays focusable). |
+| **F2** | **Splash trim + funnel** | `/` keeps **JOIN THE MESH** and the node/message HUD counters (M1/D6 intact). **Removes** the `DWEB CAMP 2026 · LoRa · OFFLINE-FIRST` sub-line and the `LAST SYNC` line. CTA renamed **`START HERE` → `START`**. Adds a secondary **BUY DEVICE** link beneath START. `counters.js` is left intact — it already guards the now-absent `#stat-updated`, so counters still degrade gracefully. (Relocating LAST SYNC elsewhere is a later feature, out of scope here.) |
+| **F3** | **External buy link** *(extends D3 / ACCEPTANCE §2d)* | **BUY DEVICE → `https://dwebcamp.org/tickets`** is an external **hyperlink** (click-through), permitted by §2's asset-vs-hyperlink rule. Added to the §2(d) human-review allowlist (alongside matrix.to, device vendor links, citations). **No external asset** is introduced; `check-offline.sh` still passes. |
+| **F4** | **Single-line footer** *(amends D7)* | Footer becomes one compact row of four items, in order: **Matrix `#dweb-mesh:dod.ngo`** (→ matrix.to link, unchanged) · **Tent 5 (Mesh Nest)** · **Meshcore `#dwebcamp`** · **Dashboard: `dweb.potatomesh.net`** (→ existing dashboard link). **Wide screens:** single row, vertical-line separators between items. **Narrow screens:** wraps to **up to 4 stacked lines**. **Amendment to D7:** the phrase *"when LoRa fails, this is how you reach a human"* is **removed and no longer required anywhere**. D7's load-bearing parts **remain**: footer on **every** page, in the **base template**, carrying **tent 5** + the **Matrix room/link**. Naming the Meshcore channel in chrome implies no bridge → consistent with D8. |
+
+**Confirmation gate:** F1–F4 require explicit sign-off (`confirm all`, or call out a
+number to change). On confirmation, D7's row is annotated `[amended by F4]` so the
+original table never silently drifts.
