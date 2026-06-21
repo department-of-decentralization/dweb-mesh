@@ -522,7 +522,47 @@ grep -c 'execCommand' public/js/copy-code.js         # Expect: >=1 (offline fall
 
 ---
 
+## Feature: Live landing data from the dashboard  *(J1–J4)*
+
+### LD-1 — Remote-first fetch, bounded, with local fallback  *(J1)*
+`counters.js` fetches live stats (`/api/stats`) + recent messages (`/api/messages?limit=3`) with a bounded `AbortController` timeout, falling back to the local JSON.
+```sh
+grep -Fc 'dweb.potatomesh.net/api/stats' public/js/counters.js   # Expect: >=1 (live stats endpoint)
+grep -Fc 'api/messages?limit=3' public/js/counters.js            # Expect: >=1 (live messages, limit param)
+grep -c 'AbortController' public/js/counters.js                  # Expect: >=1 (bounded timeout)
+grep -Fc 'stats.json' public/js/counters.js                      # Expect: >=1 (local fallback)
+grep -Fc 'messages.json' public/js/counters.js                   # Expect: >=1 (local fallback)
+```
+- **Expect:** remote-first to the dashboard, bounded ~2.5 s timeout, local-JSON fallback. Live only when the API returns `Access-Control-Allow-Origin` (J3); otherwise local.
+- [ ] Pass
+
+### LD-2 — Offline render unaffected  *(J2 — the guarantee the gate cannot see)*
+With no network / CORS-blocked, the splash still renders: counters fall back to local JSON then placeholders; the messages box to local then hidden. The local files ship as the fallback source.
+```sh
+scripts/check-offline.sh                                          # Expect: OK (the fetch URL is data, not an asset; gate stays green)
+test -f public/stats.json && test -f public/messages.json && echo ok   # Expect: ok (local fallbacks shipped)
+grep -c 'catch' public/js/counters.js                            # Expect: >=1 (every remote failure caught → fallback, never an unhandled throw)
+```
+- **Expect:** local fallback files present; remote failures caught and fall back; `check-offline.sh` green. **MANUAL:** load with the network blocked → counters show local values and the page renders fully.
+- [ ] Pass
+
+### LD-3 — Blinking cursor on the splash, reduced-motion aware  *(J4)*
+A blinking underscore after the splash title via CSS only; steady (no blink) under `prefers-reduced-motion`.
+```sh
+grep -Fc 'splash-title::after' public/css/style.css              # Expect: >=1 (the cursor)
+grep -Fc 'prefers-reduced-motion' public/css/style.css           # Expect: >=1 (steady when reduced)
+find public -name '*.js' | wc -l                                 # Expect: 4 (no new JS file; counters.js edited in place)
+```
+- **Expect:** a CSS-only blinking underscore after “JOIN THE MESH”; honours reduced-motion; no new JS file.
+- [ ] Pass
+
+### Regression — surviving prior criteria still pass  *(LD feature)*
+**Still must pass:** §2/§3 (assets stay local; `check-offline.sh` green — the data `fetch()` is not an asset; **the offline render is held by the bounded timeout + local fallback, not the gate**), §4 (fallback paths relative), §8 (counters/messages still populate — now remote→local→placeholder), CR-2 (`messages.json` remains the box's offline fallback), S3/WS-2 (JS inventory unchanged — `counters.js` edited, no new file).
+- [ ] Pass (no regression)
+
+---
+
 ## Verdict
 
-A build is **ACCEPTED** only when the surviving boxes (§1–§5, §8, §10; S1–S3, S6), LP-1–LP-7, SS-1–SS-9, **WS-1–WS-7**, **CR-1–CR-4**, and **CC-1** are all ticked, and amended §2/§3 hold. (§6/§7/§9 + S4/S5 superseded by SS; S3/LP-1 amended by H2; **WS-6 is MANUAL**, hardware-verified by the team.)
+A build is **ACCEPTED** only when the surviving boxes (§1–§5, §8, §10; S1–S3, S6), LP-1–LP-7, SS-1–SS-9, **WS-1–WS-7**, **CR-1–CR-4**, **CC-1**, and **LD-1–LD-3** are all ticked, and amended §2/§3 hold. (§6/§7/§9 + S4/S5 superseded by SS; S3/LP-1 amended by H2; **WS-6 is MANUAL**, hardware-verified by the team.)
 Record the date, the Zola version, and any waived item with its justification.

@@ -253,3 +253,18 @@ non-Meshcore stacks their join/config reference. Meshcore stays the page's prima
 | **I6** | **Meshcore channel deep-links (kept blue)** | Each channel name in the `/config` channels table becomes a `meshcore://channel/add?name=%23<name>&secret=<hex>` deep link (opens the MeshCore app to add it). Styled **blue/cyan** (`.chan-link`), **not** the amber link colour, with **no** ↗ / `target=_blank` (custom-scheme app deep link, not web navigation). The six `name`/`secret` pairs match the table + `mesh-provision.js`. |
 
 **Confirmation gate:** I1–I5 **confirmed** (2026-06-21); I6 added same session per request.
+
+## Feature: Live landing data from the dashboard (remote-first, local fallback)  *(2026-06-21)*
+
+The splash counters + recent-messages box fetch **live** data from the PotatoMesh dashboard
+when online, falling back to the local JSON so the offline copy is unaffected. Plus a blinking
+terminal cursor on the splash title.
+
+| # | Decision | Detail |
+| --- | --- | --- |
+| **J1** | **Remote-first, local fallback, bounded** | `counters.js` fetches stats from `https://dweb.potatomesh.net/api/stats` and recent messages from `…/api/messages?limit=3` (same shapes as the local files), each with a bounded **~2.5 s** `AbortController` timeout; on timeout/error/CORS-block it falls back to local `stats.json` / `messages.json`, then to placeholders / hidden box. 60 s refresh retained; message text still injected via `textContent` (untrusted mesh content). |
+| **J2** | **Amends D3/§2 — assets local; data may fetch-with-fallback** | The no-external-**asset** rule stands for all CSS/JS/fonts/images (still 100% local; `check-offline.sh` green). NEW narrow exception: a runtime **data** fetch to the **already-allowlisted** dashboard host is allowed **iff** a mandatory local-JSON fallback keeps the offline render fully intact. The gate cannot see a `fetch()`, so the offline guarantee rests on the bounded timeout + fallback and an explicit acceptance check — not the gate. |
+| **J3** | **Live is gated by the API's CORS** | Live data needs the dashboard to return `Access-Control-Allow-Origin` (absent as of 2026-06-21 → browser falls back to local). No site change needed when CORS is enabled — it goes live automatically. On offline deployments an external script keeps the local JSON fresh (the fallback source). |
+| **J4** | **Blinking cursor on the splash** | A blinking underscore after “JOIN THE MESH” via a CSS `::after` + `@keyframes` (no JS). Respects `prefers-reduced-motion` (steady underscore, no blink, for users who opt out). |
+
+**Confirmation gate:** J1–J4 require explicit sign-off (`confirm all`, or call a number).

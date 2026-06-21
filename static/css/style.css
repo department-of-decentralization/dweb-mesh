@@ -157,6 +157,10 @@ pre.has-copy { position: relative; }
 .splash-title { font-family: "Press Start 2P", monospace;
   font-size: clamp(1.8rem, 9vw, 3.4rem); color: var(--fg); margin: 0 0 1.4rem;
   line-height: 1.2; text-shadow: 0 0 10px rgba(65,255,138,0.6); }
+/* blinking terminal cursor after "JOIN THE MESH" (J4) */
+.splash-title::after { content: "_"; animation: cursor-blink 1.1s steps(1) infinite; }
+@keyframes cursor-blink { 0%, 50% { opacity: 1; } 50.01%, 100% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .splash-title::after { animation: none; } }
 .splash-cta { margin-top: 1.5rem; margin-bottom: 0; }
 .splash-buy { margin: 1rem 0 0; }
 .splash-buy a { font-family: "Press Start 2P", monospace; font-size: 0.6rem;

@@ -1,14 +1,22 @@
 /* Live mesh counters + recent messages for the splash. Vanilla JS, no framework, no
-   deps. Polls same-origin stats.json (counts) and messages.json (recent messages),
-   refreshing every 60s. On ANY failure it leaves the last-good values / static
-   placeholders in place and the messages box hidden - no spinner, no error spew.
-   Message text is rendered via textContent (never innerHTML), so untrusted mesh
-   content cannot inject markup. (SPEC.md D6.) */
+   deps. Fetches LIVE data from the PotatoMesh dashboard, falling back to the local
+   stats.json / messages.json so the offline copy is unaffected (SPEC.md J1/J2/D6).
+   Each fetch is bounded by a short AbortController timeout; on timeout/error/CORS-block
+   it uses the local file, then leaves the static placeholders / hides the box. Message
+   text is rendered via textContent (never innerHTML) — untrusted mesh content. */
 (function () {
   "use strict";
-  var WINDOW = "week";       // counter time bucket: "hour" | "day" | "week" | "month"
-  var REFRESH_MS = 60000;    // poll cadence for counters + messages
-  var MAX_MESSAGES = 3;      // how many recent messages to show
+  var WINDOW = "week";        // counter time bucket: "hour" | "day" | "week" | "month"
+  var REFRESH_MS = 60000;     // poll cadence for counters + messages
+  var MAX_MESSAGES = 3;       // how many recent messages to show
+  var TIMEOUT_MS = 2500;      // bound each live fetch so the offline copy falls back fast
+
+  // Live dashboard endpoints (J1). Live only when the API returns CORS headers (J3);
+  // otherwise the browser blocks the read and we fall back to the local file.
+  var STATS_REMOTE = "https://dweb.potatomesh.net/api/stats";
+  var STATS_LOCAL  = "stats.json";
+  var MSGS_REMOTE  = "https://dweb.potatomesh.net/api/messages?limit=3";
+  var MSGS_LOCAL   = "messages.json";
 
   var nodes = document.getElementById("stat-nodes");
   var msgs = document.getElementById("stat-messages");
@@ -28,24 +36,38 @@
     return e;
   }
 
+  function getJSON(url, signal) {
+    return fetch(url, { cache: "no-store", signal: signal }).then(function (r) {
+      if (!r.ok) { throw new Error("status " + r.status); }
+      return r.json();
+    });
+  }
+
+  // Remote-first with a bounded timeout, then the local file (offline fallback).
+  function liveOrLocal(remoteUrl, localUrl) {
+    var ctrl = (typeof AbortController !== "undefined") ? new AbortController() : null;
+    var timer = ctrl ? setTimeout(function () { ctrl.abort(); }, TIMEOUT_MS) : null;
+    return getJSON(remoteUrl, ctrl ? ctrl.signal : undefined)
+      .then(function (d) { if (timer) { clearTimeout(timer); } return d; })
+      .catch(function () { if (timer) { clearTimeout(timer); } return getJSON(localUrl); });
+  }
+
   function refreshCounters() {
-    fetch("stats.json", { cache: "no-store" })
-      .then(function (r) { if (!r.ok) { throw new Error("status"); } return r.json(); })
+    liveOrLocal(STATS_REMOTE, STATS_LOCAL)
       .then(function (d) {
         var n = total(d, "nodes"), m = total(d, "messages");
         if (n !== null && nodes) { nodes.textContent = n; }
         if (m !== null && msgs) { msgs.textContent = m; }
       })
-      .catch(function () { /* keep last-good / placeholders */ });
+      .catch(function () { /* remote + local both unreachable: keep static placeholders */ });
   }
 
   function refreshMessages() {
     if (!feed) { return; }
-    fetch("messages.json", { cache: "no-store" })
-      .then(function (r) { if (!r.ok) { throw new Error("status"); } return r.json(); })
+    liveOrLocal(MSGS_REMOTE, MSGS_LOCAL)
       .then(function (list) {
         if (!Array.isArray(list) || !list.length) { feed.textContent = ""; feed.hidden = true; return; }
-        // messages.json records: { text, protocol, channel_name, rx_time (epoch), ... }
+        // records: { text, protocol, channel_name, rx_time (epoch), ... }
         var recent = list.slice()
           .sort(function (a, b) { return (((b && b.rx_time) || 0) - ((a && a.rx_time) || 0)); })
           .slice(0, MAX_MESSAGES);
@@ -62,7 +84,7 @@
         });
         feed.hidden = false;
       })
-      .catch(function () { /* offline-honest: keep whatever is already shown */ });
+      .catch(function () { /* remote + local both unreachable: keep whatever is shown */ });
   }
 
   function refresh() { refreshCounters(); refreshMessages(); }
