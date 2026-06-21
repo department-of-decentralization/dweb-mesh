@@ -301,14 +301,14 @@ grep -Eo 'href="/(config|contact)/"' public/flash/index.html | sort -u          
 
 ### SS-5 — /config: preset + channels + AI-host channel  *(G3/G5)*
 ```sh
-grep -iE 'EU/UK/Narrow' public/config/index.html            # Expect: preset name
-grep -E '869\.618|62\.5 kHz|SF 8' public/config/index.html  # Expect: the team-confirmed EU/UK/Narrow values (G5 amended — citation/verify note removed at the team's request)
+grep -iF 'EU/UK (Narrow)' public/config/index.html          # Expect: preset name
+grep -E '869\.618|62\.5 kHz|SF 8' public/config/index.html  # Expect: the team-confirmed EU/UK (Narrow) values (G5 amended — citation/verify note removed at the team's request)
 grep -c '#dwebcamp' public/config/index.html                # Expect: >=1
 grep -c '#bot'      public/config/index.html                # Expect: >=1 (AI host, ex-D9)
 grep -ic 'de-bebb'  public/config/index.html                # Expect: >=1 (scope)
 grep -Eo 'href="https?://[^"]*"[^>]*target="_blank"' public/config/index.html | wc -l  # Expect: >=1 (app/CLI links, new tab)
 ```
-- **Expect:** EU/UK/Narrow preset box with the **team-confirmed** values (G5 amended — citation/verify note removed at the team's request); a channel box with all 6 `#channels` + scope `de-bebb` (incl. `#bot`); SET PRESET / ADD CHANNELS buttons present (non-functional OK); iOS/Android/MeshCLI links in new tabs.
+- **Expect:** EU/UK (Narrow) preset box with the **team-confirmed** values (G5 amended — citation/verify note removed at the team's request); a channel box with all 6 `#channels` + scope `de-bebb` (incl. `#bot`); SET PRESET / ADD CHANNELS buttons present (non-functional OK); iOS/Android/MeshCLI links in new tabs.
 - [ ] Pass
 
 ### SS-6 — /workshop  *(G1)*

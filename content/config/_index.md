@@ -1,14 +1,12 @@
 +++
 title = "Config"
-description = "Set the EU/UK/Narrow Meshcore preset and join the camp channels."
+description = "Set the EU/UK (Narrow) Meshcore preset and join the camp channels."
 +++
 
-You have hardware with Meshcore ready? Let's get you set up on the `EU/UK/Narrow` preset and add all the relevant channels.
+You have hardware with <span class="hi">Meshcore</span> ready? Let's get you set up on the `EU/UK (Narrow)` preset and add all the relevant channels.
 
 <p class="btn-row"><button type="button" class="btn">SET PRESET</button></p>
-<p class="cap">This sets your device to the <code>EU/UK/Narrow</code> Meshcore preset and default scope to <code>de-bebb</code> (Berlin/Brandenburg).</p>
-
-### EU/UK/Narrow
+<p class="muted">This sets your device to the <code>EU/UK (Narrow)</code> Meshcore preset and default scope to <code>de-bebb</code> (Berlin/Brandenburg).</p>
 
 <div class="refcard">
   <div class="refcard-row"><span class="refcard-k">Frequency</span><span>869.618 MHz</span></div>
@@ -20,7 +18,7 @@ You have hardware with Meshcore ready? Let's get you set up on the `EU/UK/Narrow
 </div>
 
 <p class="btn-row"><button type="button" class="btn">ADD CHANNELS</button></p>
-<p class="cap">This adds the DWebCamp hashtag channels to your device.</p>
+<p class="muted">This adds the DWebCamp hashtag channels to your device.</p>
 
 | Channel | Scope | Description |
 |---|---|---|
@@ -33,6 +31,6 @@ You have hardware with Meshcore ready? Let's get you set up on the `EU/UK/Narrow
 
 ## Apps
 
-- **iOS** — <a href="https://apps.apple.com/app/meshcore/id6742354151" target="_blank" rel="noopener">MeshCore on the App Store</a>
-- **Android** — <a href="https://play.google.com/store/apps/details?id=com.liamcottle.meshcore.android" target="_blank" rel="noopener">MeshCore on Google Play</a>
-- **Linux / macOS** — <a href="https://github.com/meshcore-dev/meshcore-cli" target="_blank" rel="noopener">MeshCLI (meshcore-cli)</a>, installed with <code>pipx install meshcore-cli</code>
+- **iOS** - <a href="https://apps.apple.com/app/meshcore/id6742354151" target="_blank" rel="noopener">MeshCore on the App Store &#8599;</a>
+- **Android** - <a href="https://play.google.com/store/apps/details?id=com.liamcottle.meshcore.android" target="_blank" rel="noopener">MeshCore on Google Play &#8599;</a>
+- **Linux / macOS** - <a href="https://github.com/meshcore-dev/meshcore-cli" target="_blank" rel="noopener">MeshCLI (meshcore-cli) &#8599;</a>, installed with <code>pipx install meshcore-cli</code>

@@ -1,11 +1,11 @@
 +++
 title = "Hardware"
-description = "Three boards for sale at the camp — or bring your own and skip to flashing."
+description = "Three boards for sale at the camp - or bring your own and skip to flashing."
 +++
 
 We have three boards for sale at the camp. You brought your own hardware? Skip this section and move on to the → [Flasher](@/flash/_index.md).
 
-> **Make sure your hardware supports the 868 MHz ISM band — in Germany, at 500 mW.**
+> **Make sure your hardware supports the 868 MHz ISM band - in Germany, at 500 mW.**
 
 <div class="devices">
 
@@ -18,7 +18,7 @@ We have three boards for sale at the camp. You brought your own hardware? Skip t
 
   <div class="device">
     <h3>Seeed T1000-E</h3>
-    <p class="pick">Pick this if: you want a sealed, card-sized tracker with GPS and battery — pocket it and go.</p>
+    <p class="pick">Pick this if: you want a sealed, card-sized tracker with GPS and battery - pocket it and go.</p>
     <p class="specs">nRF52840 + LR1110 · GNSS · no screen (phone-configured) · 85×55×6.5 mm · IP65 · 700 mAh · BLE 5.0 · 863–928 MHz.</p>
     <p class="buy">Spec: <a href="https://www.seeedstudio.com/SenseCAP-Card-Tracker-T1000-E-for-Meshtastic-p-5913.html" target="_blank" rel="noopener">seeedstudio.com &rarr;</a></p>
   </div>
@@ -33,5 +33,6 @@ We have three boards for sale at the camp. You brought your own hardware? Skip t
 </div>
 
 <p class="btn-row"><a class="btn" href="https://dwebcamp.org/tickets/" target="_blank" rel="noopener">BUY DEVICES</a></p>
+<p class="muted">The first 50 <span class="hi">Heltec v4</span> devices picked up receive a free 3D printed case and external antenna.</p>
 
 Brought your own device? Go to → [Flasher](@/flash/_index.md).
