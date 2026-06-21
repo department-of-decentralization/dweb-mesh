@@ -71,11 +71,24 @@ a:hover, a:focus { background: var(--amber); color: var(--bg); text-shadow: none
 code, pre, kbd { font-family: "Departure Mono", ui-monospace, monospace; }
 code { color: var(--cyan); text-shadow: 0 0 5px rgba(111,230,255,0.4); }
 pre {
-  background: var(--panel); border: 1px solid var(--line);
+  background: var(--panel); border: 1px solid var(--line); color: var(--cyan);
   padding: 0.8rem 1rem; overflow-x: auto; max-width: var(--maxw);
 }
-pre code { color: var(--fg); }
+pre code { color: var(--cyan); }
 hr { border: none; border-top: 1px dashed var(--line); margin: 2rem 0; }
+
+/* copy-to-clipboard button on code blocks (copy-code.js) */
+pre.has-copy { position: relative; }
+.copy-btn { position: absolute; top: 0.4rem; right: 0.4rem; padding: 0.25rem; line-height: 0;
+  cursor: pointer; color: var(--fg-dim); background: var(--bg); border: 1px solid var(--line);
+  font-family: "Departure Mono", ui-monospace, monospace; }
+.copy-btn svg { display: block; width: 1rem; height: 1rem; fill: currentColor; }
+.copy-btn:hover, .copy-btn:focus { color: var(--fg); border-color: var(--fg-dim); outline: none; }
+.copy-btn.copied, .copy-btn.failed { color: var(--fg-dim); border-color: var(--fg-dim); }
+.copy-btn.copied::after, .copy-btn.failed::after { position: absolute; top: 0.15rem; right: 1.9rem;
+  font-size: 0.6rem; white-space: nowrap; color: var(--fg-dim); }
+.copy-btn.copied::after { content: "copied"; }
+.copy-btn.failed::after { content: "failed"; }
 
 /* skip link */
 .skip-link { position: absolute; left: -9999px; top: 0;

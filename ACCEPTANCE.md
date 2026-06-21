@@ -169,7 +169,7 @@ grep -rEoq 'href="https://matrix\.to/#/#dweb-mesh:dod\.ngo"' public/ && echo "ma
 |---|-----------|--------|--------|
 | **S1** | Fonts bundled + local (D4) | `ls public/fonts/` ; `grep -rE '@font-face' public/ -l` | ≥2 `woff2` in repo; `@font-face` `url()` are local paths |
 | **S2** | Small payload (D3) | `du -sh public/ ; du -sh public/fonts/` | Total in low MB; fonts subset, not multi-MB |
-| **S3** | No node toolchain in repo (D1) *[amended by H2]* | `! test -e package.json ; ! test -d node_modules ; find public -name '*.js'` | NO `package.json`/`node_modules` in the repo; JS = hand-written + the **vendored** lib: `counters.js`, `mesh-provision.js`, `vendor/meshcore.min.js` — all local (governs the JS inventory; see **WS-1/WS-2**) |
+| **S3** | No node toolchain in repo (D1) *[amended by H2]* | `! test -e package.json ; ! test -d node_modules ; find public -name '*.js'` | NO `package.json`/`node_modules` in the repo; JS = hand-written + the **vendored** lib: `counters.js`, `copy-code.js`, `mesh-provision.js`, `vendor/meshcore.min.js` — all local (governs the JS inventory; see **WS-1/WS-2**) |
 | **S4** | Stack hierarchy stated (D8 → G2) | grep `public/start/` | Meshcore PRIMARY + Meshtastic SUPPORTED (no services) + Reticulum EDUCATIONAL/→Workshop stated in the **/start note** (no stack pages) — see **SS-2** |
 | **S5** | AI host = a channel, not a route (D9 → G3) | `! test -e public/meshcore/services` ; grep `public/config/` | no services route; AI host is the `#bot` channel line on `/config` — see **SS-5** |
 | **S6** | CNAME + CI present (D10) | `cat CNAME ; ls .github/workflows/` | `CNAME` = `mesh.dod.ngo`; a workflow builds Zola → Pages; Freifunk noted manual |
@@ -381,9 +381,9 @@ scripts/check-offline.sh                                                        
 ### WS-2 — No node toolchain entered the repo  *(H2; D1)*
 ```sh
 ! test -e package.json && ! test -e package-lock.json && ! test -d node_modules && echo "repo node-free"   # Expect: repo node-free
-find public -name '*.js' | sort   # Expect: exactly counters.js, mesh-provision.js, vendor/meshcore.min.js
+find public -name '*.js' | sort   # Expect: exactly copy-code.js, counters.js, mesh-provision.js, vendor/meshcore.min.js
 ```
-- **Expect:** no `package.json`/`node_modules` in the repo; `zola build` alone produced the site; the JS inventory is exactly those three local files.
+- **Expect:** no `package.json`/`node_modules` in the repo; `zola build` alone produced the site; the JS inventory is exactly those four local files.
 - [ ] Pass
 
 ### WS-3 — /config page wiring  *(H1/H4)*
@@ -460,7 +460,7 @@ grep -c '<details' public/config/index.html                 # Expect: 2
 grep -Ec '<details[^>]*\bopen\b' public/config/index.html   # Expect: 0 (collapsed by default)
 grep -E '<summary[^>]*>[^<]*Meshtastic' public/config/index.html  # Expect: present
 grep -E '<summary[^>]*>[^<]*Reticulum'  public/config/index.html  # Expect: present
-ls static/js/*.js   # Expect: only counters.js + mesh-provision.js (native <details>, no new JS)
+ls static/js/*.js   # Expect: counters.js, copy-code.js, mesh-provision.js (the <details> add no JS of their own; copy-code.js is the separate copy-button feature)
 ```
 - **Expect:** both sections present, collapsed, ordered Meshtastic→Reticulum, after Apps; no JS added.
 - [ ] Pass
@@ -507,7 +507,22 @@ grep -nE 'meshcore://[^"]*"[^>]*target="_blank"' public/config/index.html  # Exp
 
 ---
 
+## Enhancement: copy-to-clipboard on code blocks  *(copy-code.js)*
+
+### CC-1 — Copy button on code blocks (local, offline-safe)
+`copy-code.js` (loaded site-wide via the base template) adds a copy button to every `<pre>` that contains a `<code>` (skips the dynamic provision-log `<pre>`, which has no `<code>`); copies via the Clipboard API with an `execCommand` fallback so it works on the insecure-context offline copy too. Local JS only.
+```sh
+test -f public/js/copy-code.js && echo ok            # Expect: ok (local script)
+grep -c 'copy-code.js' public/index.html             # Expect: >=1 (global, via base template)
+grep -Ec 'https?://' public/js/copy-code.js          # Expect: 0 (no external refs)
+grep -c 'execCommand' public/js/copy-code.js         # Expect: >=1 (offline fallback)
+```
+- **Expect:** local copy script, `check-offline.sh` green; a button appears on the Reticulum `<pre><code>` but NOT on the provision-log `<pre>`. **MANUAL (browser):** clicking copies the block and flashes "copied".
+- [ ] Pass
+
+---
+
 ## Verdict
 
-A build is **ACCEPTED** only when the surviving boxes (§1–§5, §8, §10; S1–S3, S6), LP-1–LP-7, SS-1–SS-9, **WS-1–WS-7**, and **CR-1–CR-4** are all ticked, and amended §2/§3 hold. (§6/§7/§9 + S4/S5 superseded by SS; S3/LP-1 amended by H2; **WS-6 is MANUAL**, hardware-verified by the team.)
+A build is **ACCEPTED** only when the surviving boxes (§1–§5, §8, §10; S1–S3, S6), LP-1–LP-7, SS-1–SS-9, **WS-1–WS-7**, **CR-1–CR-4**, and **CC-1** are all ticked, and amended §2/§3 hold. (§6/§7/§9 + S4/S5 superseded by SS; S3/LP-1 amended by H2; **WS-6 is MANUAL**, hardware-verified by the team.)
 Record the date, the Zola version, and any waived item with its justification.
