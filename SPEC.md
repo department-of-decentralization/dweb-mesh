@@ -210,3 +210,30 @@ link (G1).** *Pending explicit sign-off (gate below).*
 **Confirmation gate:** G1–G6 require explicit sign-off (`confirm all`, or call a number).
 On confirmation, the D3 / D8 / D9 rows get `[amended by G4/G2/G3]` annotations so the
 original decision table never silently drifts.
+
+---
+
+## Feature: WebSerial Provisioning (companion config)
+
+Added 2026-06-21. Wires the `/config` SET PRESET / ADD CHANNELS buttons (the G5
+"non-functional placeholders, wired later") to **real client-side provisioning of a
+USB MeshCore companion node** via `@liamcottle/meshcore.js` over WebSerial. No backend.
+Decisions **H1–H4**. **Amends S3 + LP-1 (H2); extends G5/SS-5 and D6.** D1 and D3 upheld.
+
+> **Verification reality:** the device-level behaviour (picker opens, `getSelfInfo`
+> reports the values, channels written, port released) needs a physical companion +
+> a Chromium browser and is **not automatable here** — those criteria are tagged
+> **MANUAL** in ACCEPTANCE for the team. Auto-verifiable: clean build, `check-offline`
+> (lib local, no CDN), payload (S2), feature-detect/disabled-state, and a static
+> review of the JS against the verified API.
+
+| # | Decision | Choice |
+|---|----------|--------|
+| **H1** | **Client-side WebSerial provisioning** *(fulfils G5)* | The two `/config` buttons provision a USB **companion** node (`companion_radio_usb`) in-browser via `WebSerialConnection`. **Companion firmware only** — no repeater/room-server, no text CLI. "Region" = a single **flood scope** transport key, not a tree. |
+| **H2** | **Vendored local library** *(amends S3, LP-1; D1/D3 upheld)* | `meshcore.js` ships as a committed **self-contained browser bundle** at `static/js/vendor/meshcore.min.js`, imported by a **relative path**; plus `static/js/mesh-provision.js` (our logic). **Repo stays `node_modules`-free; `zola build` alone builds the site (D1 upheld).** Obtaining the bundle is a one-time authoring fetch (CDN bundler or esbuild), then committed; **D3 upheld** — no CDN at runtime, `check-offline.sh` must pass on the vendored file. **Amends S3** ("only counter JS / no bundler output" → counters.js + mesh-provision.js + the vendored lib, all local) and **LP-1** (rescope its `find *.js` to "the nav adds no JS"). |
+| **H3** | **Exact values & flow** *(from the verified spec)* | Preset: `setRadioParams(869618, 62500, 8, 8)` → `setTxPower(22)` *(not 27 — device rejects it)* → **persisted default flood scope** (CMD 63, device `savePrefs`; key = `getHashtagRegionKey("de-bebb").slice(0,16)`, the first 16 bytes of SHA-256("#de-bebb")) → **2-byte path-hash prefix** (CMD 61, mode 1) *(bugfix: the old RAM-only CMD 54 was lost on reboot)*, then **`getSelfInfo` → name the node `"DWeb " + first-4-hex` only if it still carries the default public-key-hex name** (a user-set name is kept). Channels: `setChannel(1..6, name, secret)` with the six given names + 16-byte hex secrets; **slot 0 untouched**; then, once configured, **`sendFloodAdvert()` then `sendChannelTextMessage(#bot, "flashed <name>")`** (advert first, message last) so the flashing team gets live mesh feedback. Flow: `open()` inside the click gesture → await `"connected"` → sequential **awaited** commands → log each step → `close()` in `finally`. Read-before-write on channels warns, doesn't clobber silently. `reboot()` left **commented**. **No** text CLI; **no** `localStorage`/`sessionStorage`. |
+| **H4** | **Secure-context gating + UI** *(amends SS-5; G4-consistent)* | On load, feature-detect `navigator.serial`; if absent → **disable both buttons** + show an "unsupported browser" line. Verbatim muted note: *"USB companion nodes only, in a Chromium browser over HTTPS. On a phone or over Bluetooth, use the MeshCore app."* **Per-button log terminals** (one under each button, opening on click and clearing per run) show per-step progress and surface the **failing step** on error. Reuse existing page styles. Works on HTTPS (GH Pages) + `localhost`; on a plain-HTTP LAN-IP Freifunk copy the buttons disable gracefully — the page still renders. |
+
+**Confirmation gate:** H1–H4 require explicit sign-off (`confirm all`, or call a number).
+On confirmation, S3 and LP-1 get `[amended by H2]` annotations so the originals never
+silently drift.

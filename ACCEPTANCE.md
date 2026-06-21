@@ -145,6 +145,7 @@ grep -rEoq 'href="https://matrix\.to/#/#dweb-mesh:dod\.ngo"' public/ && echo "ma
   reload `/` → a **static placeholder** shows. **No** infinite spinner, **no**
   console error spew, **no** hang. Restore the file afterward.
 - **Expect:** both behaviors; the JS is local, tiny, framework-free.
+- **Recent-messages box (extends D6):** the splash renders a muted-blue box under the counters showing the **last 3** messages from `messages.json` (an array of mesh records `{text, protocol, channel_name, rx_time, …}`; sorted by `rx_time`, newest first; each = text + protocol & channel-name tags + timestamp). Message text is injected via `textContent` (safe vs untrusted mesh input). Counters (`stats.json`) and messages (`messages.json`) **refresh every 60 s**; both fail soft (box hidden when absent/empty/offline). Counter window is `week`. *(messages.json shape is the assumed Mesh-Nest contract — team to confirm.)*
 - [ ] Pass
 
 ## 9. TBC fields are visible placeholders, not invented data  *(brief §13.9; D12)*  — *[superseded by Site Structure → SS-5/SS-6]*
@@ -168,7 +169,7 @@ grep -rEoq 'href="https://matrix\.to/#/#dweb-mesh:dod\.ngo"' public/ && echo "ma
 |---|-----------|--------|--------|
 | **S1** | Fonts bundled + local (D4) | `ls public/fonts/` ; `grep -rE '@font-face' public/ -l` | ≥2 `woff2` in repo; `@font-face` `url()` are local paths |
 | **S2** | Small payload (D3) | `du -sh public/ ; du -sh public/fonts/` | Total in low MB; fonts subset, not multi-MB |
-| **S3** | No framework / no node_modules (D6) | `! test -d node_modules ; find public -name '*.js'` | only the tiny counter JS (`public/js/counters.js`); no bundler output |
+| **S3** | No node toolchain in repo (D1) *[amended by H2]* | `! test -e package.json ; ! test -d node_modules ; find public -name '*.js'` | NO `package.json`/`node_modules` in the repo; JS = hand-written + the **vendored** lib: `counters.js`, `mesh-provision.js`, `vendor/meshcore.min.js` — all local (governs the JS inventory; see **WS-1/WS-2**) |
 | **S4** | Stack hierarchy stated (D8 → G2) | grep `public/start/` | Meshcore PRIMARY + Meshtastic SUPPORTED (no services) + Reticulum EDUCATIONAL/→Workshop stated in the **/start note** (no stack pages) — see **SS-2** |
 | **S5** | AI host = a channel, not a route (D9 → G3) | `! test -e public/meshcore/services` ; grep `public/config/` | no services route; AI host is the `#bot` channel line on `/config` — see **SS-5** |
 | **S6** | CNAME + CI present (D10) | `cat CNAME ; ls .github/workflows/` | `CNAME` = `mesh.dod.ngo`; a workflow builds Zola → Pages; Freifunk noted manual |
@@ -181,13 +182,15 @@ Added 2026-06-20. A zero-context reviewer judges the landing shell with **LP-1�
 below, **in addition to** §1–§10 and S1–S6 (regression line at the end). Build first
 (`zola build`), then serve `public/` at root per §0.
 
-### LP-1 — Collapsible nav is CSS-only  *(F1; protects S3, D3)*
+### LP-1 — Collapsible nav is CSS-only  *(F1; D3)*  *[amended by H2]*
 ```sh
-find public -name '*.js'                         # Expect: ONLY public/js/counters.js (no nav JS added)
-grep -rEl '<script' public/ --include='*.html'   # Expect: ONLY public/index.html (the counter)
 grep -Eic 'type=["'"'"']?checkbox' public/index.html   # Expect: >=1 (nav toggle is a checkbox, not JS)
+grep -c 'nav-toggle' public/index.html                 # Expect: >=1 (the CSS checkbox toggle)
+# The nav adds NO script of its own; scripts now live only on the splash (counter)
+# and /config (provisioning). Site-wide JS inventory is governed by S3 + WS-2.
+grep -rEl '<script' public/ --include='*.html' | sort  # Expect: ONLY public/index.html and public/config/index.html
 ```
-- **Expect:** the nav collapse uses a hidden checkbox + CSS; no nav JavaScript; no second file in `public/*.js`.
+- **Expect:** the nav collapse is a hidden checkbox + CSS — **no nav JavaScript**. (The site-wide JS-count moved to amended **S3** + **WS-2**, since the WebSerial feature legitimately adds `/config` JS.)
 - [ ] Pass
 
 ### LP-2 — Nav responsive: inline wide, logo-toggled menu narrow  *(F1)*
@@ -308,7 +311,7 @@ grep -c '#bot'      public/config/index.html                # Expect: >=1 (AI ho
 grep -ic 'de-bebb'  public/config/index.html                # Expect: >=1 (scope)
 grep -Eo 'href="https?://[^"]*"[^>]*target="_blank"' public/config/index.html | wc -l  # Expect: >=1 (app/CLI links, new tab)
 ```
-- **Expect:** EU/UK (Narrow) preset box with the **team-confirmed** values (G5 amended — citation/verify note removed at the team's request); a channel box with all 6 `#channels` + scope `de-bebb` (incl. `#bot`); SET PRESET / ADD CHANNELS buttons present (non-functional OK); iOS/Android/MeshCLI links in new tabs.
+- **Expect:** EU/UK (Narrow) preset box with the **team-confirmed** values (G5 amended — citation/verify note removed at the team's request); a channel box with all 6 `#channels` + scope `de-bebb` (incl. `#bot`); SET PRESET / ADD CHANNELS buttons present (now wired client-side — see WS-3/WS-6); iOS/Android/MeshCLI links in new tabs.
 - [ ] Pass
 
 ### SS-6 — /workshop  *(G1)*
@@ -358,7 +361,97 @@ zola build                                     # rebuild → planted asset gone
 
 ---
 
+## Feature: WebSerial Provisioning (companion config)  *(SPEC.md → Feature: WebSerial Provisioning, H1–H4)*
+
+Added 2026-06-21. Judges the `/config` provisioning wiring with **WS-1…WS-6**, in addition
+to the surviving criteria. **Auto-verifiable here:** WS-1–WS-5 (build, offline, local-asset,
+page wiring, JS values/structure). **WS-6 is MANUAL** — needs a USB companion + Chromium,
+not automatable. Build first: `zola build`.
+
+### WS-1 — Library is vendored LOCAL, no CDN  *(H2; D3)*
+```sh
+test -f public/js/vendor/meshcore.min.js && echo "vendored present"            # Expect: present
+grep -rEn 'import[^;]*["'"'"']https?://|from[^;]*["'"'"']https?://' public/js/   # Expect: NO output (no external ESM imports)
+grep -rEn 'fetch\(["'"'"']https?://|importScripts\(' public/js/                  # Expect: NO output (no runtime remote loads)
+scripts/check-offline.sh                                                         # Expect: OK
+```
+- **Expect:** `meshcore.min.js` committed under `public/js/vendor/`, imported by relative path; no external import / remote load in any shipped JS; `check-offline.sh` OK. (Incidental URL *strings* inside the vendored bundle are inert — the gate flags asset/import URLs, not strings.)
+- [ ] Pass
+
+### WS-2 — No node toolchain entered the repo  *(H2; D1)*
+```sh
+! test -e package.json && ! test -e package-lock.json && ! test -d node_modules && echo "repo node-free"   # Expect: repo node-free
+find public -name '*.js' | sort   # Expect: exactly counters.js, mesh-provision.js, vendor/meshcore.min.js
+```
+- **Expect:** no `package.json`/`node_modules` in the repo; `zola build` alone produced the site; the JS inventory is exactly those three local files.
+- [ ] Pass
+
+### WS-3 — /config page wiring  *(H1/H4)*
+```sh
+grep -Eo 'id="btn-(preset|channels)"' public/config/index.html | sort -u   # Expect: both button ids
+grep -Eo 'id="out-(preset|channels)"' public/config/index.html | sort -u   # Expect: both per-button log terminals
+grep -c '<script type="module"' public/config/index.html                   # Expect: >=1 (imports mesh-provision.js)
+grep -F 'USB companion nodes only, in a Chromium browser over HTTPS. On a phone or over Bluetooth, use the MeshCore app.' public/config/index.html   # Expect: the verbatim muted note
+```
+- **Expect:** two id'd buttons; a **per-button log terminal** under each (`out-preset`/`out-channels`, hidden until that button is clicked); the verbatim WebSerial muted note; and a module script wiring `mesh-provision.js`.
+- [ ] Pass
+
+### WS-4 — Feature-detect / disabled-state (static)  *(H4)*
+```sh
+grep -c 'navigator.serial' public/config/index.html public/js/mesh-provision.js     # Expect: present (feature-detect)
+grep -Ei 'disabled|unsupported' public/config/index.html public/js/mesh-provision.js  # Expect: disables buttons + shows unsupported line when navigator.serial absent
+```
+- **Expect:** absence of `navigator.serial` disables both buttons and shows an "unsupported browser" line (static review of the wiring; runtime is WS-6/MANUAL).
+- [ ] Pass
+
+### WS-5 — Exact provisioning values & safe flow (static)  *(H3)*
+```sh
+grep -E 'freq: ?869618' public/js/mesh-provision.js    # Expect: freq 869618
+grep -E 'bw: ?62500'     public/js/mesh-provision.js    # Expect: bw 62500
+grep -E 'sf: ?8\b'       public/js/mesh-provision.js    # Expect: sf 8
+grep -E 'cr: ?8\b'       public/js/mesh-provision.js    # Expect: cr 8
+grep -E 'tx: ?22\b'      public/js/mesh-provision.js    # Expect: tx 22
+grep -nE 'setTxPower\( *27|tx: ?27|27 ?dBm' public/js/mesh-provision.js  # Expect: NO output (27 is rejected by the device)
+grep -F 'getHashtagRegionKey' public/js/mesh-provision.js ; grep -F '"de-bebb"' public/js/mesh-provision.js  # Expect: scope key from getHashtagRegionKey("de-bebb"), persisted via CMD 63 (see WS-7)
+for k in b8769b859a18cb47fa326c79bc04e2da 03a5bab42c9d3535b69f259f338be9ea 3862ef52df5e5966eb10751b83788bc5 eb50a1bcb3e4e5d7bf69a57c9dada211 c5ead1d8a7647a63fd37d156cdc3e257 625ff2a308bbe3a4c90da77979b7a4fc; do grep -qF "$k" public/js/mesh-provision.js && echo "ok $k" || echo "MISSING $k"; done   # Expect: all 6 ok
+grep -nE 'reboot\(' public/js/mesh-provision.js        # Expect: only inside a comment (reboot left commented)
+grep -c 'getSelfInfo' public/js/mesh-provision.js      # Expect: >=1 (preset flow queries device info for the name step)
+grep -c 'setAdvertName' public/js/mesh-provision.js    # Expect: >=1 (sets the node name)
+grep -F '"DWeb "' public/js/mesh-provision.js          # Expect: present (rename prefix, applied only if the name is still the default pubkey-hex)
+grep -c 'sendFloodAdvert' public/js/mesh-provision.js        # Expect: >=1 (advert after configuring)
+grep -c 'sendChannelTextMessage' public/js/mesh-provision.js # Expect: >=1 (post "flashed <name>" to #bot, advert first)
+grep -Ei 'localStorage|sessionStorage' public/js/mesh-provision.js   # Expect: NO output
+grep -Ei "'set radio'|set_channel|region put|\"reboot\"" public/js/mesh-provision.js   # Expect: NO text-CLI strings
+```
+- **Expect:** exact preset (`869618/62500/8/8/22`, never `27`), `de-bebb` scope **persisted** via CMD 63 (key = `getHashtagRegionKey("de-bebb").slice(0,16)`) plus a 2-byte path-hash prefix via CMD 61 (see WS-7), the six channel secrets in slots 1–6 (slot 0 untouched), `reboot()` commented, no text CLI, no storage. The preset flow also queries `getSelfInfo` and **renames an unnamed node** (default = its public-key hex, e.g. `3DAC71E2`) to `DWeb <first-4-hex>` via `setAdvertName`, leaving a user-set name alone. After the channels, it sends an advert (`sendFloodAdvert`) then posts `flashed <name>` to `#bot` (`sendChannelTextMessage`) — advert first, message last — for live flashing-team feedback.
+- [ ] Pass
+
+### WS-6 — Device provisioning works  *(H1/H3 — MANUAL: USB companion + Chromium)*
+- **Verify (manual):** over HTTPS or `localhost` in a Chromium browser with a `companion_radio_usb` node on USB:
+  1. **Set preset** → serial-port picker opens; the button's log terminal opens and shows radio/tx/scope/name steps; a fresh `getSelfInfo` reports **869.618 MHz, 62.5 kHz, SF8, CR 4/8, tx 22 dBm**, and the node is **renamed to `DWeb <first-4-hex>`** if it was still default (e.g. `3DAC71E2` → `DWeb 3DAC`; a user-set name is preserved); all `Ok`.
+  2. **Add channels** → its log terminal shows `slot 1..6`, then `advert sent` + `posted to #bot: flashed <name>`; `getChannel(1..6)` returns the six names + secrets, **slot 0 unchanged**, and the `flashed <name>` post appears in `#bot` on another node.
+  3. A failed step is surfaced **with the step name** in that button's terminal; the port is **closed** after each run (next click works).
+- [ ] Pass (MANUAL)
+
+### WS-7 — Preset persists the flood scope + sets the path-hash prefix  *(bugfix 2026-06-21)*
+The RAM-only `setFloodScope` (CMD 54, lost on reboot) is replaced by the **persisted**
+default-flood-scope command (CMD 63, device `savePrefs`), and a **2-byte path-hash
+prefix** (CMD 61, mode 1) is set.
+```sh
+grep -c 'setFloodScope'           public/js/mesh-provision.js   # Expect: 0 (RAM-only CMD 54 call removed)
+grep -c 'SET_DEFAULT_FLOOD_SCOPE' public/js/mesh-provision.js   # Expect: >=1 (persisted CMD 63 frame [63][31B name \0-pad][16B key])
+grep -c 'SET_PATH_HASH_MODE'      public/js/mesh-provision.js   # Expect: >=1 (CMD 61 frame [61][0][1])
+```
+- **Expect:** no RAM-only `setFloodScope` call; CMD 63 sent (48-byte frame; key = `getHashtagRegionKey("de-bebb").slice(0,16)` = `99e4…`, verified) and CMD 61 sent (path-hash mode 1), each awaiting `Ok`. **MANUAL (hardware):** after Set preset, **reboot the companion → the `de-bebb` scope still set** (the original bug: it was lost).
+- [ ] Pass
+
+### Regression — surviving prior criteria still pass
+**Amended:** **S3** (allows the vendored lib + provisioning JS; repo still node-free) and **LP-1** (rescoped to "nav adds no JS"). **Still must pass:** §1, §2/§3 (the only external **asset** remains the `/flash` iframe; the provisioning lib is **local**), §4, §5, §8, §10, S1, **S2** (vendored bundle keeps payload low-MB), S6, LP-2–LP-7, SS-1–SS-9 (SS-5's buttons are now wired; its checks still hold).
+- [ ] Pass (no regression in the surviving criteria)
+
+---
+
 ## Verdict
 
-A build is **ACCEPTED** only when the surviving boxes (§1–§5, §8, §10; S1–S3, S6), LP-1–LP-7, and SS-1–SS-9 are all ticked, and amended §2/§3 hold. (§6/§7/§9, S4/S5 are superseded by SS — see their redirects.)
+A build is **ACCEPTED** only when the surviving boxes (§1–§5, §8, §10; S1–S3, S6), LP-1–LP-7, SS-1–SS-9, and **WS-1–WS-6** are all ticked, and amended §2/§3 hold. (§6/§7/§9 + S4/S5 superseded by SS; S3/LP-1 amended by H2; **WS-6 is MANUAL**, hardware-verified by the team.)
 Record the date, the Zola version, and any waived item with its justification.

@@ -5,7 +5,8 @@ description = "Set the EU/UK (Narrow) Meshcore preset and join the camp channels
 
 You have hardware with <span class="hi">Meshcore</span> ready? Let's get you set up on the `EU/UK (Narrow)` preset and add all the relevant channels.
 
-<p class="btn-row"><button type="button" class="btn">SET PRESET</button></p>
+<p class="btn-row"><button type="button" class="btn" id="btn-preset">SET PRESET</button></p>
+<pre id="out-preset" class="provision-log" aria-live="polite" hidden></pre>
 <p class="muted">This sets your device to the <code>EU/UK (Narrow)</code> Meshcore preset and default scope to <code>de-bebb</code> (Berlin/Brandenburg).</p>
 
 <div class="refcard">
@@ -17,7 +18,8 @@ You have hardware with <span class="hi">Meshcore</span> ready? Let's get you set
   <div class="refcard-row"><span class="refcard-k">Scope</span><span>de-bebb</span></div>
 </div>
 
-<p class="btn-row"><button type="button" class="btn">ADD CHANNELS</button></p>
+<p class="btn-row"><button type="button" class="btn" id="btn-channels">ADD CHANNELS</button></p>
+<pre id="out-channels" class="provision-log" aria-live="polite" hidden></pre>
 <p class="muted">This adds the DWebCamp hashtag channels to your device.</p>
 
 | Channel | Scope | Description |
@@ -28,6 +30,9 @@ You have hardware with <span class="hi">Meshcore</span> ready? Let's get you set
 | `#bot` | `de-bebb` | an ask-me-anything bot answering your questions |
 | `#berlinmesh` | `de-bebb` | the Berlin local Chaos Mesh community and meetup |
 | `#berlinbrandenburg` | `de-bebb` | the Berlin/Brandenburg regional channel |
+
+<p class="muted">USB companion nodes only, in a Chromium browser over HTTPS. On a phone or over Bluetooth, use the MeshCore app.</p>
+<script type="module" src="../js/mesh-provision.js"></script>
 
 ## Apps
 

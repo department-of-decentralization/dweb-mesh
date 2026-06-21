@@ -16,7 +16,7 @@ Flash your device below.
 <div class="flasher-embed">
   <iframe src="https://flasher.meshcore.io/" title="MeshCore web flasher" loading="lazy" allow="serial; usb; bluetooth"></iframe>
 </div>
-<p class="muted">The flasher runs on <a href="https://flasher.meshcore.io/" target="_blank" rel="noopener">flasher.meshcore.io</a> - it needs an internet connection and a WebSerial browser (Chromium or Brave). Use a connected laptop, or open it directly: <a href="https://flasher.meshcore.io/" target="_blank" rel="noopener">flasher.meshcore.io &#8599;</a>.</p>
+<p class="muted">The flasher runs on <a href="https://flasher.meshcore.io/" target="_blank" rel="noopener">flasher.meshcore.io &#8599;</a> - it needs an internet connection and a WebSerial browser (Chromium or Brave). Use a connected laptop, or open it directly: <a href="https://flasher.meshcore.io/" target="_blank" rel="noopener">flasher.meshcore.io &#8599;</a>.</p>
 
 Done? Move on to → [Config](@/config/_index.md).
 

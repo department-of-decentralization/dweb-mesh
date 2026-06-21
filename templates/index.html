@@ -17,6 +17,8 @@
 
   <p class="splash-cta"><a class="btn" href="{{ get_url(path='@/start/_index.md') }}">&#9654; START</a></p>
   <p class="splash-buy"><a href="{{ config.extra.tickets_url | safe }}" target="_blank" rel="noopener">BUY DEVICE &#8599;</a></p>
+
+  <div class="latest" id="latest" hidden aria-label="Recent mesh messages"></div>
 </section>
 {% endblock content %}
 {% block scripts %}
