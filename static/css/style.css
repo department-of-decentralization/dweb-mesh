@@ -82,7 +82,7 @@ hr { border: none; border-top: 1px dashed var(--line); margin: 2rem 0; }
 .skip-link:focus { left: 0; }
 
 /* header / nav — CSS-only collapsible (F1). Mobile-first: collapsed by default,
-   inline at >=1080px. Brand = home link when wide, menu toggle when narrow. No JS. */
+   inline at >=760px. Brand = home link when wide, menu toggle when narrow. No JS. */
 .site-header {
   position: sticky; top: 0; z-index: 50; background: var(--bg);
   border-bottom: 1px solid var(--line); padding: 0.7rem 1rem;
@@ -112,8 +112,8 @@ hr { border: none; border-top: 1px dashed var(--line); margin: 2rem 0; }
   padding: 0.5rem 0.2rem; }
 .site-nav a:hover, .site-nav a:focus { color: var(--bg); background: var(--fg); }
 
-/* wide (>=1080px): inline nav, brand = home link, toggle + in-menu HOME hidden */
-@media (min-width: 1080px) {
+/* wide (>=760px): inline nav, brand = home link, toggle + in-menu HOME hidden */
+@media (min-width: 760px) {
   .nav-toggle, .brand-toggle { display: none; }
   .brand-home { display: inline; }
   .site-nav, #nav-toggle:checked ~ .site-nav {
@@ -130,8 +130,11 @@ hr { border: none; border-top: 1px dashed var(--line); margin: 2rem 0; }
 /* buttons */
 .btn { display: inline-block; font-family: "Press Start 2P", monospace; font-size: 0.8rem;
   color: var(--bg); background: var(--amber); border: 2px solid var(--amber);
-  padding: 0.9rem 1.2rem; text-decoration: none; text-shadow: none; }
+  padding: 0.9rem 1.2rem; text-decoration: none; text-shadow: none; cursor: pointer; }
 .btn:hover, .btn:focus { background: var(--bg); color: var(--amber); }
+.btn-row { text-align: center; margin: 1.8rem 0; }
+.hi { color: var(--cyan); text-shadow: 0 0 5px rgba(111,230,255,0.4); }
+.cap { color: var(--fg); font-size: 0.85rem; margin: 0.35rem 0 1.4rem; text-align: center; }
 
 /* splash */
 .splash { text-align: center; padding: 3rem 0 1rem; }
@@ -179,6 +182,10 @@ hr { border: none; border-top: 1px dashed var(--line); margin: 2rem 0; }
 .refcard-k { color: var(--fg-dim); letter-spacing: 0.08em; }
 .tbc { color: var(--amber); border: 1px dashed var(--amber); padding: 0.05rem 0.5rem;
   letter-spacing: 0.12em; font-size: 0.85rem; }
+
+/* /flash web-flasher embed (G4 — the one allowed external asset, online-only) */
+.flasher-embed { border: 2px solid var(--line); background: var(--panel); margin: 1.4rem 0; }
+.flasher-embed iframe { display: block; width: 100%; height: 680px; border: 0; }
 
 .devices { display: grid; grid-template-columns: 1fr; gap: 1rem; margin: 1.3rem 0; max-width: none; }
 @media (min-width: 760px) { .devices { grid-template-columns: repeat(3, 1fr); } }

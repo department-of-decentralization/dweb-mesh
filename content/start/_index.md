@@ -1,30 +1,18 @@
 +++
-title = "Start Here"
-description = "Boxed device to working node in four steps. The fast path into Meshcore."
+title = "Start"
+description = "Orientation for the camp mesh: hardware, flash, config, help — in four steps."
 +++
 
-The fast path from a boxed device to a working node on the camp **Meshcore** mesh.
-Four steps. Stuck at any point? Jump to the [Mesh Nest](@/mesh-nest/_index.md) — tent 5.
+## 1 · BUY DEVICE
+If you didn't bring your own hardware or reserved a mesh-messaging companion in the ticket shop, go to the available hardware page. → [Hardware](@/hardware/_index.md)
 
-## 1 · Get a device
-Any of the three known-good boards. No device yet? → [Devices](@/devices/_index.md).
-Already have a LoRa board? Skip ahead.
+## 2 · FLASH FIRMWARE
+Meshcore is the primary protocol for the camp mesh. If you haven't installed Meshcore firmware yet, head to the web flasher. → [Flash](@/flash/_index.md)
 
-## 2 · Flash Meshcore
-Meshcore is the camp's primary stack. → [Meshcore → Flash](@/meshcore/flash.md).
-Roughly five minutes with a web flasher where supported.
+## 3 · CONFIGURATION
+Make sure you are on the correct Meshcore preset and join the available camp channels for news, schedule, and bots. → [Config](@/config/_index.md)
 
-## 3 · Load the camp settings
-Match region, frequency slot, channel, preset and PSK to the camp.
-→ [Settings](@/settings/_index.md) — the card to screenshot.
+## 4 · GET HELP
+Lost? Get help at tent 5 (Mesh Nest) or on Matrix. → [Contact](@/contact/_index.md)
 
-## 4 · Confirm you're on the mesh
-Open the Meshcore app and check you can see camp nodes and the chimney repeater.
-→ [Meshcore → Config & joining](@/meshcore/config.md).
-
-> Meshtastic is supported too, but the camp feeds **no services** into it, and the
-> stacks don't bridge. Here for Reticulum? That's workshops-only —
-> [Reticulum](@/reticulum/_index.md).
-
-Still dark? **Mesh Nest, tent 5.** The footer has the Matrix fallback for when LoRa
-itself is down.
+> <span class="hi">Meshtastic</span> is supported too — we run a Router on <span class="hi">MediumFast</span>, but the camp feeds **no services** into it, and the protocols **don't bridge**. Here for <span class="hi">Reticulum</span>? Check the [Workshop](@/workshop/_index.md) page for config.

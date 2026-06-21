@@ -17,14 +17,11 @@
   <nav class="site-nav" aria-label="Primary">
     <a class="nav-home" href="{{ get_url(path='@/_index.md') }}">HOME</a>
     <a href="{{ get_url(path='@/start/_index.md') }}">START</a>
-    <a href="{{ get_url(path='@/settings/_index.md') }}">SETTINGS</a>
-    <a href="{{ get_url(path='@/devices/_index.md') }}">DEVICES</a>
-    <a href="{{ get_url(path='@/meshcore/_index.md') }}">MESHCORE</a>
-    <a href="{{ get_url(path='@/meshtastic/_index.md') }}">MESHTASTIC</a>
-    <a href="{{ get_url(path='@/reticulum/_index.md') }}">RETICULUM</a>
-    <a href="{{ get_url(path='@/mesh-nest/_index.md') }}">MESH&middot;NEST</a>
-    <a href="{{ get_url(path='@/agenda/_index.md') }}">AGENDA</a>
-    <a href="{{ get_url(path='@/about/_index.md') }}">ABOUT</a>
+    <a href="{{ get_url(path='@/hardware/_index.md') }}">HARDWARE</a>
+    <a href="{{ get_url(path='@/flash/_index.md') }}">FLASH</a>
+    <a href="{{ get_url(path='@/config/_index.md') }}">CONFIG</a>
+    <a href="{{ get_url(path='@/workshop/_index.md') }}">WORKSHOP</a>
+    <a href="{{ get_url(path='@/contact/_index.md') }}">CONTACT</a>
   </nav>
 </header>
 
@@ -34,10 +31,10 @@
 
 <footer class="site-footer">
   <ul class="footer-row">
-    <li>MATRIX: <a href="{{ config.extra.matrix_url | safe }}">{{ config.extra.matrix_room }}</a></li>
-    <li>{{ config.extra.mesh_nest_location | upper }}: <a href="{{ get_url(path='@/mesh-nest/_index.md') }}">MESH&nbsp;NEST</a></li>
+    <li>MATRIX: <a href="{{ config.extra.matrix_url | safe }}" target="_blank" rel="noopener">{{ config.extra.matrix_room }}</a></li>
+    <li>{{ config.extra.mesh_nest_location | upper }}: <a href="{{ get_url(path='@/contact/_index.md') }}">MESH&nbsp;NEST</a></li>
     <li>MESHCORE {{ config.extra.meshcore_channel }}</li>
-    <li>DASHBOARD: <a href="{{ config.extra.dashboard_url | safe }}">{{ config.extra.dashboard_label }}</a></li>
+    <li>DASHBOARD: <a href="{{ config.extra.dashboard_url | safe }}" target="_blank" rel="noopener">{{ config.extra.dashboard_label }}</a></li>
   </ul>
 </footer>
 
