@@ -237,3 +237,19 @@ Decisions **H1–H4**. **Amends S3 + LP-1 (H2); extends G5/SS-5 and D6.** D1 and
 **Confirmation gate:** H1–H4 require explicit sign-off (`confirm all`, or call a number).
 On confirmation, S3 and LP-1 get `[amended by H2]` annotations so the originals never
 silently drift.
+
+## Feature: Cross-stack config reference — Meshtastic + Reticulum  *(2026-06-21)*
+
+Two **default-collapsed** sections at the bottom of `/config` (after Apps) giving the two
+non-Meshcore stacks their join/config reference. Meshcore stays the page's primary, expanded flow.
+
+| # | Decision | Detail |
+| --- | --- | --- |
+| **I1** | **Two collapsed `<details>` sections** | At the bottom of `/config`, after `## Apps`: **Meshtastic** then **Reticulum**, each a native `<details>/<summary>` (h3-styled summary), **default collapsed**, **no JS** (offline-safe). Upholds three-stacks: Meshcore PRIMARY (expanded); these two are secondary, tucked away. |
+| **I2** | **Meshtastic = local QR + links** | Renders the site's **first image**, the channel QR, served **locally** from `static/img/meshtastic-berlin.png`, referenced by a **relative** `../img/…` path (root + `/dweb-mesh/` portable, per D2/§4). The `<img>` is **wrapped in its Meshtastic channel-import link** `https://meshtastic.org/e/?add=true#…` (new tab). Alt text describes "Meshtastic preset + channels for DWeb Camp (Berlin)". Muted caption: scan with the Meshtastic app to load the preset + channels; plus a **Full config** link → Codeberg `berlin.yml` (new tab, ↗). |
+| **I3** | **Reticulum = verbatim config + link** | A verbatim `<pre>` **RNode interface** block (`frequency 869475000` / `bandwidth 125000` / `spreadingfactor 7` / `codingrate 5` / `txpower 22`) + a **More info** link → Berlin Chaos Mesh forum (new tab, ↗). Educational reference only. |
+| **I4** | **No external assets (D3/§2 upheld)** | The QR is served **locally** — `check-offline.sh` still passes (it scans `<img src=https>`). The new external **links** (meshtastic.org import, Codeberg, forum) are `<a href>` hyperlinks (allowed); they join the §2(d) host inventory. |
+| **I5** | **Static reference, no bridges** | Read-only reference — no WebSerial/device provisioning (that stays Meshcore-only, H1), no interop/bridges between stacks. |
+| **I6** | **Meshcore channel deep-links (kept blue)** | Each channel name in the `/config` channels table becomes a `meshcore://channel/add?name=%23<name>&secret=<hex>` deep link (opens the MeshCore app to add it). Styled **blue/cyan** (`.chan-link`), **not** the amber link colour, with **no** ↗ / `target=_blank` (custom-scheme app deep link, not web navigation). The six `name`/`secret` pairs match the table + `mesh-provision.js`. |
+
+**Confirmation gate:** I1–I5 **confirmed** (2026-06-21); I6 added same session per request.

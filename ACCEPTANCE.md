@@ -451,7 +451,63 @@ grep -c 'SET_PATH_HASH_MODE'      public/js/mesh-provision.js   # Expect: >=1 (C
 
 ---
 
+## Feature: Cross-stack config reference — Meshtastic + Reticulum  *(I1–I6)*
+
+### CR-1 — Two default-collapsed sections after Apps  *(I1)*
+`/config` ends with two native `<details>` (Meshtastic, then Reticulum), **default collapsed**, after `## Apps`. No new JS.
+```sh
+grep -c '<details' public/config/index.html                 # Expect: 2
+grep -Ec '<details[^>]*\bopen\b' public/config/index.html   # Expect: 0 (collapsed by default)
+grep -E '<summary[^>]*>[^<]*Meshtastic' public/config/index.html  # Expect: present
+grep -E '<summary[^>]*>[^<]*Reticulum'  public/config/index.html  # Expect: present
+ls static/js/*.js   # Expect: only counters.js + mesh-provision.js (native <details>, no new JS)
+```
+- **Expect:** both sections present, collapsed, ordered Meshtastic→Reticulum, after Apps; no JS added.
+- [ ] Pass
+
+### CR-2 — Meshtastic: local QR wrapped in its import link  *(I2; upholds §2)*
+The QR is served **locally** via a relative path; the `<img>` is wrapped in the `meshtastic.org/e/?add=true#…` import link (new tab); alt text names the DWeb Camp Meshtastic preset/channels; the Codeberg `berlin.yml` link is present (new tab).
+```sh
+test -f public/img/meshtastic-berlin.png && echo ok                          # Expect: ok (served from static/img)
+grep -E '<img[^>]+src="\.\./img/meshtastic-berlin\.png"' public/config/index.html  # Expect: relative local img
+grep -E '<img[^>]+alt="[^"]*Meshtastic[^"]*DWeb' public/config/index.html     # Expect: descriptive alt
+grep -F 'meshtastic.org/e/?add=true' public/config/index.html                # Expect: import link present
+grep -E 'codeberg\.org/berlinmesh/meshtastic[^"]*"[^>]*target="_blank"' public/config/index.html  # Expect: berlin.yml link, new tab
+grep -nE '<img[^>]+src="https?://' public/config/index.html                  # Expect: NO output (no external image)
+```
+- **Expect:** QR is a local relative `<img>` (no `https` image), wrapped in the import link, descriptive alt, + Codeberg link new-tab; `check-offline.sh` still passes.
+- [ ] Pass
+
+### CR-3 — Reticulum: verbatim RNode config + forum link  *(I3)*
+A `<pre>` RNode interface block with the exact values + a Chaos Mesh forum link (new tab).
+```sh
+grep -F 'RNodeInterface' public/config/index.html        # Expect: present
+grep -F '869475000' public/config/index.html             # Expect: frequency
+grep -F 'spreadingfactor = 7' public/config/index.html   # Expect: SF 7
+grep -F 'codingrate = 5' public/config/index.html        # Expect: CR 5
+grep -E 'forum\.chaosmesh\.net[^"]*"[^>]*target="_blank"' public/config/index.html  # Expect: forum link, new tab
+```
+- **Expect:** RNode block verbatim (freq 869475000, bw 125000, SF 7, CR 5, tx 22) + forum link new-tab.
+- [ ] Pass
+
+### CR-4 — Meshcore channel deep-links, kept blue  *(I6)*
+Each of the six channel names is a `meshcore://channel/add?name=…&secret=…` deep link, styled **cyan** (`.chan-link`), not amber, with no `target=_blank`/↗ (custom scheme, app deep link).
+```sh
+grep -c 'meshcore://channel/add' public/config/index.html   # Expect: 6
+for p in '%23dwebcamp&secret=b8769b859a18cb47fa326c79bc04e2da' '%23schedule&secret=03a5bab42c9d3535b69f259f338be9ea' '%23workshop&secret=3862ef52df5e5966eb10751b83788bc5' '%23bot&secret=eb50a1bcb3e4e5d7bf69a57c9dada211' '%23berlinmesh&secret=c5ead1d8a7647a63fd37d156cdc3e257' '%23berlinbrandenburg&secret=625ff2a308bbe3a4c90da77979b7a4fc'; do grep -qF "$p" public/config/index.html && echo "ok" || echo "MISS $p"; done  # Expect: 6× ok
+grep -E '\.chan-link[^}]*--cyan' public/css/style.css        # Expect: cyan styling
+grep -nE 'meshcore://[^"]*"[^>]*target="_blank"' public/config/index.html  # Expect: NO output (no new-tab on deep links)
+```
+- **Expect:** 6 `meshcore://channel/add` deep links with the exact name+secret pairs, cyan-styled, no new-tab/↗.
+- [ ] Pass
+
+### Regression — surviving prior criteria still pass  *(CR feature)*
+**Still must pass:** §2/§3 (QR is **local**; only external **asset** remains the `/flash` iframe — `check-offline.sh` green), §4 (relative img path portable at `/dweb-mesh/`), §5 (footer), **SS-5** (existing preset/channels/apps checks unchanged — the table now deep-links the names but keeps the six secrets + scope text), **SS-8** (new **web** links open new-tab; `meshcore://` deep links exempt as non-http), **S2** (+~84 KB QR stays low-MB), **WS-1–WS-7**.
+- [ ] Pass (no regression)
+
+---
+
 ## Verdict
 
-A build is **ACCEPTED** only when the surviving boxes (§1–§5, §8, §10; S1–S3, S6), LP-1–LP-7, SS-1–SS-9, and **WS-1–WS-6** are all ticked, and amended §2/§3 hold. (§6/§7/§9 + S4/S5 superseded by SS; S3/LP-1 amended by H2; **WS-6 is MANUAL**, hardware-verified by the team.)
+A build is **ACCEPTED** only when the surviving boxes (§1–§5, §8, §10; S1–S3, S6), LP-1–LP-7, SS-1–SS-9, **WS-1–WS-7**, and **CR-1–CR-4** are all ticked, and amended §2/§3 hold. (§6/§7/§9 + S4/S5 superseded by SS; S3/LP-1 amended by H2; **WS-6 is MANUAL**, hardware-verified by the team.)
 Record the date, the Zola version, and any waived item with its justification.

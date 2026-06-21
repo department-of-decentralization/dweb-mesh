@@ -173,6 +173,22 @@ hr { border: none; border-top: 1px dashed var(--line); margin: 2rem 0; }
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M21.41 11.58l-9-9A2 2 0 0 0 11 2H4a2 2 0 0 0-2 2v7a2 2 0 0 0 .59 1.42l9 9a2 2 0 0 0 2.82 0l7-7a2 2 0 0 0 0-2.84zM5.5 7A1.5 1.5 0 1 1 7 5.5 1.5 1.5 0 0 1 5.5 7z'/%3E%3C/svg%3E") center / contain no-repeat; }
 .latest-ts { color: var(--fg-dim); font-size: 0.6rem; margin-left: auto; }
 
+/* collapsible cross-stack config sections (Meshtastic / Reticulum) - native <details>, no JS */
+.collapse { border: 1px solid var(--line); background: var(--panel); margin: 1rem 0; }
+.collapse > summary { cursor: pointer; list-style: none; padding: 0.5rem 0.7rem;
+  font-family: "Press Start 2P", "Departure Mono", monospace; font-size: 0.8rem;
+  color: var(--cyan); text-shadow: 0 0 5px rgba(111,230,255,0.4); }
+.collapse > summary::-webkit-details-marker { display: none; }
+.collapse > summary::before { content: "\25B8  "; color: var(--fg-dim); }   /* right-pointing triangle */
+.collapse[open] > summary::before { content: "\25BE  "; }                    /* down-pointing triangle */
+.collapse > *:not(summary) { margin: 0.6rem 0.7rem; }
+.qr { display: block; width: 240px; max-width: 100%; height: auto; margin: 0.8rem 0;
+  background: #fff; padding: 8px; image-rendering: pixelated; }
+.qr-link, .qr-link:hover, .qr-link:focus { display: inline-block; background: none; }
+.chan-link { color: var(--cyan); font-family: "Departure Mono", ui-monospace, monospace;
+  text-decoration: none; text-shadow: 0 0 5px rgba(111,230,255,0.4); }
+.chan-link:hover, .chan-link:focus { background: none; color: var(--cyan); text-decoration: underline; }
+
 /* footer — single compact row of four items (F4) */
 .site-footer { border-top: 1px solid var(--line); padding: 0.9rem 1.1rem 1.4rem;
   margin-top: 2rem; color: var(--fg-dim); font-size: 0.82rem; }
