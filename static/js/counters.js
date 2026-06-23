@@ -25,9 +25,23 @@
 
   function num(v) { return (typeof v === "number" && isFinite(v)) ? String(v) : null; }
   function total(d, metric) { var t = d && d.total && d.total[metric]; return t ? num(t[WINDOW]) : null; }
+  // Render the message time in the mesh's local zone (Europe/Berlin), DST-correct, for
+  // EVERY viewer — not the browser's own zone, not UTC (SPEC.md K1). Built-in Intl tz
+  // database only: no library, no network, offline-safe (K2).
   function fmtTs(ts) {
-    var t = new Date(typeof ts === "number" ? ts * 1000 : Date.parse(ts));
-    return isFinite(t.getTime()) ? t.toISOString().replace("T", " ").slice(0, 16) + " UTC" : "";
+    var d = new Date(typeof ts === "number" ? ts * 1000 : Date.parse(ts));
+    if (!isFinite(d.getTime())) { return ""; }
+    var p = {};
+    new Intl.DateTimeFormat("en-GB", {
+      timeZone: "Europe/Berlin", hourCycle: "h23",
+      year: "numeric", month: "2-digit", day: "2-digit",
+      hour: "2-digit", minute: "2-digit", second: "2-digit"
+    }).formatToParts(d).forEach(function (x) { p[x.type] = x.value; });
+    // Label from the computed Berlin offset (K3): Europe/Berlin is only ever CET (+60)
+    // or CEST (+120); derive it, not the locale-dependent "GMT+2" timeZoneName.
+    var off = Math.round((Date.UTC(+p.year, +p.month - 1, +p.day, +p.hour, +p.minute, +p.second) - d.getTime()) / 60000);
+    var zone = off >= 120 ? "CEST" : "CET";
+    return p.year + "-" + p.month + "-" + p.day + " " + p.hour + ":" + p.minute + " " + zone;
   }
   function el(tag, cls, text) {
     var e = document.createElement(tag);

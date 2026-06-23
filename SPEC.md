@@ -262,9 +262,27 @@ terminal cursor on the splash title.
 
 | # | Decision | Detail |
 | --- | --- | --- |
-| **J1** | **Remote-first, local fallback, bounded** | `counters.js` fetches stats from `https://dweb.potatomesh.net/api/stats` and recent messages from `…/api/messages?limit=3` (same shapes as the local files), each with a bounded **~2.5 s** `AbortController` timeout; on timeout/error/CORS-block it falls back to local `stats.json` / `messages.json`, then to placeholders / hidden box. 60 s refresh retained; message text still injected via `textContent` (untrusted mesh content). |
+| **J1** | **Remote-first, local fallback, bounded** *[extended by K1]* | `counters.js` fetches stats from `https://dweb.potatomesh.net/api/stats` and recent messages from `…/api/messages?limit=3` (same shapes as the local files), each with a bounded **~2.5 s** `AbortController` timeout; on timeout/error/CORS-block it falls back to local `stats.json` / `messages.json`, then to placeholders / hidden box. 60 s refresh retained; message text still injected via `textContent` (untrusted mesh content). |
 | **J2** | **Amends D3/§2 — assets local; data may fetch-with-fallback** | The no-external-**asset** rule stands for all CSS/JS/fonts/images (still 100% local; `check-offline.sh` green). NEW narrow exception: a runtime **data** fetch to the **already-allowlisted** dashboard host is allowed **iff** a mandatory local-JSON fallback keeps the offline render fully intact. The gate cannot see a `fetch()`, so the offline guarantee rests on the bounded timeout + fallback and an explicit acceptance check — not the gate. |
 | **J3** | **Live is gated by the API's CORS** | Live data needs the dashboard to return `Access-Control-Allow-Origin` (absent as of 2026-06-21 → browser falls back to local). No site change needed when CORS is enabled — it goes live automatically. On offline deployments an external script keeps the local JSON fresh (the fallback source). |
 | **J4** | **Blinking cursor on the splash** | A blinking underscore after “JOIN THE MESH” via a CSS `::after` + `@keyframes` (no JS). Respects `prefers-reduced-motion` (steady underscore, no blink, for users who opt out). |
 
 **Confirmation gate:** J1–J4 require explicit sign-off (`confirm all`, or call a number).
+
+## Feature: Message timestamps in Berlin time (CET/CEST)  *(2026-06-23)*
+
+The splash recent-messages box renders each message's time in **Europe/Berlin** local
+time (CET/CEST) for **every** viewer, replacing the current `UTC` suffix. Presentation-only
+change to the existing box (J1 / §8); the fetch, remote→local fallback, 60 s refresh and
+`textContent` safety are untouched. Decisions **K1–K3**. **Extends J1 / §8 + D6.** D2
+reinforced (one deterministic build); D3 upheld (built-in `Intl`, no tz library, offline-safe).
+
+| # | Decision | Choice |
+|---|----------|--------|
+| **K1** | **Fixed Berlin clock, not viewer-local, not UTC** | Message timestamps render in **Europe/Berlin** (CET in winter, CEST in summer, DST handled automatically) for **every** viewer — not the browser's own timezone, not UTC. The source instant is unchanged (the record's `rx_time` epoch seconds / `rx_iso` UTC). Chosen over viewer-local for **determinism** (one static build renders identically at GH Pages, the camp, and the offline Freifunk copy — reinforces **D2**) and because the feed is Berlin/Brandenburg mesh traffic. Implemented by editing `fmtTs()` in `static/js/counters.js` **in place** — **no new JS file** (upholds **LD-3 / S3 / WS-2**: the JS inventory stays the four existing files). |
+| **K2** | **Built-in `Intl` only — no tz library, offline-safe** *(upholds D3 / §2)* | The UTC→Berlin conversion uses the browser's built-in `Intl.DateTimeFormat({ timeZone: "Europe/Berlin" })` (the JS engine's bundled IANA tz database). **No bundled or remote timezone library; no network request.** `check-offline.sh` stays green and the offline render is unaffected — the box still fails soft (stays hidden) when data is absent/offline, exactly as J1 / §8 specify. |
+| **K3** | **Format: `YYYY-MM-DD HH:MM` + `CET`/`CEST` label** | Keep the current compact 24-hour shape and **replace the ` UTC` suffix with ` CEST` / ` CET`**. The label is **derived from the computed Berlin UTC offset** for that instant (+120 min → `CEST`, +60 → `CET`), so it is deterministic and locale-independent (not the engine's locale-dependent `GMT+2` short name). Example: a message at `2026-06-21 15:07Z` renders **`2026-06-21 17:07 CEST`**. `.latest-ts` styling is unchanged; only `.latest-ts` CSS may be adjusted if the added label overflows at narrow widths — no template/markup change. |
+
+**Confirmation gate:** K1–K3 require explicit sign-off (`confirm all`, or call out a number
+to change). On confirmation, the **J1** row is annotated `[extended by K1]` so the original
+never silently drifts, then Phase 2 appends the K-criteria to `ACCEPTANCE.md`.

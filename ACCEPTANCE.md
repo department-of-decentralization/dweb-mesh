@@ -562,7 +562,45 @@ find public -name '*.js' | wc -l                                 # Expect: 4 (no
 
 ---
 
+## Feature: Message timestamps in Berlin time (CET/CEST)  *(SPEC.md → Feature: Message timestamps in Berlin time, K1–K3)*
+
+Added 2026-06-23. A zero-context reviewer judges the timestamp change with **TZ-1…TZ-3**,
+in addition to the surviving criteria (regression line at end). The change is confined to
+`fmtTs()` in `static/js/counters.js`; the splash messages box (J1 / §8) is otherwise unchanged.
+Build first (`zola build`), then serve `public/` at root per §0.
+
+### TZ-1 — Renders in Europe/Berlin via built-in `Intl`, no tz library  *(K1/K2; D3)*
+```sh
+grep -Fc 'Europe/Berlin'       public/js/counters.js   # Expect: >=1 (fixed Berlin zone — not viewer-local, not UTC)
+grep -Fc 'Intl.DateTimeFormat' public/js/counters.js   # Expect: >=1 (built-in Intl conversion)
+grep -Eic 'moment|luxon|dayjs|date-fns|spacetime|js-joda|timezone-js|moment-timezone|tz\.min' public/js/counters.js   # Expect: 0 (no tz library; the built-in Intl 'timeZone' option is NOT a library)
+scripts/check-offline.sh                                # Expect: OK (no external asset; Intl is built-in)
+```
+- **Expect:** `fmtTs()` converts to `Europe/Berlin` using the engine's built-in `Intl` tz database; no timezone library is added; `check-offline.sh` stays green. The only `https://` in the file remains the J1 dashboard API URLs (runtime **data**, not an asset).
+- [ ] Pass
+
+### TZ-2 — `CET`/`CEST` label, offset-derived (not UTC, not `GMT+offset`)  *(K3)*
+```sh
+grep -c 'CEST'  public/js/counters.js          # Expect: >=1 (summer label)
+grep -Ec '\bCET\b' public/js/counters.js       # Expect: >=1 (winter label)
+grep -Fc '" UTC"' public/js/counters.js        # Expect: 0 (the old ` UTC` suffix is gone)
+grep -Ec 'timeZoneName *:' public/js/counters.js # Expect: 0 (the timeZoneName Intl *option* is unused — label is offset-derived; a comment naming it is fine)
+```
+- **Expect:** the visible suffix is ` CET` / ` CEST`, chosen from the computed Berlin UTC offset for that instant (+120 min → `CEST`, +60 → `CET`); the literal ` UTC` suffix is removed; the label is not the engine's `GMT+2`-style `timeZoneName`. *(CET is the winter branch — not exercised by the summer-only sample data; TZ-3 verifies the summer value.)*
+- [ ] Pass
+
+### TZ-3 — The rendered time is Berlin-local and DST-correct  *(K1/K3 — behavioral, against committed data)*
+- **Verify:** with the network blocked (so the box uses the committed local `messages.json`, per §0 / LD-2), load `/` and read the **newest** message's timestamp in the recent-messages box.
+- **Expect:** it reads **`2026-06-21 17:07 CEST`** — the record's `2026-06-21T15:07:59Z` UTC instant shifted **+2 h** into Central European Summer Time, seconds dropped, labelled `CEST`. (Not `15:07 UTC`; not the viewer's own timezone.)
+- [ ] Pass
+
+### Regression — surviving prior criteria still pass  *(TZ feature)*
+**Still must pass:** §1 (clean build); **§2/§3 + `check-offline.sh`** (no new asset; **no tz library** — *at risk* if a library were added); §8 / LD-1 / LD-2 (the box still fetches remote→local→hidden and renders offline); **LD-3** (`find public -name '*.js' | wc -l` still **4** — the edit is in place, *at risk* if a new JS file were added); **S3 / WS-2** (JS inventory = the same four files); CR-2 (`messages.json` remains the offline fallback). The change is presentation-only inside `fmtTs()`.
+- [ ] Pass (no regression)
+
+---
+
 ## Verdict
 
-A build is **ACCEPTED** only when the surviving boxes (§1–§5, §8, §10; S1–S3, S6), LP-1–LP-7, SS-1–SS-9, **WS-1–WS-7**, **CR-1–CR-4**, **CC-1**, and **LD-1–LD-3** are all ticked, and amended §2/§3 hold. (§6/§7/§9 + S4/S5 superseded by SS; S3/LP-1 amended by H2; **WS-6 is MANUAL**, hardware-verified by the team.)
+A build is **ACCEPTED** only when the surviving boxes (§1–§5, §8, §10; S1–S3, S6), LP-1–LP-7, SS-1–SS-9, **WS-1–WS-7**, **CR-1–CR-4**, **CC-1**, **LD-1–LD-3**, and **TZ-1–TZ-3** are all ticked, and amended §2/§3 hold. (§6/§7/§9 + S4/S5 superseded by SS; S3/LP-1 amended by H2; **WS-6 is MANUAL**, hardware-verified by the team.)
 Record the date, the Zola version, and any waived item with its justification.
