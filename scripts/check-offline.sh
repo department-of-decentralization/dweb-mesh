@@ -20,10 +20,12 @@ scan() {
     "$1" "$DIR" 2>/dev/null || true
 }
 
-# G4 (Feature: Site Structure): the ONE allowed external asset is the Meshcore web
-# flasher iframe on /flash. Allow precisely that line; still catch everything else.
+# G4 (Feature: Site Structure): the first allowed external asset is the Meshcore web
+# flasher iframe on /flash. N2 (Feature: Intel page): the second is the mesh-intel
+# viewer iframe on /intel. Allow precisely those two lines; still catch everything else.
 ALLOW_FLASHER='/flash/index\.html:[0-9]+:<iframe[^>]*src="https://flasher\.meshcore\.io'
-hits=$(scan '<(link|script|img|source|video|audio|iframe|embed)\b[^>]*\b(src|href)=["'"'"']https?://[^"'"'"']*' | grep -Eiv "$ALLOW_FLASHER" || true)
+ALLOW_INTEL='/intel/index\.html:[0-9]+:<iframe[^>]*src="https://meshint\.potatomesh\.net'
+hits=$(scan '<(link|script|img|source|video|audio|iframe|embed)\b[^>]*\b(src|href)=["'"'"']https?://[^"'"'"']*' | grep -Eiv "$ALLOW_FLASHER" | grep -Eiv "$ALLOW_INTEL" || true)
 [ -n "$hits" ] && report "external asset reference(s) in markup" "$hits"
 
 hits=$(scan '(@import|url\()[[:space:]]*["'"'"']?https?://')

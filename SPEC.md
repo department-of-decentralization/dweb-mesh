@@ -33,7 +33,7 @@ I will re-verify this list at every later checkpoint to prevent drift.
 |---|----------|--------|
 | **D1** | **Generator** | **Zola** (mandated by brief §2). Single Rust binary, no `node_modules`. *Verified present: `zola 0.22.1`.* |
 | **D2** | **Dual-root / URLs** | **Single source, single build, `base_url = "/"`** → **host-less root-absolute paths** (`/start/`, `/css/…`): links carry **no domain**, so the same artifact works at GH Pages *and* on the offline Freifunk host with **no DNS dependency**. **Custom domain `mesh.dod.ngo`** (committed `CNAME`) serves GH Pages at root; **the same build is the Freifunk manual drop**. One build, both targets. *(If ever subpath-scoped, `base_url` is the single switch + rebuild — all refs go through `get_url`. Link checker keeps refs honest.)* |
-| **D3** | **Self-contained** *[amended by G4]* | **Zero external references — except** the single `flasher.meshcore.io` iframe on `/flash` (G4, scoped allowlist). No other CDN, webfont, external JS, analytics, remote anything. Grep gate in ACCEPTANCE enforces this; carve-out scoped to `/flash`. Every other byte ships in the repo. |
+| **D3** | **Self-contained** *[amended by G4, N2]* | **Zero external references — except** two scoped iframes — `flasher.meshcore.io` on `/flash` (G4) and `meshint.potatomesh.net` on `/intel` (N2), each allowlisted to its one page. No other CDN, webfont, external JS, analytics, remote anything. Grep gate in ACCEPTANCE enforces this; carve-outs scoped per page. Every other byte ships in the repo. |
 | **D4** | **Typography** | **Bundled OFL pixel font for display/chrome** (candidate: *Press Start 2P*) **+ bundled OFL monospace for body & the `/settings/` card** (candidate: a small legible OFL mono, final pick at build). Both self-hosted (`woff2`), subset where it helps payload. |
 | **D5** | **Content depth** | **Hybrid.** Real, **dated + sourced** instructions for *stable* procedures (e.g. Meshtastic web-flasher flow, Reticulum `pip` install); **visible TBC placeholders** for *volatile / camp-private* items (Meshcore firmware specifics, exact presets, PSK). Light web research for the stable parts; team reviews before camp. |
 | **D6** | **Live counters** | Vanilla JS (no framework, local, tiny) fetches **`./stats.json`** (site-root relative). **Commit a sample** `stats.json` = `{nodes:0, messages:0, updated:<ISO>}`. On any fetch failure → **static placeholder**, no spinner, no error spew. Mesh Nest box overwrites the file live. |
@@ -185,7 +185,7 @@ task-oriented **7-page funnel** (device → flash → config → help), Meshcore
 Decisions **G1–G6**. **Amends D3 (G4), D8 (G2), D9 (G3), §2 M2–M10 (G1), D7/F4 footer
 link (G1).** *Pending explicit sign-off (gate below).*
 
-### New route map (supersedes §2 M2–M10)
+### New route map (supersedes §2 M2–M10)  *[+ `/intel/` via N1, 2026-06-24 → 8 pages]*
 
 | Route | From | Purpose / key content |
 |---|---|---|
@@ -194,16 +194,17 @@ link (G1).** *Pending explicit sign-off (gate below).*
 | `/hardware/` | M4 `/devices/` | 3 device cards (`Spec:` links, ext. antenna on Thinknode); 868 MHz / 500 mW warning; centered **BUY DEVICES** button → tickets; BYO → Flasher |
 | `/flash/` | M5 `/meshcore/flash/` | 5 steps + **iframe** flasher (G4) + graceful note; → Config / Contact |
 | `/config/` | M5 `/meshcore/config/` | EU/UK (Narrow) preset box (cited, G5); channel box (6 `#channels`, scope `de-bebb`); non-functional SET PRESET / ADD CHANNELS buttons; app + MeshCLI links |
+| `/intel/` *(N1)* | new | full-bleed `<iframe>` of `meshint.potatomesh.net/?d=dweb.potatomesh.net`; chrome-only (header + footer + frame); nav between Config and Workshop |
 | `/workshop/` *[amended by L1]* | M9 `/agenda/` | agenda template; 3 session titles + metadata only; ~~content TBC; links removed~~ → **sourced details + 1-line summary + per-session talx link, time-ordered (L1)** |
 | `/contact/` | M10 `/about/` + M8 `/mesh-nest/` | Mesh Nest / Tent 5 note; DoD hosting (dod.ngo); `#berlinmesh` support; dashboard; Matrix; Impressum (§5 DDG) |
 | **deleted** | — | `/settings/`, `/meshcore/` hub, `/meshcore/services/`, `/meshtastic/` ×3, `/reticulum/` ×3 |
 
 | # | Decision | Choice |
 |---|----------|--------|
-| **G1** | **Flat 7-page IA** *(supersedes §2 M2–M10; amends D7/F4 footer link)* | The route map above. Nav rebuilt to the new routes; footer Tent-5 link repointed `/mesh-nest/` → `/contact/` (else the `get_url` breaks the build). Deletions per the table; §5/LP-6 still hold (footer keeps `tent 5` text + Matrix link). |
+| **G1** | **Flat 7-page IA** *(supersedes §2 M2–M10; amends D7/F4 footer link)* *[extended by N1: +`/intel/` → 8 pages]* | The route map above. Nav rebuilt to the new routes; footer Tent-5 link repointed `/mesh-nest/` → `/contact/` (else the `get_url` breaks the build). Deletions per the table; §5/LP-6 still hold (footer keeps `tent 5` text + Matrix link). |
 | **G2** | **De-page the stacks** *(amends D8)* | Meshcore is the sole funnel. Meshtastic + Reticulum lose dedicated pages; D8's truth survives as a **`/start` note**: "Meshtastic supported · Router on `MediumFast` · camp feeds no services · protocols don't bridge · Reticulum → Workshop." No-bridge / no-services **preserved, relocated**. `Meshtastic` / `Reticulum` / `MediumFast` rendered in a highlight color. |
 | **G3** | **AI host → channel** *(amends D9)* | `/meshcore/services/` deleted; the AI host becomes the **`#bot`** line in the `/config` channel box ("ask-me-anything bot"). No services page. |
-| **G4** | **Scoped offline-exception for the flasher** *(amends D3)* | `/flash` embeds `<iframe src="https://flasher.meshcore.io">`. **This one host is allowlisted, scoped to `/flash` only**; every other external asset stays forbidden. `check-offline.sh` + AC#2 amended to permit exactly this. Page degrades gracefully (steps + "needs internet" note + fallback link). Online-only by nature: the offline Freifunk `/flash` flasher won't function (accepted). Build verifies the flasher's `X-Frame-Options`/CSP; if framing is blocked, revisit. |
+| **G4** | **Scoped offline-exception for the flasher** *(amends D3)* *[extended by N2]* | `/flash` embeds `<iframe src="https://flasher.meshcore.io">`. **This one host is allowlisted, scoped to `/flash` only**; every other external asset stays forbidden. **(N2, 2026-06-24: a parallel second carve-out adds `meshint.potatomesh.net` scoped to `/intel`; the rule is now two scoped hosts, one per page.)** `check-offline.sh` + AC#2 amended to permit exactly this. Page degrades gracefully (steps + "needs internet" note + fallback link). Online-only by nature: the offline Freifunk `/flash` flasher won't function (accepted). Build verifies the flasher's `X-Frame-Options`/CSP; if framing is blocked, revisit. |
 | **G5** | **Sourced content** *(D5 / D12)* | EU/UK (Narrow) preset values **looked up, then team-confirmed** (*citation/verify note removed per team 2026-06-21*). Channels supplied by the team (6 `#channels`, scope `de-bebb`). App + MeshCLI links researched. Impressum (§5 DDG) verbatim. SET PRESET / ADD CHANNELS buttons are **non-functional placeholders**, no inline "placeholder" note (wired later). |
 | **G6** | **External links → new tab** | All external `<a href>` get `target="_blank"` + `rel="noopener"` (BUY DEVICE on splash + everywhere). Internal links stay host-less `get_url`. |
 
@@ -306,3 +307,23 @@ G6/SS-8 (external links → new tab). **Confirmed 2026-06-24.**
 **Confirmation gate:** L1–L4 **confirmed 2026-06-24**. The **G1** `/workshop/` row is annotated
 `[amended by L1]` (above) so the original route map never silently drifts; Phase 2 appends the
 L-criteria to `ACCEPTANCE.md` (WK-1…WK-4).
+
+## Feature: Intel page (embedded mesh-intel dashboard)  *(2026-06-24)*
+
+Added 2026-06-24. A new **`/intel/`** route — nav **INTEL**, between CONFIG and WORKSHOP — that is
+**chrome-only**: the base-template header + footer with a single full-bleed `<iframe>` filling the
+space between them, embedding the live PotatoMesh **mesh-intel** view of the dweb dashboard.
+Decisions **N1–N4** (letter **M skipped** — it already names the §2 module specs M0–M12).
+**Amends D3 + G4 (N2), §2/§3 acceptance (N2/N3), G1/SS-1 route count (N1), SS-9 (N2).** Upholds
+D7/F4 (footer), D2 (host-less internal links), D11. **Confirmed 2026-06-24.**
+
+| # | Decision | Choice |
+|---|----------|--------|
+| **N1** | **Full-bleed Intel route** *(extends G1/SS-1: 7→8 pages)* | New **`/intel/`** route; nav label **INTEL** inserted **between CONFIG and WORKSHOP**. The page is **chrome-only** — header (nav) + footer from the base template, with **one `<iframe>` filling 100% of the space between them** (no `<h1>`, no body copy, no subnav). Needs a dedicated **`templates/intel.html`** (bypasses the standard 72ch `article.doc` wrapper) + full-bleed CSS; the iframe fills the viewport between header/footer (the page itself doesn't scroll — the frame scrolls internally). Internal nav link is host-less `get_url` (D2). This is the **8th** route; G1's "no resurrected stack hierarchy" intent is preserved — Intel is a new task page, not an old stack page. |
+| **N2** | **Second scoped offline-asset carve-out** *(amends D3, G4, §2, SS-9)* | `/intel` embeds `<iframe src="https://meshint.potatomesh.net/?d=dweb.potatomesh.net">`. This host is allowlisted **scoped to `/intel` only**, exactly mirroring G4's flasher carve-out. There are now **two** scoped external assets — `flasher.meshcore.io` on `/flash` (G4) and `meshint.potatomesh.net` on `/intel` (N2); **every other external asset stays forbidden**. `check-offline.sh`, §2 and SS-9 are amended to permit precisely this second line and still FAIL on any other external asset (even on `/intel`). The **`?d=dweb.potatomesh.net` query is load-bearing** (points the intel viewer at the dweb dashboard data) and is preserved verbatim. `meshint`/`dweb` are the same PotatoMesh host family already referenced as the dashboard hyperlink (D6/J), so no new vendor trust is introduced. |
+| **N3** | **Online-only; blank offline, accepted** *(amends §3; upholds the CLAUDE.md offline value as G4 does)* | The iframe needs upstream internet; on the offline Freifunk copy it renders **blank** — **accepted**, exactly as G4 accepts the `/flash` flasher. The page's **chrome (header + footer) still renders fully offline** with no other external request. Per the chosen design there is **no fallback note/link** — `/intel` is intentionally header + iframe + footer only. D7/F4 footer and the §5/LP-6 "footer on every page" guarantee still hold on `/intel` (the footer is in the base template, below the frame). |
+| **N4** | **Framing pre-check + frame attributes** *(D11; G4-consistent build gate)* | At build, **verify `meshint.potatomesh.net` permits embedding** (no `X-Frame-Options: DENY` / restrictive `frame-ancestors`); if framing is blocked the embed can't render even online → revisit before shipping. The iframe carries `title="Mesh Intel"` + `loading="lazy"`; minimal CRT-consistent chrome (D11). The URL is single-sourced — hardcoded in `templates/intel.html` with a comment (or `config.toml [extra].intel_url`); the host-less rule (D2) is unaffected (an external embed `src` is necessarily absolute, as with the flasher). |
+
+**Confirmation gate:** N1–N4 **confirmed 2026-06-24**. The **D3** and **G4** rows and the **Site
+Structure route map** are annotated `[amended by N2]` / `[extended by N1]` (above) so the originals
+never silently drift; Phase 2 appends the criteria to `ACCEPTANCE.md` (IN-1…IN-5).

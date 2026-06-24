@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}{{ section.title }} &middot; {{ config.title }}{% endblock title %}
+{% block description %}{{ section.description | default(value=config.description) }}{% endblock description %}
+{% block main %}
+{# N1/N2/N4: chrome-only - header + footer from base, one full-bleed iframe. Mesh-intel
+   viewer pointed at the dweb dashboard via ?d= (load-bearing). Online-only; blank offline
+   (accepted, like the flasher, N3). check-offline.sh scopes meshint to this page. #}
+<main id="main" class="intel-main">
+  <iframe class="intel-frame" src="https://meshint.potatomesh.net/?d=dweb.potatomesh.net" title="Mesh Intel" loading="lazy"></iframe>
+</main>
+{% endblock main %}

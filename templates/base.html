@@ -21,14 +21,17 @@
     <a href="{{ get_url(path='@/hardware/_index.md') }}">HARDWARE</a>
     <a href="{{ get_url(path='@/flash/_index.md') }}">FLASH</a>
     <a href="{{ get_url(path='@/config/_index.md') }}">CONFIG</a>
+    <a href="{{ get_url(path='@/intel/_index.md') }}">INTEL</a>
     <a href="{{ get_url(path='@/workshop/_index.md') }}">WORKSHOP</a>
     <a href="{{ get_url(path='@/contact/_index.md') }}">CONTACT</a>
   </nav>
 </header>
 
+{% block main %}
 <main id="main" class="site-main">
 {% block content %}{% endblock content %}
 </main>
+{% endblock main %}
 
 <footer class="site-footer">
   <ul class="footer-row">

@@ -52,6 +52,13 @@ buy", cited sources) are **allowed** — they are click-throughs, not page asset
 > flasher is online-only by nature). The carve-out is **scoped to that one host on
 > `/flash`**; every other external asset stays forbidden. `check-offline.sh` is amended
 > to allow precisely this and still fail on anything else (verified by **SS-9**).
+>
+> **Further amended by Feature: Intel page → N2:** a **second** external asset is now allowed —
+> the `<iframe src="https://meshint.potatomesh.net/?d=dweb.potatomesh.net">` on `/intel` (the
+> mesh-intel viewer is online-only by nature). Two scoped carve-outs now exist — `flasher.meshcore.io`
+> on `/flash` and `meshint.potatomesh.net` on `/intel`, **each scoped to its one page**; every other
+> external asset stays forbidden. `check-offline.sh` allows precisely these two and still fails on
+> anything else (verified by **SS-9** + **IN-3**).
 
 Scans target only browser-loaded files (`*.html *.css *.js *.svg *.xml`). Prose
 docs (`*.md`/`*.txt` — bundled font licenses & `SOURCES.md`) may legitimately name
@@ -63,7 +70,8 @@ INC="--include=*.html --include=*.css --include=*.js --include=*.svg --include=*
 
 # (a) No external assets (script/link/img/source/video/audio/iframe/embed):
 grep -rEoin $INC '<(link|script|img|source|video|audio|iframe|embed)\b[^>]*\b(src|href)=["'"'"']https?://' public/
-#   Expect: ONLY the flasher.meshcore.io iframe under public/flash/ (G4 carve-out); nothing else.
+#   Expect: ONLY the two carve-outs — flasher.meshcore.io under public/flash/ (G4) and
+#           meshint.potatomesh.net under public/intel/ (N2); nothing else.
 
 # (b) No external CSS imports / url():
 grep -rEin $INC '(@import|url\()\s*["'"'"']?https?://' public/
@@ -89,9 +97,10 @@ scripts/check-offline.sh
   route (see §6). Open browser devtools → Network.
 - **Expect:** every page styled with the **bundled fonts** (pixel display + mono
   body); no 404s for CSS/font/JS/img; **no request leaves `localhost`**.
-  *(Amended by G4: `/flash` embeds the online-only `flasher.meshcore.io` iframe — it
-  won't load offline, which is accepted; the rest of `/flash` and every other page
-  still render fully offline with no other external request.)*
+  *(Amended by G4 + N3: `/flash` embeds the online-only `flasher.meshcore.io` iframe and
+  `/intel` embeds the online-only `meshint.potatomesh.net` iframe — neither loads offline,
+  which is accepted; the rest of those pages (incl. `/intel`'s header + footer) and every
+  other page still render fully offline with no other external request.)*
 - [ ] Pass
 
 ## 4. Links resolve at root (and subpath via the base_url switch)  *(brief §13.4; D2)*
@@ -264,16 +273,16 @@ Added 2026-06-20. A zero-context reviewer judges the restructure with **SS-1…S
 criteria **superseded** (§6→SS-1, §7→SS-2, §9→SS-5/6, S4→SS-2, S5→SS-5); §2/§3 are
 **amended** (G4 flasher carve-out). Build first: `zola build`.
 
-### SS-1 — Flat 7-page IA; old hierarchy gone  *(G1)*
+### SS-1 — Flat 8-page IA; old hierarchy gone  *(G1)*  *[amended by N1: +/intel/]*
 ```sh
-for p in "" start hardware flash config workshop contact ; do
+for p in "" start hardware flash config intel workshop contact ; do
   test -f "public/${p:+$p/}index.html" && echo "OK  /$p/" || echo "MISSING /$p/"
-done            # Expect: 7 lines, all OK
+done            # Expect: 8 lines, all OK  (INTEL added by N1, between CONFIG and WORKSHOP)
 for d in settings devices meshcore meshtastic reticulum mesh-nest agenda about ; do
   test -e "public/$d" && echo "STALE /$d/" || echo "gone /$d/"
 done            # Expect: 8 lines, all "gone"
 ```
-- **Expect:** the 7 routes exist; the 8 pre-restructure paths are deleted; build is clean (§1); nav + footer link only to the 7 (no broken `get_url`).
+- **Expect:** the 8 routes exist (INTEL between CONFIG and WORKSHOP); the 8 pre-restructure paths are still deleted; build is clean (§1); every internal nav/footer `get_url` resolves (no broken link).
 - [ ] Pass
 
 ### SS-2 — /start: 4-CTA sitemap + relocated stack note  *(G1/G2)*
@@ -354,7 +363,7 @@ printf '<img src="https://evil.example/x.png">' >> public/flash/index.html
 scripts/check-offline.sh ; echo "exit=$?"      # Expect: FAIL (non-zero)
 zola build                                     # rebuild → planted asset gone
 ```
-- **Expect:** `check-offline.sh` passes with the legitimate flasher iframe but still FAILS on any other external asset (even on `/flash`). The allowlist is one host, not a global off-switch.
+- **Expect:** `check-offline.sh` passes with the legitimate flasher iframe but still FAILS on any other external asset (even on `/flash`). The allowlist is **two scoped hosts** — flasher on `/flash` (G4) and meshint on `/intel` (N2, see **IN-3**) — **not a global off-switch**; this check proves the `/flash` scope, IN-3 proves the `/intel` scope.
 - [ ] Pass
 
 ### Regression — surviving prior criteria still pass
@@ -663,9 +672,73 @@ grep -F '.tbc' public/css/style.css                              # Expect: prese
 **Amended (planned, not a regression):** **SS-6** — its pre-L1 `grep TBC` ≥1 and "no links inside the workshop content" assertions are retired and replaced by **WK-1…WK-4** (links are now expected). **Still must pass:** §1 (clean build), **§2/§3 + `check-offline.sh`** (talx links are hyperlinks, not assets — offline render intact), §2(d) inventory (adds exactly `talx.dod.ngo`), §4 (internal links unchanged; subpath build still works), §5 / LP-6 (footer chrome untouched), **SS-1** (the 7-route IA still includes `/workshop/`), **SS-8** (every external `<a>`, the four new ones included, opens a new tab). All other groups (LP, WS, CR, CC, LD, TZ, S*) untouched.
 - [ ] Pass (no regression in the surviving criteria)
 
+## Feature: Intel page (embedded mesh-intel dashboard)  *(SPEC.md → Feature: Intel page, N1–N4)*
+
+Added 2026-06-24. A zero-context reviewer judges the Intel page with **IN-1…IN-5**, in addition to
+the surviving criteria (regression line at end). This feature **amends §2/§3** (a *second* scoped
+external-asset carve-out — see the §2/§3 notes), **SS-1** (7→8 routes) and **SS-9** (one→two scoped
+hosts). The new route is `/intel/`; nav label **INTEL** between **CONFIG** and **WORKSHOP**; the page
+is chrome-only (header + footer + one full-bleed iframe). Build first: `zola build`.
+
+### IN-1 — Route exists, nav placement, host-less link  *(N1)*
+```sh
+test -f public/intel/index.html && echo "OK /intel/" || echo "MISSING /intel/"   # Expect: OK /intel/
+grep -oE '>(CONFIG|INTEL|WORKSHOP)<' public/index.html | tr -d '<>' | tr '\n' ' '  # Expect: CONFIG INTEL WORKSHOP (that order)
+grep -Eo 'href="/intel/"' public/index.html | head -1   # Expect: present (host-less internal nav link, D2)
+```
+- **Expect:** `/intel/` builds; the nav carries **INTEL between CONFIG and WORKSHOP** on every page; the internal link is host-less `/intel/` (no domain). *(Manual: clicking INTEL routes to the page.)*
+- [ ] Pass
+
+### IN-2 — Chrome-only, full-bleed meshint iframe with verbatim `?d=`  *(N1/N2/N4)*
+```sh
+grep -Eo '<iframe[^>]*src="https://meshint\.potatomesh\.net/\?d=dweb\.potatomesh\.net"' public/intel/index.html   # Expect: present (exact src, ?d= preserved)
+grep -c '<iframe' public/intel/index.html       # Expect: 1 (exactly one iframe)
+grep -c '<h1'         public/intel/index.html    # Expect: 0 (chrome-only: no heading / body copy)
+grep -c 'class="doc"' public/intel/index.html    # Expect: 0 (bypasses the standard 72ch article wrapper)
+grep -Eio 'title="mesh intel"' public/intel/index.html   # Expect: present (iframe title, N4)
+grep -c 'loading="lazy"' public/intel/index.html         # Expect: >=1 (N4)
+```
+- **Expect:** exactly one `<iframe>` whose `src` is **verbatim** `https://meshint.potatomesh.net/?d=dweb.potatomesh.net` (the `?d=` query is load-bearing); no `<h1>`/`.doc` wrapper (chrome-only); `title` + `loading="lazy"` set. *(Manual/build, N4: the frame actually renders online — `meshint.potatomesh.net` returns no `X-Frame-Options: DENY` / restrictive `frame-ancestors`.)*
+- [ ] Pass
+
+### IN-3 — The `/intel` carve-out is SCOPED to host AND page  *(N2; the SS-9 analog)*
+```sh
+scripts/check-offline.sh                       # Expect: OK (passes WITH the meshint iframe on /intel)
+# (a) other external assets on /intel still caught:
+printf '<img src="https://evil.example/y.png">' >> public/intel/index.html
+scripts/check-offline.sh ; echo "exit=$?"      # Expect: FAIL (non-zero)
+zola build                                     # rebuild → planted asset gone
+# (b) meshint is allowed ONLY on /intel — the same iframe on another page must FAIL:
+printf '<iframe src="https://meshint.potatomesh.net/?d=x"></iframe>' >> public/contact/index.html
+scripts/check-offline.sh ; echo "exit=$?"      # Expect: FAIL (meshint not allowed off /intel)
+zola build                                     # rebuild → discard
+```
+- **Expect:** the gate passes with the legit meshint iframe on `/intel`, still **FAILS** on any other external asset on `/intel`, and **FAILS** if the meshint iframe appears on any non-`/intel` page. The carve-out is scoped to **host + page**, not a global host allow.
+- [ ] Pass
+
+### IN-4 — Footer present; bare iframe (no fallback link)  *(N3; §5/LP-6 hold)*
+```sh
+grep -ic 'tent 5' public/intel/index.html               # Expect: >=1 (footer on /intel — §5 holds)
+grep -Eoq 'href="https://matrix\.to/#/#dweb-mesh:dod\.ngo"' public/intel/index.html && echo "matrix OK"  # Expect: matrix OK
+grep -rEoh '<a\b[^>]*href="https?://[^"]*"' public/intel/index.html | sort -u   # Expect: ONLY the footer's matrix.to + dashboard links (no intel-specific fallback link)
+```
+- **Expect:** the base-template footer (tent 5 + Matrix link + dashboard) renders on `/intel`, so §5/LP-6 hold; **no extra fallback hyperlink** is added (bare-iframe design, N3). *(Manual: with the network blocked, `/intel` still renders header + footer; the iframe area is blank — accepted, as the flasher.)*
+- [ ] Pass
+
+### IN-5 — Full-bleed layout  *(N1 — MANUAL: browser; static CSS check)*
+```sh
+grep -Eic 'intel' static/css/style.css   # Expect: >=1 (full-bleed iframe layout styles for the intel page)
+```
+- **Expect (MANUAL, browser):** the iframe fills 100% width and the full height **between** header and footer; the page itself does not scroll (the frame scrolls internally); the footer is visible below the frame. Static: the intel layout CSS exists.
+- [ ] Pass
+
+### Regression — surviving prior criteria still pass  *(IN feature)*
+**Amended (planned, not a regression):** **§2/§3** (now **two** scoped iframe assets; `check-offline.sh` still green and still fails on a third), **SS-1** (7→8 routes), **SS-9** (one→two scoped hosts; its `/flash` proof unchanged). **Still must pass:** §1 (clean build), §4 (subpath build still works; `/intel` internal link host-less), **§5 / LP-6** (footer on `/intel`), **SS-8** (no external `<a>` without `target="_blank"` — the meshint iframe is an **asset**, not an `<a>`; footer links unchanged), and every other group (LP, WS, CR, CC, LD, TZ, WK, S1–S6) untouched. **At risk:** §2 (the gate must still catch a *third* asset → IN-3), §5 (the new `intel.html` template must still inherit the base footer → IN-4).
+- [ ] Pass (no regression in the surviving criteria)
+
 ---
 
 ## Verdict
 
-A build is **ACCEPTED** only when the surviving boxes (§1–§5, §8, §10; S1–S3, S6), LP-1–LP-7, SS-1–SS-9, **WS-1–WS-7**, **CR-1–CR-4**, **CC-1**, **LD-1–LD-3**, **TZ-1–TZ-3**, and **WK-1–WK-4** are all ticked, and amended §2/§3 hold. (§6/§7/§9 + S4/S5 superseded by SS; **SS-6 amended by WK-1…WK-4**; S3/LP-1 amended by H2; **WS-6 is MANUAL**, hardware-verified by the team.)
+A build is **ACCEPTED** only when the surviving boxes (§1–§5, §8, §10; S1–S3, S6), LP-1–LP-7, SS-1–SS-9, **WS-1–WS-7**, **CR-1–CR-4**, **CC-1**, **LD-1–LD-3**, **TZ-1–TZ-3**, **WK-1–WK-4**, and **IN-1–IN-5** are all ticked, and amended §2/§3 hold. (§6/§7/§9 + S4/S5 superseded by SS; **SS-6 amended by WK-1…WK-4**; **§2/§3/SS-1/SS-9 amended by N1/N2/N3 — Intel page**; S3/LP-1 amended by H2; **WS-6 is MANUAL**, hardware-verified by the team.)
 Record the date, the Zola version, and any waived item with its justification.
