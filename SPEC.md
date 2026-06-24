@@ -194,7 +194,7 @@ link (G1).** *Pending explicit sign-off (gate below).*
 | `/hardware/` | M4 `/devices/` | 3 device cards (`Spec:` links, ext. antenna on Thinknode); 868 MHz / 500 mW warning; centered **BUY DEVICES** button → tickets; BYO → Flasher |
 | `/flash/` | M5 `/meshcore/flash/` | 5 steps + **iframe** flasher (G4) + graceful note; → Config / Contact |
 | `/config/` | M5 `/meshcore/config/` | EU/UK (Narrow) preset box (cited, G5); channel box (6 `#channels`, scope `de-bebb`); non-functional SET PRESET / ADD CHANNELS buttons; app + MeshCLI links |
-| `/workshop/` | M9 `/agenda/` | agenda template; 3 session titles + metadata only; content TBC; links removed |
+| `/workshop/` *[amended by L1]* | M9 `/agenda/` | agenda template; 3 session titles + metadata only; ~~content TBC; links removed~~ → **sourced details + 1-line summary + per-session talx link, time-ordered (L1)** |
 | `/contact/` | M10 `/about/` + M8 `/mesh-nest/` | Mesh Nest / Tent 5 note; DoD hosting (dod.ngo); `#berlinmesh` support; dashboard; Matrix; Impressum (§5 DDG) |
 | **deleted** | — | `/settings/`, `/meshcore/` hub, `/meshcore/services/`, `/meshtastic/` ×3, `/reticulum/` ×3 |
 
@@ -286,3 +286,23 @@ reinforced (one deterministic build); D3 upheld (built-in `Intl`, no tz library,
 **Confirmation gate:** K1–K3 require explicit sign-off (`confirm all`, or call out a number
 to change). On confirmation, the **J1** row is annotated `[extended by K1]` so the original
 never silently drifts, then Phase 2 appends the K-criteria to `ACCEPTANCE.md`.
+
+## Feature: Workshop session details (sourced schedule + talx links)  *(2026-06-24)*
+
+Added 2026-06-24. Replaces the all-TBC `/workshop/` list with the **four now-scheduled
+sessions**, ordered by schedule start time, each carrying sourced metadata + a one-line
+summary + an external **`Details ↗`** link to its talx page. Decisions **L1–L4**.
+**Amends G1** (the `/workshop/` row *"content TBC; links removed"* → sourced details + per-session
+external link). Upholds D3/§2 (links, not assets), D5/D12 (sourced from talx, never invented),
+G6/SS-8 (external links → new tab). **Confirmed 2026-06-24.**
+
+| # | Decision | Choice |
+|---|----------|--------|
+| **L1** | **Sourced, time-ordered session list** *(amends G1)* | `/workshop/` lists the **four** sessions **ordered by schedule start** (Wed Jul 8 → Fri Jul 10), not by supplied-link order. Each = title (`h2`) + a metadata line **`Type · Day Mon D · HH:MM–HH:MM · Room · Speaker`** + a **one-line summary** + a **`Details ↗`** link. **Amends G1**'s `/workshop/` clause *"content TBC; links removed"* → *sourced session details + per-session external link*; *"metadata only"* is extended to **metadata + 1-line summary + link** (full abstract stays behind the link). The metadata line's **date-time and location render in muted blue** (`.sess-hi` → `--cyan-dim`). Prose dashes are plain hyphens `-` (no em/en-dashes — hacker register, [[dashes-plain-hyphens-only]]); `&middot;` stays as the item separator. Order today: (1) **Join the DWeb Camp Mesh + Tech Support** — Wed Jul 8, 13:00–18:00 @ Mesh Nest (5); (2) **Join the DWeb Camp Mesh!** — Thu Jul 9, 09:30–09:40 @ Hacker's Lab (7); (3) **Introduction to Meshtastic and Meshcore (hands-on)** — Thu Jul 9, 15:00–16:00 @ Hacker's Lab (7); (4) **Off the grid: build an app over radio on Reticulum (LoRa)** — Fri Jul 10, 10:30–12:00 @ Hacker's Lab (7). |
+| **L2** | **talx is the live source of truth** *(upholds D5/D12)* | Every rendered value (time, room, type, speaker, summary) is **taken from the linked talx page, never invented**; the `Details ↗` link *is* that page, so a later reschedule is one click from current (the D5 mitigation for a volatile schedule). Session (1) **has no session-type on talx** → rendered **descriptively** ("Drop-in"), **flagged for team confirm**, not given an invented formal label. **Venue numbers** — Mesh Nest **(5)**, Hacker's Lab **(7)** — are **team-supplied camp facts** (D12), exactly like the footer's `tent 5`: not on talx, not invented; a later venue change is a one-line team edit. The one-line summary is a faithful condensation of the talx abstract — no new facts. |
+| **L3** | **External links, new tab, zero new assets** *(upholds D3/§2, G6/SS-8)* | The four links are `<a href="https://talx.dod.ngo/dwebcamp-2026/talk/<ID>/" target="_blank" rel="noopener">…&#8599;</a>` — **hyperlinks, not assets**: `check-offline.sh` stays green; the offline Freifunk copy still renders fully (the links simply don't resolve offline, exactly like matrix.to). Adds exactly one new host — **`talx.dod.ngo`** — to the §2(d) external-link inventory; nothing is auto-fetched at render. |
+| **L4** | **Extensible, honestly non-final** *(upholds D12)* | A short standing line — *"More sessions may be added as the camp approaches."* — keeps the page honestly non-exhaustive (more sessions are expected). Adding a 5th+ session later is just another time-ordered row; any **accepted-but-unscheduled** future session renders its unknown fields with the existing `.tbc` marker (TBC discipline still governs anything not yet sourced). The current four are scheduled, so they carry **no** TBC — which is why **SS-6**'s literal `grep TBC` assertion is amended in Phase 2 (its *intent* — no invented data — is preserved by L2). |
+
+**Confirmation gate:** L1–L4 **confirmed 2026-06-24**. The **G1** `/workshop/` row is annotated
+`[amended by L1]` (above) so the original route map never silently drifts; Phase 2 appends the
+L-criteria to `ACCEPTANCE.md` (WK-1…WK-4).

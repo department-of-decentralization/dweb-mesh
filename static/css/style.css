@@ -226,6 +226,7 @@ pre.has-copy { position: relative; }
 .doc blockquote p { max-width: none; margin: 0.3rem 0; }
 .doc blockquote a { color: var(--amber); }
 .muted { color: var(--fg-dim); font-size: 0.82rem; }
+.sess-hi { color: var(--cyan-dim); }   /* /workshop date-time + location - muted blue */
 
 .refcard { border: 2px solid var(--line); background: var(--panel); max-width: 30rem; margin: 1.3rem 0; }
 .refcard-row { display: flex; justify-content: space-between; align-items: center; gap: 1rem;

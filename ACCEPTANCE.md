@@ -186,9 +186,12 @@ below, **in addition to** §1–§10 and S1–S6 (regression line at the end). B
 ```sh
 grep -Eic 'type=["'"'"']?checkbox' public/index.html   # Expect: >=1 (nav toggle is a checkbox, not JS)
 grep -c 'nav-toggle' public/index.html                 # Expect: >=1 (the CSS checkbox toggle)
-# The nav adds NO script of its own; scripts now live only on the splash (counter)
-# and /config (provisioning). Site-wide JS inventory is governed by S3 + WS-2.
-grep -rEl '<script' public/ --include='*.html' | sort  # Expect: ONLY public/index.html and public/config/index.html
+# The nav adds NO script of its own. Page-specific scripts are the splash counter
+# (index.html) + /config provisioning; copy-code.js is injected SITE-WIDE via the base
+# template (CC-1), so every page legitimately carries a <script>. The authoritative JS
+# inventory is governed by S3 + WS-2 — not this grep. Here, verify the nav/header
+# itself stays pure CSS (checkbox + label, no JS), which CC-1 does not affect:
+awk '/<header/,/<\/header>/' public/index.html | grep -c '<script'  # Expect: 0 (no <script> inside the header/nav)
 ```
 - **Expect:** the nav collapse is a hidden checkbox + CSS — **no nav JavaScript**. (The site-wide JS-count moved to amended **S3** + **WS-2**, since the WebSerial feature legitimately adds `/config` JS.)
 - [ ] Pass
@@ -314,12 +317,15 @@ grep -Eo 'href="https?://[^"]*"[^>]*target="_blank"' public/config/index.html | 
 - **Expect:** EU/UK (Narrow) preset box with the **team-confirmed** values (G5 amended — citation/verify note removed at the team's request); a channel box with all 6 `#channels` + scope `de-bebb` (incl. `#bot`); SET PRESET / ADD CHANNELS buttons present (now wired client-side — see WS-3/WS-6); iOS/Android/MeshCLI links in new tabs.
 - [ ] Pass
 
-### SS-6 — /workshop  *(G1)*
-```sh
-grep -riE 'TBC|to be confirmed|content.*later' public/workshop/index.html   # Expect: >=1 (content TBC)
-```
-- **Expect:** the 3 session titles + metadata only; body content marked TBC. *(Manual: no links inside the workshop content — footer/nav chrome links don't count.)*
-- [ ] Pass
+### SS-6 — /workshop  *(G1)*  — *[amended by Workshop session details → WK-1…WK-4]*
+> **Amended by L1–L4 (2026-06-24):** `/workshop/` is no longer *"titles + metadata only,
+> content TBC, no links."* The four sessions are now **scheduled + sourced**, each with an
+> external talx link — judge `/workshop/` via **WK-1…WK-4** below. The original assertions
+> (`grep TBC` ≥1; the manual "no links inside the workshop content") are **retired**: they
+> describe the pre-L1 page and now invert (links are *expected* — the four talx ones). The
+> facts they protected survive — **no invention** as **WK-2** (every value traces to its talx
+> link) and **TBC discipline for any future *unscheduled* session** as **WK-4**.
+- [ ] Pass — via **WK-1…WK-4**
 
 ### SS-7 — /contact  *(G1)*
 ```sh
@@ -600,7 +606,66 @@ grep -Ec 'timeZoneName *:' public/js/counters.js # Expect: 0 (the timeZoneName I
 
 ---
 
+## Feature: Workshop session details (sourced schedule + talx links)  *(SPEC.md → Feature: Workshop session details, L1–L4)*
+
+Added 2026-06-24. A zero-context reviewer judges `/workshop/` with **WK-1…WK-4**, in addition
+to the surviving criteria (regression line at end). This feature **amends SS-6** (its pre-L1
+`grep TBC` / "no links" assertions are retired — see the note at SS-6). Build first (`zola
+build`), then check `public/workshop/index.html`. The four sessions and their talx IDs:
+(1) **YLKXWX** Join the DWeb Camp Mesh + Tech Support — Wed Jul 8, 13:00–18:00 @ Mesh Nest (5);
+(2) **ZHGJNM** Join the DWeb Camp Mesh! — Thu Jul 9, 09:30–09:40 @ Hacker's Lab (7);
+(3) **L9WV3W** Introduction to Meshtastic and Meshcore — Thu Jul 9, 15:00–16:00 @ Hacker's Lab (7);
+(4) **LBV3GJ** Off the grid: Reticulum app over LoRa — Fri Jul 10, 10:30–12:00 @ Hacker's Lab (7).
+
+### WK-1 — Four sessions, time-ordered, with metadata + summary + link  *(L1)*
+```sh
+for id in YLKXWX ZHGJNM L9WV3W LBV3GJ; do grep -qF "talk/$id/" public/workshop/index.html && echo "ok $id" || echo "MISSING $id"; done   # Expect: 4× ok (one talx link per session)
+grep -noE 'YLKXWX|ZHGJNM|L9WV3W|LBV3GJ' public/workshop/index.html   # Expect: top-to-bottom = YLKXWX, ZHGJNM, L9WV3W, LBV3GJ (schedule order Wed Jul 8 → Fri Jul 10, NOT supplied-link order)
+grep -Eo 'Jul (8|9|10)' public/workshop/index.html | sort -u          # Expect: Jul 8, Jul 9, Jul 10 (all three camp days)
+grep -c 'Mesh Nest'   public/workshop/index.html                      # Expect: >=1 (session 1 room)
+grep -c "Hacker's Lab" public/workshop/index.html                     # Expect: >=3 (sessions 2-4 room; team-supplied no. (7), not on talx)
+grep -c 'Afri'        public/workshop/index.html                      # Expect: >=4 (speaker on every session)
+grep -o 'class="sess-hi"' public/workshop/index.html | wc -l          # Expect: 8 (date-time + location = 2 spans × 4 sessions, muted blue)
+grep -F 'sess-hi' public/css/style.css                                # Expect: present (.sess-hi maps to --cyan-dim, the muted blue)
+grep -nE '—|–|&mdash;|&ndash;' public/workshop/index.html             # Expect: NO output (plain hyphens only - hacker register)
+```
+- **Expect:** the four sessions render **in schedule order**, each = title + a metadata line `Type · Day Mon D · HH:MM–HH:MM · Room · Speaker` + a one-line summary + a `Details ↗` talx link. The **date-time and location are styled muted blue** (`.sess-hi`); venue numbers (Mesh Nest (5), Hacker's Lab (7)) are team-supplied (D12), not from talx. Prose uses plain hyphens, no em/en-dashes. *(Manual: the summary is a single line; the full talx abstract is NOT duplicated inline - it lives behind the link.)*
+- [ ] Pass
+
+### WK-2 — Sourced from talx, nothing invented  *(L2; D5/D12)*
+```sh
+for t in '13:00' '09:30' '15:00' '10:30'; do grep -qF "$t" public/workshop/index.html && echo "ok $t" || echo "MISSING $t"; done   # Expect: 4× ok (the four start times, from talx)
+grep -ic 'drop-in'   public/workshop/index.html   # Expect: >=1 (session 1 has NO type on talx → descriptive "drop-in", not an invented formal label)
+grep -ic 'lightning' public/workshop/index.html   # Expect: >=1 (session 2 type, from talx)
+```
+- **Expect:** every rendered time / room / type / speaker / summary appears on the linked talx page (**manual** cross-check against the four URLs); session 1's missing type is shown descriptively ("Mesh Nest · drop-in"), flagged for team confirm, not fabricated; no value is invented.
+- [ ] Pass
+
+### WK-3 — External links: new tab, hyperlinks not assets  *(L3; D3/§2, G6/SS-8)*
+```sh
+grep -Eo 'href="https://talx\.dod\.ngo/[^"]*"[^>]*target="_blank"[^>]*rel="noopener"' public/workshop/index.html | wc -l   # Expect: 4 (all open a new tab, rel=noopener)
+grep -rEoh '<a\b[^>]*href="https?://[^"]*"[^>]*>' public/workshop/index.html | grep -v 'target="_blank"'   # Expect: NO output (no external <a> on the page misses target=_blank — SS-8 holds)
+grep -nE '<(link|script|img|source|video|audio|iframe|embed)\b[^>]*\bsrc="https?://talx' public/workshop/index.html   # Expect: NO output (talx is <a> hyperlinks only, never an asset)
+scripts/check-offline.sh   # Expect: OK (no external asset added)
+```
+- **Expect:** four talx `<a>` links, each `target="_blank" rel="noopener"` with the `↗` (`&#8599;`) glyph; no external asset; `check-offline.sh` green; the offline copy still renders (links just don't resolve offline). `talx.dod.ngo` is the only **new** host in the §2(d) external-link inventory.
+- [ ] Pass
+
+### WK-4 — Extensible, honestly non-final  *(L4; D12)*
+```sh
+grep -i 'more sessions may be added' public/workshop/index.html   # Expect: present (page reads as non-exhaustive)
+grep -F '.tbc' public/css/style.css                              # Expect: present (the TBC marker survives for any FUTURE unscheduled session)
+```
+- **Expect:** a standing "more sessions may be added" line; the `.tbc` styling remains for future *unscheduled* sessions. The current four are scheduled, so `grep -ic TBC public/workshop/index.html` may be **0** — that is correct, not a failure (WK-2 guarantees no invention; WK-4 keeps the page honestly non-final).
+- [ ] Pass
+
+### Regression — surviving prior criteria still pass  *(WK feature)*
+**Amended (planned, not a regression):** **SS-6** — its pre-L1 `grep TBC` ≥1 and "no links inside the workshop content" assertions are retired and replaced by **WK-1…WK-4** (links are now expected). **Still must pass:** §1 (clean build), **§2/§3 + `check-offline.sh`** (talx links are hyperlinks, not assets — offline render intact), §2(d) inventory (adds exactly `talx.dod.ngo`), §4 (internal links unchanged; subpath build still works), §5 / LP-6 (footer chrome untouched), **SS-1** (the 7-route IA still includes `/workshop/`), **SS-8** (every external `<a>`, the four new ones included, opens a new tab). All other groups (LP, WS, CR, CC, LD, TZ, S*) untouched.
+- [ ] Pass (no regression in the surviving criteria)
+
+---
+
 ## Verdict
 
-A build is **ACCEPTED** only when the surviving boxes (§1–§5, §8, §10; S1–S3, S6), LP-1–LP-7, SS-1–SS-9, **WS-1–WS-7**, **CR-1–CR-4**, **CC-1**, **LD-1–LD-3**, and **TZ-1–TZ-3** are all ticked, and amended §2/§3 hold. (§6/§7/§9 + S4/S5 superseded by SS; S3/LP-1 amended by H2; **WS-6 is MANUAL**, hardware-verified by the team.)
+A build is **ACCEPTED** only when the surviving boxes (§1–§5, §8, §10; S1–S3, S6), LP-1–LP-7, SS-1–SS-9, **WS-1–WS-7**, **CR-1–CR-4**, **CC-1**, **LD-1–LD-3**, **TZ-1–TZ-3**, and **WK-1–WK-4** are all ticked, and amended §2/§3 hold. (§6/§7/§9 + S4/S5 superseded by SS; **SS-6 amended by WK-1…WK-4**; S3/LP-1 amended by H2; **WS-6 is MANUAL**, hardware-verified by the team.)
 Record the date, the Zola version, and any waived item with its justification.
