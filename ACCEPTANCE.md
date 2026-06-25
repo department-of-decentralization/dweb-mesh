@@ -744,12 +744,14 @@ Added 2026-06-25. A zero-context reviewer judges the caption with **EC-1**, in a
 surviving criteria (regression line below). The caption is **plain muted text** under the splash
 title; it adds no asset and no link. Build first (`zola build`), then check `public/index.html`.
 
-### EC-1 — Muted event caption under the title, not a link  *(O1)*
+### EC-1 — Muted event caption under the title; line 2 a muted link  *(O1, amended 2026-06-26)*
 ```sh
 grep -F 'class="splash-meta"' public/index.html               # Expect: present (the caption element)
 grep -F 'July 8-12, Alte Hölle, Wiesenburg' public/index.html # Expect: present (line 1: dates + venue)
 grep -Fc 'dwebcamp.org' public/index.html                     # Expect: >=1 (line 2)
-grep -F 'splash-meta' public/index.html | grep -c '<a'        # Expect: 0 (plain text — dwebcamp.org is NOT a link)
+grep -Eo '<a[^>]*href="https://dwebcamp\.org/?"[^>]*>dwebcamp\.org</a>' public/index.html   # Expect: present (line 2 links to dwebcamp.org)
+grep -Eo 'href="https://dwebcamp\.org/?"[^>]*target="_blank"[^>]*rel="noopener"' public/index.html   # Expect: present (new tab - G6/SS-8)
+grep -F 'splash-meta a' public/css/style.css                  # Expect: present (link styled muted, not amber)
 grep -F 'splash-meta' public/index.html | grep -E '—|–|&mdash;|&ndash;'   # Expect: NO output (plain hyphen in "8-12")
 # LP-4 still holds (the caption did NOT reintroduce the removed sub-line / its class / SYNC):
 grep -c  'splash-sub' public/index.html                       # Expect: 0
@@ -757,11 +759,11 @@ grep -ic 'SYNC'       public/index.html                       # Expect: 0
 grep -ic 'JOIN'       public/index.html                       # Expect: >=1 (title kept)
 scripts/check-offline.sh                                      # Expect: OK (caption is text, no asset)
 ```
-- **Expect:** a `.splash-meta` caption reading `July 8-12, Alte Hölle, Wiesenburg` / `dwebcamp.org`, rendered as **plain muted text** (no `<a>`), directly beneath the `JOIN THE MESH` title and above the HUD. No `splash-sub`, no `SYNC` (LP-4 intact); no new asset (`check-offline.sh` green); no new external-link inventory entry (`dwebcamp.org/tickets` already present via BUY DEVICE — the caption adds no link). *(Manual: the caption sits between the title and the NODES/MESSAGES HUD.)*
+- **Expect:** a `.splash-meta` caption directly beneath the `JOIN THE MESH` title and above the HUD: line 1 `July 8-12, Alte Hölle, Wiesenburg` (plain muted text), line 2 `dwebcamp.org` as a **muted link** → `https://dwebcamp.org`, `target="_blank" rel="noopener"` (G6/SS-8), styled muted via `.splash-meta a` (overrides the amber link colour). No `splash-sub`, no `SYNC` (LP-4 intact); the link is a **hyperlink, not an asset** (`check-offline.sh` green); the §2(d) inventory gains `dwebcamp.org` (root) alongside the existing BUY DEVICE `dwebcamp.org/tickets` (same host). *(Manual: the caption sits between the title and the NODES/MESSAGES HUD.)*
 - [ ] Pass
 
 ### Regression — surviving prior criteria still pass  *(EC feature)*
-**Still must pass:** **LP-4** (caption uses `.splash-meta`, not `splash-sub`; no `SYNC`; JOIN + both counters kept — EC-1 re-checks), §2/§3 + `check-offline.sh` (no asset added), **LP-5 / §2(d) / SS-8** (no new external link — the caption is plain text; the only `dwebcamp.org` link remains BUY DEVICE → `/tickets`), §5/LP-6 (footer untouched), and every other group. The splash title cursor (LD-3/J4) and counters (§8) are unaffected.
+**Still must pass:** **LP-4** (caption uses `.splash-meta`, not `splash-sub`; no `SYNC`; JOIN + both counters kept — EC-1 re-checks), §2/§3 + `check-offline.sh` (the dwebcamp.org link is a **hyperlink, not an asset**), **SS-8** (the new external `<a>` opens a new tab — EC-1 checks `target=_blank rel=noopener`), **LP-5 / §2(d)** (the external-link inventory now lists `dwebcamp.org/tickets` **and** `dwebcamp.org` root — same host, intentional), §5/LP-6 (footer untouched), and every other group. The splash title cursor (LD-3/J4) and counters (§8) are unaffected.
 - [ ] Pass (no regression)
 
 ---
@@ -803,7 +805,7 @@ grep -F 'session--past' public/css/style.css                 # Expect: present (
 
 ### WT-3 — Live session shows a blinking orange square; sess-hi invariant held  *(P3; J4)*
 ```sh
-grep -F 'live-dot' public/js/workshop.js                     # Expect: present (revealed when start<=now<=end)
+grep -F 'session--live' public/js/workshop.js                # Expect: present (live class added when start<=now<=end)
 grep -F 'live-dot' public/css/style.css                      # Expect: present (orange square + blink)
 grep -Fc 'prefers-reduced-motion' public/css/style.css       # Expect: >=2 (J4 cursor + live-dot steady-when-reduced)
 grep -o 'class="sess-hi"' public/workshop/index.html | wc -l # Expect: 8 (WK-1 invariant — the live marker is .live-dot, NOT a sess-hi span)
@@ -813,7 +815,7 @@ grep -o 'class="sess-hi"' public/workshop/index.html | wc -l # Expect: 8 (WK-1 i
 
 ### WT-4 — No tz library; device-clock compare; 60 s refresh; offline-safe  *(P4; D3/K-style)*
 ```sh
-grep -Eic 'moment|luxon|dayjs|date-fns|spacetime|js-joda|timezone' public/js/workshop.js   # Expect: 0 (no tz library — Date parsing only)
+grep -Eic 'moment|luxon|dayjs|date-fns|spacetime|js-joda|timezone-js|moment-timezone|tz\.min' public/js/workshop.js   # Expect: 0 (no tz library — Date parsing only; a 'timezone' mention in a comment is not a library, matching TZ-1)
 grep -Ec 'new Date|Date\.now|getTime' public/js/workshop.js  # Expect: >=1 (compares against the device clock)
 grep -E 'setInterval|60000|60 ?\* ?1000' public/js/workshop.js  # Expect: present (recompute every 60 s)
 scripts/check-offline.sh                                     # Expect: OK

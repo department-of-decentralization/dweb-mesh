@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}{{ section.title }} &middot; {{ config.title }}{% endblock title %}
+{% block description %}{{ section.description | default(value=config.description) }}{% endblock description %}
+{% block content %}
+<article class="doc">
+  <h1>{{ section.title }}</h1>
+  {{ section.content | safe }}
+</article>
+{% endblock content %}
+{% block scripts %}
+<script src="{{ get_url(path='js/workshop.js') }}"></script>
+{% endblock scripts %}
