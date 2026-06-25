@@ -168,7 +168,7 @@ Decisions **F1–F4**; **F4 amends D7**. *Pending explicit sign-off (see gate be
 | # | Decision | Choice |
 |---|----------|--------|
 | **F1** | **Collapsible nav (CSS-only)** | Primary nav collapses, below a content-driven width, into a **logo-triggered menu**. Mechanism: a **hidden checkbox + CSS sibling selectors** — **zero JS, no external assets** (upholds D3/D11; **S3 unchanged**). The `DWEB·MESH` brand is a **home link at wide widths and the menu toggle at narrow widths** (a breakpoint-swapped link/label pair, since one element can't be both `<a>` and `<label>`). The collapsed menu carries a **HOME** entry so narrow screens can still reach `/`. Replaces the current `flex-wrap` nav. Toggle is keyboard-operable (the checkbox stays focusable). |
-| **F2** | **Splash trim + funnel** | `/` keeps **JOIN THE MESH** and the node/message HUD counters (M1/D6 intact). **Removes** the `DWEB CAMP 2026 · LoRa · OFFLINE-FIRST` sub-line and the `LAST SYNC` line. CTA renamed **`START HERE` → `START`**. Adds a secondary **BUY DEVICE** link beneath START. `counters.js` is left intact — it already guards the now-absent `#stat-updated`, so counters still degrade gracefully. (Relocating LAST SYNC elsewhere is a later feature, out of scope here.) |
+| **F2** | **Splash trim + funnel** *[extended by O1]* | `/` keeps **JOIN THE MESH** and the node/message HUD counters (M1/D6 intact). **Removes** the `DWEB CAMP 2026 · LoRa · OFFLINE-FIRST` sub-line and the `LAST SYNC` line. CTA renamed **`START HERE` → `START`**. Adds a secondary **BUY DEVICE** link beneath START. `counters.js` is left intact — it already guards the now-absent `#stat-updated`, so counters still degrade gracefully. (Relocating LAST SYNC elsewhere is a later feature, out of scope here.) |
 | **F3** | **External buy link** *(extends D3 / ACCEPTANCE §2d)* | **BUY DEVICE → `https://dwebcamp.org/tickets`** is an external **hyperlink** (click-through), permitted by §2's asset-vs-hyperlink rule. Added to the §2(d) human-review allowlist (alongside matrix.to, device vendor links, citations). **No external asset** is introduced; `check-offline.sh` still passes. |
 | **F4** | **Single-line footer** *(amends D7)* | Footer becomes one compact row of four items, in order: **Matrix `#dweb-mesh:dod.ngo`** (→ matrix.to link, unchanged) · **Tent 5 (Mesh Nest)** · **Meshcore `#dwebcamp`** · **Dashboard: `dweb.potatomesh.net`** (→ existing dashboard link). **Wide screens:** single row, vertical-line separators between items. **Narrow screens:** wraps to **up to 4 stacked lines**. **Amendment to D7:** the phrase *"when LoRa fails, this is how you reach a human"* is **removed and no longer required anywhere**. D7's load-bearing parts **remain**: footer on **every** page, in the **base template**, carrying **tent 5** + the **Matrix room/link**. Naming the Meshcore channel in chrome implies no bridge → consistent with D8. |
 
@@ -327,3 +327,48 @@ D7/F4 (footer), D2 (host-less internal links), D11. **Confirmed 2026-06-24.**
 **Confirmation gate:** N1–N4 **confirmed 2026-06-24**. The **D3** and **G4** rows and the **Site
 Structure route map** are annotated `[amended by N2]` / `[extended by N1]` (above) so the originals
 never silently drift; Phase 2 appends the criteria to `ACCEPTANCE.md` (IN-1…IN-5).
+
+---
+
+## Feature: Splash event caption  *(2026-06-25)*
+
+Added 2026-06-25. A short **muted caption** directly beneath the splash title (`JOIN THE
+MESH`), above the NODES/MESSAGES HUD: the camp dates + venue, then `dwebcamp.org`. Decision
+**O1**. **Extends F2** — the splash gains one caption line; this does **not** restore F2's
+removed `DWEB CAMP 2026 · LoRa · OFFLINE-FIRST` sub-line, its class, or the `LAST SYNC` line.
+Upholds D3/§2 (plain text — no asset, no external link; `check-offline.sh` green), D11 (CRT
+register), D12 (dates/venue are team-supplied camp facts, rendered verbatim, never invented),
+and the hacker-register plain-hyphen rule ([[dashes-plain-hyphens-only]]). LP-4 still holds
+(new `.splash-meta` class — **not** `splash-sub`; contains no `SYNC`). *Pending sign-off.*
+
+| # | Decision | Choice |
+|---|----------|--------|
+| **O1** | **Muted event caption under the title** *(extends F2)* | A `<p class="splash-meta">` rendered **directly beneath the `JOIN THE MESH` title, above the HUD**, on two lines via a `<br>`: line 1 **`July 8-12, Alte Hölle, Wiesenburg`**, line 2 **`dwebcamp.org`**. **Plain muted text** (`--fg-dim`, small) — **not** a link (no `<a>`, no `target=_blank`, no §2(d) inventory change). Plain hyphen in `8-12` (hacker register). New class **`.splash-meta`** — deliberately **not** `splash-sub` (LP-4 asserts `splash-sub`==0) and carrying no `SYNC`/`START HERE` substring, so **LP-4 still passes**. The blinking title cursor (J4) and the funnel (START / BUY DEVICE / counters — F2/M1/D6) are untouched. |
+
+**Confirmation gate:** O1 requires explicit sign-off (`confirm`, or call it out to change). On
+confirmation, the **F2** row is annotated `[extended by O1]` so the original never silently drifts.
+
+---
+
+## Feature: Workshop live time-state (CEST)  *(2026-06-25)*
+
+Added 2026-06-25. `/workshop/` gains **client-side, clock-aware** rendering: each session
+**dims to muted grey once its end time has passed**, and a **blinking orange square** appears
+before the time of any session **currently in progress**. A static build cannot know the
+viewer's current time, so this is the page's first runtime JS beyond the splash. Decisions
+**P1–P4**. **Extends S3/WS-2** (a 5th local hand-written JS file; repo stays node-free — D1/D3
+upheld) and **amends** the literal JS-count acceptance lines (LD-3, CR-1, S3/WS-2 inventory, TZ
+regression). Upholds D3/§2 (local JS, `Date` only, no network — `check-offline.sh` green),
+D5/D12/L2 (times are talx-sourced, not invented), D8 (display-only, no bridges), D11, and J4
+(blink + `prefers-reduced-motion`). WK-1/WK-2/WK-3 preserved by construction. *Pending sign-off.*
+
+| # | Decision | Choice |
+|---|----------|--------|
+| **P1** | **New page-scoped local JS** *(extends S3/WS-2; amends LD-3/CR-1/TZ count)* | A new hand-written **`static/js/workshop.js`** (local, **no network — `Date` only**), loaded **only on `/workshop/`** via a new **`templates/workshop.html`** (extends `base.html`, renders the section body, fills `{% block scripts %}`), selected by `template = "workshop.html"` in `content/workshop/_index.md`. Mirrors how `counters.js` loads only on `/`. **Repo stays node-free (D1); `zola build` alone builds the site; `check-offline.sh` green (D3).** Bumps the JS inventory 4→5: **amends** LD-3 (`find public -name '*.js' \| wc -l` 4→5), CR-1 (`ls static/js/*.js` 3→4), the S3/WS-2 enumerated list (+`workshop.js`), and the TZ-regression `wc -l` line. |
+| **P2** | **Past sessions render muted grey** | Each session is wrapped in a per-session container carrying `data-start`/`data-end`. When **now > end**, `workshop.js` adds **`.session--past`**, dimming that whole block (heading + metadata line + summary + `Details ↗`) to the muted treatment (reduced opacity → `--fg-dim`). With **JS off / offline**, no class is added → every session renders normally, so the offline Freifunk copy is unaffected. |
+| **P3** | **Blinking orange square on the live session** *(reuses J4)* | When **start ≤ now ≤ end**, JS reveals a **blinking orange (`--amber`) square** (`■`) immediately **before that session's time** (the first `.sess-hi` of the metadata line). It is a **new, separate element** (`.live-dot`) — **not** a `.sess-hi` span — so **WK-1's `class="sess-hi"`==8 still holds**. It is hidden by default (no spurious square when JS is off / for non-live sessions). **Respects `prefers-reduced-motion`** (steady square, no blink), exactly as J4's cursor does. |
+| **P4** | **"Assume CEST" → absolute-instant data, device-clock compare** *(D5/D12/L2; D3/K-style)* | Start/end come **verbatim from the already-on-page talx-sourced local times** (not invented). **"CEST everywhere"** = encode each as an absolute instant with the **`+02:00`** offset (e.g. `data-start="2026-07-08T13:00:00+02:00"`), compared against the device clock (`Date.now()`, an absolute epoch) — correct regardless of the viewer's own timezone, with **no tz library** (`Date` parsing only, like K2's built-in approach); `check-offline.sh` stays green. Recompute **on load + every 60 s** (matches the counter cadence). The four sessions: Wed Jul 8 13:00-18:00; Thu Jul 9 09:30-09:40; Thu Jul 9 15:00-16:00; Fri Jul 10 10:30-12:00. |
+
+**Confirmation gate:** P1–P4 require explicit sign-off (`confirm all`, or call a number to
+change). On confirmation, the **S3** and **WS-2** rows are annotated `[extended by P1]`; Phase 2
+then appends the workshop-time criteria to `ACCEPTANCE.md` and amends the LD-3 / CR-1 / TZ count lines.

@@ -178,7 +178,7 @@ grep -rEoq 'href="https://matrix\.to/#/#dweb-mesh:dod\.ngo"' public/ && echo "ma
 |---|-----------|--------|--------|
 | **S1** | Fonts bundled + local (D4) | `ls public/fonts/` ; `grep -rE '@font-face' public/ -l` | ≥2 `woff2` in repo; `@font-face` `url()` are local paths |
 | **S2** | Small payload (D3) | `du -sh public/ ; du -sh public/fonts/` | Total in low MB; fonts subset, not multi-MB |
-| **S3** | No node toolchain in repo (D1) *[amended by H2]* | `! test -e package.json ; ! test -d node_modules ; find public -name '*.js'` | NO `package.json`/`node_modules` in the repo; JS = hand-written + the **vendored** lib: `counters.js`, `copy-code.js`, `mesh-provision.js`, `vendor/meshcore.min.js` — all local (governs the JS inventory; see **WS-1/WS-2**) |
+| **S3** | No node toolchain in repo (D1) *[amended by H2, P1]* | `! test -e package.json ; ! test -d node_modules ; find public -name '*.js'` | NO `package.json`/`node_modules` in the repo; JS = hand-written + the **vendored** lib: `counters.js`, `copy-code.js`, `mesh-provision.js`, `workshop.js` (page-scoped, `/workshop` only — P1), `vendor/meshcore.min.js` — all local (governs the JS inventory; see **WS-1/WS-2/WT-1**) |
 | **S4** | Stack hierarchy stated (D8 → G2) | grep `public/start/` | Meshcore PRIMARY + Meshtastic SUPPORTED (no services) + Reticulum EDUCATIONAL/→Workshop stated in the **/start note** (no stack pages) — see **SS-2** |
 | **S5** | AI host = a channel, not a route (D9 → G3) | `! test -e public/meshcore/services` ; grep `public/config/` | no services route; AI host is the `#bot` channel line on `/config` — see **SS-5** |
 | **S6** | CNAME + CI present (D10) | `cat CNAME ; ls .github/workflows/` | `CNAME` = `mesh.dod.ngo`; a workflow builds Zola → Pages; Freifunk noted manual |
@@ -393,12 +393,12 @@ scripts/check-offline.sh                                                        
 - **Expect:** `meshcore.min.js` committed under `public/js/vendor/`, imported by relative path; no external import / remote load in any shipped JS; `check-offline.sh` OK. (Incidental URL *strings* inside the vendored bundle are inert — the gate flags asset/import URLs, not strings.)
 - [ ] Pass
 
-### WS-2 — No node toolchain entered the repo  *(H2; D1)*
+### WS-2 — No node toolchain entered the repo  *(H2; D1)*  *[amended by P1: +workshop.js]*
 ```sh
 ! test -e package.json && ! test -e package-lock.json && ! test -d node_modules && echo "repo node-free"   # Expect: repo node-free
-find public -name '*.js' | sort   # Expect: exactly copy-code.js, counters.js, mesh-provision.js, vendor/meshcore.min.js
+find public -name '*.js' | sort   # Expect: copy-code.js, counters.js, mesh-provision.js, vendor/meshcore.min.js, workshop.js  (5 — workshop.js added by P1)
 ```
-- **Expect:** no `package.json`/`node_modules` in the repo; `zola build` alone produced the site; the JS inventory is exactly those four local files.
+- **Expect:** no `package.json`/`node_modules` in the repo; `zola build` alone produced the site; the JS inventory is exactly those five local files (incl. the page-scoped `workshop.js`, P1).
 - [ ] Pass
 
 ### WS-3 — /config page wiring  *(H1/H4)*
@@ -475,7 +475,7 @@ grep -c '<details' public/config/index.html                 # Expect: 2
 grep -Ec '<details[^>]*\bopen\b' public/config/index.html   # Expect: 0 (collapsed by default)
 grep -E '<summary[^>]*>[^<]*Meshtastic' public/config/index.html  # Expect: present
 grep -E '<summary[^>]*>[^<]*Reticulum'  public/config/index.html  # Expect: present
-ls static/js/*.js   # Expect: counters.js, copy-code.js, mesh-provision.js (the <details> add no JS of their own; copy-code.js is the separate copy-button feature)
+ls static/js/*.js   # Expect: counters.js, copy-code.js, mesh-provision.js, workshop.js (workshop.js added by P1; the <details> add no JS of their own; copy-code.js is the separate copy-button feature)
 ```
 - **Expect:** both sections present, collapsed, ordered Meshtastic→Reticulum, after Apps; no JS added.
 - [ ] Pass
@@ -566,9 +566,9 @@ A blinking underscore after the splash title via CSS only; steady (no blink) und
 ```sh
 grep -Fc 'splash-title::after' public/css/style.css              # Expect: >=1 (the cursor)
 grep -Fc 'prefers-reduced-motion' public/css/style.css           # Expect: >=1 (steady when reduced)
-find public -name '*.js' | wc -l                                 # Expect: 4 (no new JS file; counters.js edited in place)
+find public -name '*.js' | wc -l                                 # Expect: 5 (this LD change added no JS; the +1 is workshop.js, added later by P1)
 ```
-- **Expect:** a CSS-only blinking underscore after “JOIN THE MESH”; honours reduced-motion; no new JS file.
+- **Expect:** a CSS-only blinking underscore after “JOIN THE MESH”; honours reduced-motion; the LD change adds no new JS file (the count reads 5 only because P1 later adds `workshop.js`).
 - [ ] Pass
 
 ### Regression — surviving prior criteria still pass  *(LD feature)*
@@ -610,7 +610,7 @@ grep -Ec 'timeZoneName *:' public/js/counters.js # Expect: 0 (the timeZoneName I
 - [ ] Pass
 
 ### Regression — surviving prior criteria still pass  *(TZ feature)*
-**Still must pass:** §1 (clean build); **§2/§3 + `check-offline.sh`** (no new asset; **no tz library** — *at risk* if a library were added); §8 / LD-1 / LD-2 (the box still fetches remote→local→hidden and renders offline); **LD-3** (`find public -name '*.js' | wc -l` still **4** — the edit is in place, *at risk* if a new JS file were added); **S3 / WS-2** (JS inventory = the same four files); CR-2 (`messages.json` remains the offline fallback). The change is presentation-only inside `fmtTs()`.
+**Still must pass:** §1 (clean build); **§2/§3 + `check-offline.sh`** (no new asset; **no tz library** — *at risk* if a library were added); §8 / LD-1 / LD-2 (the box still fetches remote→local→hidden and renders offline); **LD-3** (`find public -name '*.js' | wc -l` is now **5** — P1 added `workshop.js`; the TZ edit itself adds no file); **S3 / WS-2** (JS inventory = the five local files, incl. P1's `workshop.js`); CR-2 (`messages.json` remains the offline fallback). The change is presentation-only inside `fmtTs()`.
 - [ ] Pass (no regression)
 
 ---
@@ -738,7 +738,96 @@ grep -Eic 'intel' static/css/style.css   # Expect: >=1 (full-bleed iframe layout
 
 ---
 
+## Feature: Splash event caption  *(SPEC.md → Feature: Splash event caption, O1)*
+
+Added 2026-06-25. A zero-context reviewer judges the caption with **EC-1**, in addition to the
+surviving criteria (regression line below). The caption is **plain muted text** under the splash
+title; it adds no asset and no link. Build first (`zola build`), then check `public/index.html`.
+
+### EC-1 — Muted event caption under the title, not a link  *(O1)*
+```sh
+grep -F 'class="splash-meta"' public/index.html               # Expect: present (the caption element)
+grep -F 'July 8-12, Alte Hölle, Wiesenburg' public/index.html # Expect: present (line 1: dates + venue)
+grep -Fc 'dwebcamp.org' public/index.html                     # Expect: >=1 (line 2)
+grep -F 'splash-meta' public/index.html | grep -c '<a'        # Expect: 0 (plain text — dwebcamp.org is NOT a link)
+grep -F 'splash-meta' public/index.html | grep -E '—|–|&mdash;|&ndash;'   # Expect: NO output (plain hyphen in "8-12")
+# LP-4 still holds (the caption did NOT reintroduce the removed sub-line / its class / SYNC):
+grep -c  'splash-sub' public/index.html                       # Expect: 0
+grep -ic 'SYNC'       public/index.html                       # Expect: 0
+grep -ic 'JOIN'       public/index.html                       # Expect: >=1 (title kept)
+scripts/check-offline.sh                                      # Expect: OK (caption is text, no asset)
+```
+- **Expect:** a `.splash-meta` caption reading `July 8-12, Alte Hölle, Wiesenburg` / `dwebcamp.org`, rendered as **plain muted text** (no `<a>`), directly beneath the `JOIN THE MESH` title and above the HUD. No `splash-sub`, no `SYNC` (LP-4 intact); no new asset (`check-offline.sh` green); no new external-link inventory entry (`dwebcamp.org/tickets` already present via BUY DEVICE — the caption adds no link). *(Manual: the caption sits between the title and the NODES/MESSAGES HUD.)*
+- [ ] Pass
+
+### Regression — surviving prior criteria still pass  *(EC feature)*
+**Still must pass:** **LP-4** (caption uses `.splash-meta`, not `splash-sub`; no `SYNC`; JOIN + both counters kept — EC-1 re-checks), §2/§3 + `check-offline.sh` (no asset added), **LP-5 / §2(d) / SS-8** (no new external link — the caption is plain text; the only `dwebcamp.org` link remains BUY DEVICE → `/tickets`), §5/LP-6 (footer untouched), and every other group. The splash title cursor (LD-3/J4) and counters (§8) are unaffected.
+- [ ] Pass (no regression)
+
+---
+
+## Feature: Workshop live time-state (CEST)  *(SPEC.md → Feature: Workshop live time-state, P1–P4)*
+
+Added 2026-06-25. A zero-context reviewer judges `/workshop/`'s clock-aware rendering with
+**WT-1…WT-4**, in addition to the surviving criteria (regression line below). This feature
+**amends the JS-count assertions** in **S3, WS-2, CR-1, LD-3** (and the TZ-3 regression line):
+the inventory grows 4→5 with the new **local** `workshop.js`. Static checks are auto-verifiable;
+the time-dependent behaviour is **MANUAL** (it depends on the device clock). Build first (`zola
+build`), then check `public/workshop/`.
+
+### WT-1 — New page-scoped local JS; count amended 4→5  *(P1; D1/D3)*
+```sh
+test -f public/js/workshop.js && echo "present"              # Expect: present (the 5th JS file)
+grep -Ec 'https?://' public/js/workshop.js                   # Expect: 0 (no external refs — Date only, local)
+grep -Ec 'fetch\(|XMLHttpRequest|import[^;]*https?://' public/js/workshop.js   # Expect: 0 (no network)
+grep -c 'workshop.js' public/workshop/index.html             # Expect: >=1 (loaded on /workshop/)
+grep -rl 'workshop.js' public/ --include='*.html'            # Expect: ONLY public/workshop/index.html (page-scoped, not site-wide)
+find public -name '*.js' | sort                              # Expect: copy-code.js, counters.js, mesh-provision.js, vendor/meshcore.min.js, workshop.js (5)
+scripts/check-offline.sh                                     # Expect: OK
+```
+- **Expect:** `workshop.js` is local, network-free, loaded **only** on `/workshop/` (a dedicated `templates/workshop.html` fills `{% block scripts %}`, exactly as `index.html` loads `counters.js`). The JS inventory is now **5** local files; the repo stays node-free. This is the **amendment** to S3 / WS-2 / CR-1 / LD-3.
+- [ ] Pass
+
+### WT-2 — Each session carries CEST start/end; past sessions dim  *(P2/P4)*
+```sh
+grep -c 'data-start=' public/workshop/index.html             # Expect: 4 (one per session)
+grep -c 'data-end='   public/workshop/index.html             # Expect: 4
+grep -o '+02:00' public/workshop/index.html | wc -l          # Expect: 8 (CEST offset on every start + end — 4 sessions × 2 attrs — P4)
+for t in 2026-07-08T13:00 2026-07-09T09:30 2026-07-09T15:00 2026-07-10T10:30; do grep -qF "$t" public/workshop/index.html && echo "ok $t" || echo "MISSING $t"; done   # Expect: 4× ok (starts, matching the visible talx times)
+for t in 2026-07-08T18:00 2026-07-09T09:40 2026-07-09T16:00 2026-07-10T12:00; do grep -qF "$t" public/workshop/index.html && echo "ok $t" || echo "MISSING $t"; done   # Expect: 4× ok (ends)
+grep -F 'session--past' public/js/workshop.js                # Expect: present (class applied when now > end)
+grep -F 'session--past' public/css/style.css                 # Expect: present (muted-grey styling)
+```
+- **Expect:** all four sessions are wrapped with `data-start`/`data-end` absolute instants at **`+02:00`** (CEST), matching the visible talx times; `workshop.js` applies `.session--past` (muted grey) once the device clock is past a session's **end**. *(MANUAL, clock-dependent: with the clock set after a session's end, that whole session block — heading, metadata, summary, Details link — renders muted grey; before its end it renders normally. With JS disabled, no session dims.)*
+- [ ] Pass
+
+### WT-3 — Live session shows a blinking orange square; sess-hi invariant held  *(P3; J4)*
+```sh
+grep -F 'live-dot' public/js/workshop.js                     # Expect: present (revealed when start<=now<=end)
+grep -F 'live-dot' public/css/style.css                      # Expect: present (orange square + blink)
+grep -Fc 'prefers-reduced-motion' public/css/style.css       # Expect: >=2 (J4 cursor + live-dot steady-when-reduced)
+grep -o 'class="sess-hi"' public/workshop/index.html | wc -l # Expect: 8 (WK-1 invariant — the live marker is .live-dot, NOT a sess-hi span)
+```
+- **Expect:** a `.live-dot` element (orange `--amber` square `■`) sits before the live session's time and **blinks**, reusing J4's keyframe; under `prefers-reduced-motion` it is steady (no blink). It is a separate element, so `class="sess-hi"` still appears exactly **8** times (WK-1 holds). *(MANUAL, clock-dependent: with the clock inside a session's window, exactly that session shows the blinking square; outside any window, none do.)*
+- [ ] Pass
+
+### WT-4 — No tz library; device-clock compare; 60 s refresh; offline-safe  *(P4; D3/K-style)*
+```sh
+grep -Eic 'moment|luxon|dayjs|date-fns|spacetime|js-joda|timezone' public/js/workshop.js   # Expect: 0 (no tz library — Date parsing only)
+grep -Ec 'new Date|Date\.now|getTime' public/js/workshop.js  # Expect: >=1 (compares against the device clock)
+grep -E 'setInterval|60000|60 ?\* ?1000' public/js/workshop.js  # Expect: present (recompute every 60 s)
+scripts/check-offline.sh                                     # Expect: OK
+```
+- **Expect:** start/end instants are compared to `Date.now()` (absolute epoch) so the result is the same regardless of the viewer's own timezone; **no timezone library** is added (the `+02:00` offset in the data is enough — `Date` parses it); states recompute on load and every **60 s**; `check-offline.sh` green. *(MANUAL: with the network blocked / JS disabled, the page still renders all four sessions normally — the offline Freifunk copy is unaffected.)*
+- [ ] Pass
+
+### Regression — surviving prior criteria still pass  *(WT feature)*
+**Amended (planned, not a regression):** **S3, WS-2, CR-1, LD-3** and the **TZ-3** regression line — the JS inventory grows 4→5 with the **local** `workshop.js` (repo still node-free; `check-offline.sh` green). **Still must pass:** §1 (clean build), **§2/§3 + `check-offline.sh`** (workshop.js is local, network-free — no asset, no external import), §4 (internal links + subpath build unchanged), §5/LP-6 (footer untouched), **WK-1** (`class="sess-hi"`==8, the four talx IDs in schedule order, Mesh Nest / Hacker's Lab / Afri strings, plain hyphens — all preserved through the per-session wrap; WT-2/WT-3 re-assert the at-risk ones), **WK-2/WK-3** (visible times + the four `target=_blank` talx links intact), §8/LD/TZ (the splash counters/messages JS is untouched), and every other group (S, LP, SS, CC, CR, IN).
+- [ ] Pass (no regression in the surviving criteria)
+
+---
+
 ## Verdict
 
-A build is **ACCEPTED** only when the surviving boxes (§1–§5, §8, §10; S1–S3, S6), LP-1–LP-7, SS-1–SS-9, **WS-1–WS-7**, **CR-1–CR-4**, **CC-1**, **LD-1–LD-3**, **TZ-1–TZ-3**, **WK-1–WK-4**, and **IN-1–IN-5** are all ticked, and amended §2/§3 hold. (§6/§7/§9 + S4/S5 superseded by SS; **SS-6 amended by WK-1…WK-4**; **§2/§3/SS-1/SS-9 amended by N1/N2/N3 — Intel page**; S3/LP-1 amended by H2; **WS-6 is MANUAL**, hardware-verified by the team.)
+A build is **ACCEPTED** only when the surviving boxes (§1–§5, §8, §10; S1–S3, S6), LP-1–LP-7, SS-1–SS-9, **WS-1–WS-7**, **CR-1–CR-4**, **CC-1**, **LD-1–LD-3**, **TZ-1–TZ-3**, **WK-1–WK-4**, **IN-1–IN-5**, **EC-1**, and **WT-1–WT-4** are all ticked, and amended §2/§3 hold. (§6/§7/§9 + S4/S5 superseded by SS; **SS-6 amended by WK-1…WK-4**; **§2/§3/SS-1/SS-9 amended by N1/N2/N3 — Intel page**; S3/LP-1 amended by H2; **S3/WS-2/CR-1/LD-3 JS-count 4→5 amended by P1 — Workshop live time-state**; **WS-6 is MANUAL**, hardware-verified by the team.)
 Record the date, the Zola version, and any waived item with its justification.
