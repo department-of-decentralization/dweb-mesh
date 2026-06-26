@@ -15,4 +15,4 @@ Make sure you are on the correct Meshcore preset and join the available camp cha
 ## 4 · GET HELP
 Lost? Get help at tent 5 (Mesh Nest) or on Matrix. → [Contact](@/contact/_index.md)
 
-> <span class="hi">Meshtastic</span> is supported too - we run a Router on <span class="hi">MediumFast</span>, but the camp feeds **no services** into it, and the protocols **don't bridge**. Here for <span class="hi">Reticulum</span>? Check the [Workshop](@/workshop/_index.md) page for config.
+> <span class="hi">Meshtastic</span> is supported too - we run a Router on <span class="hi">MediumFast</span>, but the camp feeds **no services** into it, and the protocols **don't bridge**. Here for <span class="hi">Reticulum</span>? Its config is at the bottom of the [Config](@/config/_index.md) page - the [Workshop](@/workshop/_index.md) has the Reticulum session.

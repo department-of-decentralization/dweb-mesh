@@ -291,8 +291,13 @@ grep -Eo 'href="/(hardware|flash|config|contact)/"' public/start/index.html | so
 grep -iE 'no services' public/start/index.html      # Expect: present
 grep -iE 'bridge'      public/start/index.html      # Expect: present ("don't bridge")
 grep -iE 'meshtastic|mediumfast|reticulum' public/start/index.html   # Expect: all three named
+# Bugfix 2026-06-26: the Reticulum clause points config to the Config page (I3 relocated the
+# RNode config block to the bottom of /config), NOT "the Workshop page for config". The Workshop
+# link stays (G2: Reticulum->Workshop); only the stale config pointer is corrected.
+grep -iF 'at the bottom of the' public/start/index.html   # Expect: present (Reticulum config -> Config page)
+grep -iF 'page for config'       public/start/index.html  # Expect: NO output (stale Workshop-for-config wording gone)
 ```
-- **Expect:** exactly 4 action items (Hardware/Flash/Config/Contact) + a note stating Meshtastic supported (Router on MediumFast), no services, no bridge, Reticulum→Workshop, with the three terms highlighted.
+- **Expect:** exactly 4 action items (Hardware/Flash/Config/Contact) + a note stating Meshtastic supported (Router on MediumFast), no services, no bridge, Reticulum→Workshop, with the three terms highlighted. Bugfix 2026-06-26: the Reticulum clause now points its **config to the Config page** (where I3 put the RNode block) while keeping the Workshop link.
 - [ ] Pass
 
 ### SS-3 — /hardware  *(G1/G5/G6)*
@@ -758,8 +763,14 @@ grep -c  'splash-sub' public/index.html                       # Expect: 0
 grep -ic 'SYNC'       public/index.html                       # Expect: 0
 grep -ic 'JOIN'       public/index.html                       # Expect: >=1 (title kept)
 scripts/check-offline.sh                                      # Expect: OK (caption is text, no asset)
+# Bugfix 2026-06-26: the caption block is horizontally CENTERED, not pinned left.
+# Root cause: p{max-width:72ch} (style.css line 67) + .splash-meta font-size:0.72rem make 72ch
+# compute NARROWER than the splash container; with horizontal margin 0 the block pinned LEFT
+# (~79px off-centre on desktop). Fix = auto side-margins (matching .hud/.latest); the check
+# also accepts max-width:none as an equivalent fix.
+grep -E '\.splash-meta *\{[^}]*(margin:[^;}]*auto|max-width: *none)' public/css/style.css   # Expect: present (caption centered)
 ```
-- **Expect:** a `.splash-meta` caption directly beneath the `JOIN THE MESH` title and above the HUD: line 1 `July 8-12, Alte Hölle, Wiesenburg` (plain muted text), line 2 `dwebcamp.org` as a **muted link** → `https://dwebcamp.org`, `target="_blank" rel="noopener"` (G6/SS-8), styled muted via `.splash-meta a` (overrides the amber link colour). No `splash-sub`, no `SYNC` (LP-4 intact); the link is a **hyperlink, not an asset** (`check-offline.sh` green); the §2(d) inventory gains `dwebcamp.org` (root) alongside the existing BUY DEVICE `dwebcamp.org/tickets` (same host). *(Manual: the caption sits between the title and the NODES/MESSAGES HUD.)*
+- **Expect:** a `.splash-meta` caption directly beneath the `JOIN THE MESH` title and above the HUD: line 1 `July 8-12, Alte Hölle, Wiesenburg` (plain muted text), line 2 `dwebcamp.org` as a **muted link** → `https://dwebcamp.org`, `target="_blank" rel="noopener"` (G6/SS-8), styled muted via `.splash-meta a` (overrides the amber link colour). No `splash-sub`, no `SYNC` (LP-4 intact); the link is a **hyperlink, not an asset** (`check-offline.sh` green); the §2(d) inventory gains `dwebcamp.org` (root) alongside the existing BUY DEVICE `dwebcamp.org/tickets` (same host). The caption block is **horizontally centered** (auto side-margins), not pinned left (bugfix 2026-06-26). *(Manual: the caption sits centered between the title and the NODES/MESSAGES HUD.)*
 - [ ] Pass
 
 ### Regression — surviving prior criteria still pass  *(EC feature)*

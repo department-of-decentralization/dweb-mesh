@@ -167,7 +167,7 @@ pre.has-copy { position: relative; }
 @keyframes cursor-blink { 0%, 50% { opacity: 1; } 50.01%, 100% { opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .splash-title::after { animation: none; } }
 /* muted event caption under the title (O1) - dates + venue, plain text */
-.splash-meta { color: var(--fg-dim); font-size: 0.72rem; line-height: 1.5; letter-spacing: 0.04em; margin: -0.4rem 0 1.3rem; }
+.splash-meta { color: var(--fg-dim); font-size: 0.72rem; line-height: 1.5; letter-spacing: 0.04em; margin: -0.4rem auto 1.3rem; }
 .splash-meta a { color: var(--fg-dim); text-decoration: underline; text-underline-offset: 2px; }
 .splash-meta a:hover, .splash-meta a:focus { color: var(--fg); background: none; text-shadow: none; }
 .splash-cta { margin-top: 1.5rem; margin-bottom: 0; }
