@@ -98,10 +98,10 @@ A high-stakes tabletop simulation building offline comms for a total-blackout co
 
 <section class="session" data-start="2026-07-10T10:00:00+02:00" data-end="2026-07-10T10:30:00+02:00">
 
-<!-- talx lists no session type and the abstract gives no format word; type marked TBC - team to confirm -->
+<!-- talx lists no session type and the abstract gives no format word; rendered generically as "Session" - team to confirm -->
 ## Mesh News Network - dWebbing Local Journalism
 
-<p class="muted"><span class="tbc">TBC</span> &middot; <span class="live-dot" aria-hidden="true"></span><span class="sess-hi">Fri Jul 10 &middot; 10:00-10:30</span> &middot; <span class="sess-hi">Resilience Base</span> &middot; Casey Carr</p>
+<p class="muted">Session &middot; <span class="live-dot" aria-hidden="true"></span><span class="sess-hi">Fri Jul 10 &middot; 10:00-10:30</span> &middot; <span class="sess-hi">Resilience Base</span> &middot; Casey Carr</p>
 
 A community-run news stack for offline or degraded networks - signed bulletins, a touch of Usenet nostalgia, Meshtastic LoRa relays and local LLM briefings.<br>
 <a href="https://talx.dod.ngo/dwebcamp-2026/talk/JFNK39/" target="_blank" rel="noopener">Details &#8599;</a>

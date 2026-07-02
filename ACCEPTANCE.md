@@ -652,7 +652,7 @@ for t in '13:00' '21:00' '09:30' '09:40' '10:30' '10:40' '15:00' '10:00'; do gre
 grep -ic 'drop-in'   public/workshop/index.html   # Expect: >=1 (session 1 has NO type on talx → descriptive "drop-in", not an invented formal label)
 grep -ic 'lightning' public/workshop/index.html   # Expect: >=1 (session 2 type, from talx)
 ```
-- **Expect:** every rendered time / room / type / speaker / summary appears on the linked talx page (**manual** cross-check against the 11 URLs); the sessions with no type on talx are shown descriptively (session 1 "drop-in"; V9L89B "Tabletop simulation", its abstract's own word) or with the visible `.tbc` marker (JFNK39), flagged for team confirm, not fabricated; no value is invented.
+- **Expect:** every rendered time / room / type / speaker / summary appears on the linked talx page (**manual** cross-check against the 11 URLs); the sessions with no type on talx are shown descriptively (session 1 "drop-in"; V9L89B "Tabletop simulation", its abstract's own word) or with a generic `Session` label (JFNK39), flagged for team confirm, not fabricated; no value is invented.
 - [ ] Pass
 
 ### WK-3 — External links: new tab, hyperlinks not assets  *(L3; D3/§2, G6/SS-8)*
@@ -867,10 +867,11 @@ grep -Fc 'Resilience Base' public/workshop/index.html           # Expect: >=1 (V
 grep -E 'P2P Portal \([0-9]|Resilience Base \([0-9]' public/workshop/index.html   # Expect: NO output (no invented venue number on the new rooms)
 grep -Fc 'Decentralized Hardware @' public/workshop/index.html  # Expect: 0 (talx's track-branded room normalized to "Hacker's Lab (7)", Q2)
 for ty in 'Informal meetup' 'Networking session' 'Tabletop simulation' 'Workshop' 'Lightning talk' 'Drop-in'; do grep -qF "$ty" public/workshop/index.html && echo "ok $ty" || echo "MISSING $ty"; done   # Expect: 6× ok (types sourced from talx, or descriptive where talx lists none)
-grep -F '.tbc' public/css/style.css                             # Expect: present (the .tbc marker exists)
-grep -c 'class="tbc"' public/workshop/index.html                # Expect: >=1 (JFNK39 has NO type on talx → rendered with the visible .tbc marker, not fabricated)
+grep -cF 'muted">Session' public/workshop/index.html            # Expect: 1 (JFNK39 has NO type on talx → rendered with the generic label "Session", not a fabricated format)
+grep -c 'class="tbc"' public/workshop/index.html                # Expect: 0 (workshop page uses no .tbc marker; the generic "Session" label replaced it)
+grep -F '.tbc' public/css/style.css                             # Expect: present (the .tbc CSS class still exists for future unscheduled sessions — WK-4)
 ```
-- **Expect:** the two genuinely-new rooms render verbatim with **no** invented `(n)`; talx's `Decentralized Hardware @ Hackers Lab` is normalized to `Hacker's Lab (7)`; every type is talx-sourced or descriptive (`Tabletop simulation` is the Dark Horizon abstract's own word), and the one session with no type on talx (Mesh News Network, JFNK39) uses the visible `.tbc` marker — nothing fabricated.
+- **Expect:** the two genuinely-new rooms render verbatim with **no** invented `(n)`; talx's `Decentralized Hardware @ Hackers Lab` is normalized to `Hacker's Lab (7)`; every type is talx-sourced or descriptive (`Tabletop simulation` is the Dark Horizon abstract's own word), and the one session with no type on talx (Mesh News Network, JFNK39) uses the **generic label `Session`** — a neutral placeholder, not a fabricated format.
 - [ ] Pass
 
 ### AG-3 — No stack-bridge wording; plain hyphens; no JS/asset added  *(Q4; D8/D3)*
