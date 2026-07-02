@@ -623,7 +623,7 @@ grep -Ec 'timeZoneName *:' public/js/counters.js # Expect: 0 (the timeZoneName I
 ## Feature: Workshop session details (sourced schedule + talx links)  *(SPEC.md → Feature: Workshop session details, L1–L4)*
 
 Added 2026-06-24. A zero-context reviewer judges `/workshop/` with **WK-1…WK-4**, in addition
-to the surviving criteria (regression line at end). This feature **amends SS-6** (its pre-L1
+to the surviving criteria (regression line at end). **[Amended 2026-07-02 by Q1/Q3: /workshop/ now holds 11 sessions — the WK-1/WK-2/WK-3 counts below are re-derived (4→11, sess-hi 8→22) and the 7 added sessions get AG-1…AG-3 in "Feature: Workshop agenda expansion".]** This feature **amends SS-6** (its pre-L1
 `grep TBC` / "no links" assertions are retired — see the note at SS-6). Build first (`zola
 build`), then check `public/workshop/index.html`. The four sessions and their talx IDs:
 (1) **YLKXWX** Join the DWeb Camp Mesh + Tech Support — Wed Jul 8, 13:00–18:00 @ Mesh Nest (5);
@@ -631,38 +631,38 @@ build`), then check `public/workshop/index.html`. The four sessions and their ta
 (3) **L9WV3W** Introduction to Meshtastic and Meshcore — Thu Jul 9, 15:00–16:00 @ Hacker's Lab (7);
 (4) **LBV3GJ** Off the grid: Reticulum app over LoRa — Fri Jul 10, 10:30–12:00 @ Hacker's Lab (7).
 
-### WK-1 — Four sessions, time-ordered, with metadata + summary + link  *(L1)*
+### WK-1 — Eleven sessions, time-ordered, with metadata + summary + link  *(L1)*  *[4→11 sessions: amended by Q1]*
 ```sh
-for id in YLKXWX ZHGJNM L9WV3W LBV3GJ; do grep -qF "talk/$id/" public/workshop/index.html && echo "ok $id" || echo "MISSING $id"; done   # Expect: 4× ok (one talx link per session)
-grep -noE 'YLKXWX|ZHGJNM|L9WV3W|LBV3GJ' public/workshop/index.html   # Expect: top-to-bottom = YLKXWX, ZHGJNM, L9WV3W, LBV3GJ (schedule order Wed Jul 8 → Fri Jul 10, NOT supplied-link order)
-grep -Eo 'Jul (8|9|10)' public/workshop/index.html | sort -u          # Expect: Jul 8, Jul 9, Jul 10 (all three camp days)
+for id in YLKXWX NSXNYJ ZHGJNM MLFH9Z X9ENCG XBZFVE L9WV3W V9L89B JFNK39 LBV3GJ WNTPQS; do grep -qF "talk/$id/" public/workshop/index.html && echo "ok $id" || echo "MISSING $id"; done   # Expect: 11× ok (one talx link per session; +7 via Q1)
+grep -noE 'YLKXWX|NSXNYJ|ZHGJNM|MLFH9Z|X9ENCG|XBZFVE|L9WV3W|V9L89B|JFNK39|LBV3GJ|WNTPQS' public/workshop/index.html   # Expect: top-to-bottom = YLKXWX, NSXNYJ, ZHGJNM, MLFH9Z, X9ENCG, XBZFVE, L9WV3W, V9L89B, JFNK39, LBV3GJ, WNTPQS (schedule order Wed Jul 8 → Sat Jul 11, NOT supplied-link order; amended by Q1)
+grep -Eo 'Jul (8|9|10|11)' public/workshop/index.html | sort -u       # Expect: Jul 8, Jul 9, Jul 10, Jul 11 (all four camp days; Sat Jul 11 added by Q1)
 grep -c 'Mesh Nest'   public/workshop/index.html                      # Expect: >=1 (session 1 room)
-grep -c "Hacker's Lab" public/workshop/index.html                     # Expect: >=3 (sessions 2-4 room; team-supplied no. (7), not on talx)
+grep -c "Hacker's Lab" public/workshop/index.html                     # Expect: >=6 (Hacker's Lab (7) sessions incl. 3 normalized "@ Hackers Lab" via Q2; team-supplied no. (7), not on talx)
 grep -c 'Afri'        public/workshop/index.html                      # Expect: >=4 (speaker on every session)
-grep -o 'class="sess-hi"' public/workshop/index.html | wc -l          # Expect: 8 (date-time + location = 2 spans × 4 sessions, muted blue)
+grep -o 'class="sess-hi"' public/workshop/index.html | wc -l          # Expect: 22 (date-time + location = 2 spans × 11 sessions, muted blue; 8→22 amended by Q1)
 grep -F 'sess-hi' public/css/style.css                                # Expect: present (.sess-hi maps to --cyan-dim, the muted blue)
 grep -nE '—|–|&mdash;|&ndash;' public/workshop/index.html             # Expect: NO output (plain hyphens only - hacker register)
 ```
-- **Expect:** the four sessions render **in schedule order**, each = title + a metadata line `Type · Day Mon D · HH:MM–HH:MM · Room · Speaker` + a one-line summary + a `Details ↗` talx link. The **date-time and location are styled muted blue** (`.sess-hi`); venue numbers (Mesh Nest (5), Hacker's Lab (7)) are team-supplied (D12), not from talx. Prose uses plain hyphens, no em/en-dashes. *(Manual: the summary is a single line; the full talx abstract is NOT duplicated inline - it lives behind the link.)*
+- **Expect:** the 11 sessions render **in schedule order**, each = title + a metadata line `Type · Day Mon D · HH:MM–HH:MM · Room · Speaker` + a one-line summary + a `Details ↗` talx link. The **date-time and location are styled muted blue** (`.sess-hi`); venue numbers (Mesh Nest (5), Hacker's Lab (7)) are team-supplied (D12), not from talx; the two genuinely-new rooms (P2P Portal, Resilience Base) carry NO invented number (Q2). Prose uses plain hyphens, no em/en-dashes. *(Manual: the summary is a single line; the full talx abstract is NOT duplicated inline - it lives behind the link.)*
 - [ ] Pass
 
 ### WK-2 — Sourced from talx, nothing invented  *(L2; D5/D12)*
 ```sh
-for t in '13:00' '09:30' '15:00' '10:30'; do grep -qF "$t" public/workshop/index.html && echo "ok $t" || echo "MISSING $t"; done   # Expect: 4× ok (the four start times, from talx)
+for t in '13:00' '21:00' '09:30' '09:40' '10:30' '10:40' '15:00' '10:00'; do grep -qF "$t" public/workshop/index.html && echo "ok $t" || echo "MISSING $t"; done   # Expect: 8× ok (distinct start times across the 11 sessions, from talx; amended by Q1)
 grep -ic 'drop-in'   public/workshop/index.html   # Expect: >=1 (session 1 has NO type on talx → descriptive "drop-in", not an invented formal label)
 grep -ic 'lightning' public/workshop/index.html   # Expect: >=1 (session 2 type, from talx)
 ```
-- **Expect:** every rendered time / room / type / speaker / summary appears on the linked talx page (**manual** cross-check against the four URLs); session 1's missing type is shown descriptively ("Mesh Nest · drop-in"), flagged for team confirm, not fabricated; no value is invented.
+- **Expect:** every rendered time / room / type / speaker / summary appears on the linked talx page (**manual** cross-check against the 11 URLs); the sessions with no type on talx are shown descriptively (session 1 "drop-in"; V9L89B "Tabletop simulation", its abstract's own word) or with the visible `.tbc` marker (JFNK39), flagged for team confirm, not fabricated; no value is invented.
 - [ ] Pass
 
 ### WK-3 — External links: new tab, hyperlinks not assets  *(L3; D3/§2, G6/SS-8)*
 ```sh
-grep -Eo 'href="https://talx\.dod\.ngo/[^"]*"[^>]*target="_blank"[^>]*rel="noopener"' public/workshop/index.html | wc -l   # Expect: 4 (all open a new tab, rel=noopener)
+grep -Eo 'href="https://talx\.dod\.ngo/[^"]*"[^>]*target="_blank"[^>]*rel="noopener"' public/workshop/index.html | wc -l   # Expect: 11 (all open a new tab, rel=noopener; 4→11 amended by Q1)
 grep -rEoh '<a\b[^>]*href="https?://[^"]*"[^>]*>' public/workshop/index.html | grep -v 'target="_blank"'   # Expect: NO output (no external <a> on the page misses target=_blank — SS-8 holds)
 grep -nE '<(link|script|img|source|video|audio|iframe|embed)\b[^>]*\bsrc="https?://talx' public/workshop/index.html   # Expect: NO output (talx is <a> hyperlinks only, never an asset)
 scripts/check-offline.sh   # Expect: OK (no external asset added)
 ```
-- **Expect:** four talx `<a>` links, each `target="_blank" rel="noopener"` with the `↗` (`&#8599;`) glyph; no external asset; `check-offline.sh` green; the offline copy still renders (links just don't resolve offline). `talx.dod.ngo` is the only **new** host in the §2(d) external-link inventory.
+- **Expect:** eleven talx `<a>` links, each `target="_blank" rel="noopener"` with the `↗` (`&#8599;`) glyph; no external asset; `check-offline.sh` green; the offline copy still renders (links just don't resolve offline). `talx.dod.ngo` remains the only external-link host on this page (added by L3; this feature adds no NEW host).
 - [ ] Pass
 
 ### WK-4 — Extensible, honestly non-final  *(L4; D12)*
@@ -782,7 +782,7 @@ grep -E '\.splash-meta *\{[^}]*(margin:[^;}]*auto|max-width: *none)' public/css/
 ## Feature: Workshop live time-state (CEST)  *(SPEC.md → Feature: Workshop live time-state, P1–P4)*
 
 Added 2026-06-25. A zero-context reviewer judges `/workshop/`'s clock-aware rendering with
-**WT-1…WT-4**, in addition to the surviving criteria (regression line below). This feature
+**WT-1…WT-4**, in addition to the surviving criteria (regression line below). **[Amended 2026-07-02 by Q3: 11 sessions now — WT-2/WT-3 counts re-derived (data-start/end 4→11, +02:00 8→22, sess-hi 8→22).]** This feature
 **amends the JS-count assertions** in **S3, WS-2, CR-1, LD-3** (and the TZ-3 regression line):
 the inventory grows 4→5 with the new **local** `workshop.js`. Static checks are auto-verifiable;
 the time-dependent behaviour is **MANUAL** (it depends on the device clock). Build first (`zola
@@ -803,15 +803,15 @@ scripts/check-offline.sh                                     # Expect: OK
 
 ### WT-2 — Each session carries CEST start/end; past sessions dim  *(P2/P4)*
 ```sh
-grep -c 'data-start=' public/workshop/index.html             # Expect: 4 (one per session)
-grep -c 'data-end='   public/workshop/index.html             # Expect: 4
-grep -o '+02:00' public/workshop/index.html | wc -l          # Expect: 8 (CEST offset on every start + end — 4 sessions × 2 attrs — P4)
-for t in 2026-07-08T13:00 2026-07-09T09:30 2026-07-09T15:00 2026-07-10T10:30; do grep -qF "$t" public/workshop/index.html && echo "ok $t" || echo "MISSING $t"; done   # Expect: 4× ok (starts, matching the visible talx times)
-for t in 2026-07-08T18:00 2026-07-09T09:40 2026-07-09T16:00 2026-07-10T12:00; do grep -qF "$t" public/workshop/index.html && echo "ok $t" || echo "MISSING $t"; done   # Expect: 4× ok (ends)
+grep -c 'data-start=' public/workshop/index.html             # Expect: 11 (one per session; 4→11 amended by Q3)
+grep -c 'data-end='   public/workshop/index.html             # Expect: 11 (4→11 amended by Q3)
+grep -o '+02:00' public/workshop/index.html | wc -l          # Expect: 22 (CEST offset on every start + end — 11 sessions × 2 attrs; 8→22 amended by Q3)
+for t in 2026-07-08T13:00 2026-07-08T21:00 2026-07-09T09:30 2026-07-09T09:40 2026-07-09T10:30 2026-07-09T10:40 2026-07-09T15:00 2026-07-10T10:00 2026-07-10T10:30 2026-07-11T09:30; do grep -qF "$t" public/workshop/index.html && echo "ok $t" || echo "MISSING $t"; done   # Expect: 10× ok (distinct start instants; the two Thu 15:00 sessions share one; amended by Q3)
+for t in 2026-07-08T18:00 2026-07-08T23:00 2026-07-09T09:40 2026-07-09T10:40 2026-07-09T11:30 2026-07-09T11:40 2026-07-09T16:00 2026-07-10T10:30 2026-07-10T12:00 2026-07-11T11:00; do grep -qF "$t" public/workshop/index.html && echo "ok $t" || echo "MISSING $t"; done   # Expect: 10× ok (distinct end instants; amended by Q3)
 grep -F 'session--past' public/js/workshop.js                # Expect: present (class applied when now > end)
 grep -F 'session--past' public/css/style.css                 # Expect: present (muted-grey styling)
 ```
-- **Expect:** all four sessions are wrapped with `data-start`/`data-end` absolute instants at **`+02:00`** (CEST), matching the visible talx times; `workshop.js` applies `.session--past` (muted grey) once the device clock is past a session's **end**. *(MANUAL, clock-dependent: with the clock set after a session's end, that whole session block — heading, metadata, summary, Details link — renders muted grey; before its end it renders normally. With JS disabled, no session dims.)*
+- **Expect:** all 11 sessions are wrapped with `data-start`/`data-end` absolute instants at **`+02:00`** (CEST), matching the visible talx times; `workshop.js` applies `.session--past` (muted grey) once the device clock is past a session's **end**. *(MANUAL, clock-dependent: with the clock set after a session's end, that whole session block — heading, metadata, summary, Details link — renders muted grey; before its end it renders normally. With JS disabled, no session dims.)*
 - [ ] Pass
 
 ### WT-3 — Live session shows a blinking orange square; sess-hi invariant held  *(P3; J4)*
@@ -819,9 +819,9 @@ grep -F 'session--past' public/css/style.css                 # Expect: present (
 grep -F 'session--live' public/js/workshop.js                # Expect: present (live class added when start<=now<=end)
 grep -F 'live-dot' public/css/style.css                      # Expect: present (orange square + blink)
 grep -Fc 'prefers-reduced-motion' public/css/style.css       # Expect: >=2 (J4 cursor + live-dot steady-when-reduced)
-grep -o 'class="sess-hi"' public/workshop/index.html | wc -l # Expect: 8 (WK-1 invariant — the live marker is .live-dot, NOT a sess-hi span)
+grep -o 'class="sess-hi"' public/workshop/index.html | wc -l # Expect: 22 (WK-1 invariant — 2 sess-hi × 11 sessions; the live marker is .live-dot, NOT a sess-hi span; 8→22 amended by Q3)
 ```
-- **Expect:** a `.live-dot` element (orange `--amber` square `■`) sits before the live session's time and **blinks**, reusing J4's keyframe; under `prefers-reduced-motion` it is steady (no blink). It is a separate element, so `class="sess-hi"` still appears exactly **8** times (WK-1 holds). *(MANUAL, clock-dependent: with the clock inside a session's window, exactly that session shows the blinking square; outside any window, none do.)*
+- **Expect:** a `.live-dot` element (orange `--amber` square `■`) sits before the live session's time and **blinks**, reusing J4's keyframe; under `prefers-reduced-motion` it is steady (no blink). It is a separate element, so `class="sess-hi"` still appears exactly **22** times (WK-1 holds). *(MANUAL, clock-dependent: with the clock inside a session's window, exactly that session shows the blinking square; outside any window, none do.)*
 - [ ] Pass
 
 ### WT-4 — No tz library; device-clock compare; 60 s refresh; offline-safe  *(P4; D3/K-style)*
@@ -840,7 +840,57 @@ scripts/check-offline.sh                                     # Expect: OK
 
 ---
 
+## Feature: Workshop agenda expansion (7 more sourced sessions)  *(SPEC.md → Feature: Workshop agenda expansion, Q1–Q4)*
+
+Added 2026-07-02. A zero-context reviewer judges the seven added sessions with **AG-1…AG-3**, on
+top of the **amended** WK-1…WK-4 and WT-1…WT-4 (their session counts re-derived 4→11 by Q1/Q3 —
+see those groups). This feature adds **no JS and no asset**: `workshop.js` is data-driven and
+unchanged, so the JS inventory stays 5 files (S3/WS-2/CR-1/LD-3 unaffected). Build first (`zola
+build`), then check `public/workshop/index.html`. The 11 sessions in schedule order, the 7 NEW
+talx IDs in **bold**: YLKXWX, **NSXNYJ**, ZHGJNM, **MLFH9Z**, **X9ENCG**, **XBZFVE**, L9WV3W,
+**V9L89B**, **JFNK39**, LBV3GJ, **WNTPQS**.
+
+### AG-1 — The 7 new sessions present, interleaved in schedule order  *(Q1)*
+```sh
+for id in NSXNYJ MLFH9Z X9ENCG XBZFVE V9L89B JFNK39 WNTPQS; do grep -qF "talk/$id/" public/workshop/index.html && echo "ok $id" || echo "MISSING $id"; done   # Expect: 7× ok (the new talx links)
+grep -c 'class="session"' public/workshop/index.html   # Expect: 11 (one <section class="session"> per session)
+grep -oE 'YLKXWX|NSXNYJ|ZHGJNM|MLFH9Z|X9ENCG|XBZFVE|L9WV3W|V9L89B|JFNK39|LBV3GJ|WNTPQS' public/workshop/index.html | tr '\n' ' '   # Expect: YLKXWX NSXNYJ ZHGJNM MLFH9Z X9ENCG XBZFVE L9WV3W V9L89B JFNK39 LBV3GJ WNTPQS (top-to-bottom = schedule order Wed Jul 8 → Sat Jul 11)
+grep -Eo 'talk/(NSXNYJ|MLFH9Z|X9ENCG|XBZFVE|V9L89B|JFNK39|WNTPQS)/"[^>]*target="_blank"[^>]*rel="noopener"' public/workshop/index.html | wc -l   # Expect: 7 (each new Details link opens a new tab)
+```
+- **Expect:** the seven new `<section class="session">` blocks render in the L1 format (title `h2` + `Type · Day · Time · Room · Speaker` metadata + one-line summary + `Details ↗`); the full top-to-bottom order is the 11 IDs above, with the two Thu 15:00-16:00 sessions ordered L9WV3W (Introduction) before V9L89B (Dark Horizon).
+- [ ] Pass
+
+### AG-2 — Rooms normalized, no invented numbers; types sourced or .tbc  *(Q2; D12/L2)*
+```sh
+grep -Fc 'P2P Portal' public/workshop/index.html                # Expect: >=1 (X9ENCG room, verbatim)
+grep -Fc 'Resilience Base' public/workshop/index.html           # Expect: >=1 (V9L89B + JFNK39 room, verbatim; count is 2)
+grep -E 'P2P Portal \([0-9]|Resilience Base \([0-9]' public/workshop/index.html   # Expect: NO output (no invented venue number on the new rooms)
+grep -Fc 'Decentralized Hardware @' public/workshop/index.html  # Expect: 0 (talx's track-branded room normalized to "Hacker's Lab (7)", Q2)
+for ty in 'Informal meetup' 'Networking session' 'Tabletop simulation' 'Workshop' 'Lightning talk' 'Drop-in'; do grep -qF "$ty" public/workshop/index.html && echo "ok $ty" || echo "MISSING $ty"; done   # Expect: 6× ok (types sourced from talx, or descriptive where talx lists none)
+grep -F '.tbc' public/css/style.css                             # Expect: present (the .tbc marker exists)
+grep -c 'class="tbc"' public/workshop/index.html                # Expect: >=1 (JFNK39 has NO type on talx → rendered with the visible .tbc marker, not fabricated)
+```
+- **Expect:** the two genuinely-new rooms render verbatim with **no** invented `(n)`; talx's `Decentralized Hardware @ Hackers Lab` is normalized to `Hacker's Lab (7)`; every type is talx-sourced or descriptive (`Tabletop simulation` is the Dark Horizon abstract's own word), and the one session with no type on talx (Mesh News Network, JFNK39) uses the visible `.tbc` marker — nothing fabricated.
+- [ ] Pass
+
+### AG-3 — No stack-bridge wording; plain hyphens; no JS/asset added  *(Q4; D8/D3)*
+```sh
+grep -nE '—|–|&mdash;|&ndash;' public/workshop/index.html       # Expect: NO output (plain hyphens across all 11, incl. the new "Mesh News Network - dWebbing" title — hacker register)
+grep -iE 'bridge|gateway|interoperat' public/workshop/index.html   # Expect: NO output (no summary claims a bridge/gateway between Meshcore/Meshtastic/Reticulum — D8; the "cross-pollination"/community framing is phrased without the loaded terms)
+find public -name '*.js' | wc -l                                # Expect: 5 (workshop.js unchanged, data-driven; this feature adds NO JS)
+scripts/check-offline.sh                                         # Expect: OK (7 more talx <a> hyperlinks, no new asset)
+grep -i 'more sessions may be added' public/workshop/index.html  # Expect: present (the L4 standing line kept)
+```
+- **Expect:** across the 11-session page there are no em/en dashes and no bridge/gateway/interop wording (D8 upheld — the two "cross-pollination"/"bridges between communities" sessions are listed faithfully as community/networking framing, never as stack interop); the JS inventory is unchanged at 5 files; `check-offline.sh` is green; the L4 "more sessions may be added" line remains.
+- [ ] Pass
+
+### Regression — surviving prior criteria still pass  *(AG feature)*
+**Amended (planned, not a regression):** **WK-1/WK-2/WK-3** and **WT-2/WT-3** — session counts re-derived 4→11 (`class="sess-hi"` 8→22, `data-start`/`data-end` 4→11, `+02:00` 8→22, talx links 4→11, the ID list/order/camp-day set expanded), plus the WK/WT section-intro annotations. **Still must pass unchanged:** §1 (clean build), **§2/§3 + `check-offline.sh`** (7 new talx **hyperlinks**, no asset; the two scoped iframes on /flash + /intel remain the only external assets), §2(d) inventory (no NEW host — `talx.dod.ngo` already added by L3), §4 (internal links + subpath build), §5/LP-6 (footer on /workshop untouched), **SS-1** (/workshop still in the 8-page IA), **SS-8** (every external `<a>`, incl. the 7 new, opens a new tab), **WT-1/WT-4** (`workshop.js` unchanged — local, network-free, page-scoped; the 5-file JS inventory in **S3/WS-2/CR-1/LD-3** holds), and every other group (LP, WS, CR, CC, LD, TZ, IN, EC, S1–S6).
+- [ ] Pass (no regression in the surviving criteria)
+
+---
+
 ## Verdict
 
-A build is **ACCEPTED** only when the surviving boxes (§1–§5, §8, §10; S1–S3, S6), LP-1–LP-7, SS-1–SS-9, **WS-1–WS-7**, **CR-1–CR-4**, **CC-1**, **LD-1–LD-3**, **TZ-1–TZ-3**, **WK-1–WK-4**, **IN-1–IN-5**, **EC-1**, and **WT-1–WT-4** are all ticked, and amended §2/§3 hold. (§6/§7/§9 + S4/S5 superseded by SS; **SS-6 amended by WK-1…WK-4**; **§2/§3/SS-1/SS-9 amended by N1/N2/N3 — Intel page**; S3/LP-1 amended by H2; **S3/WS-2/CR-1/LD-3 JS-count 4→5 amended by P1 — Workshop live time-state**; **WS-6 is MANUAL**, hardware-verified by the team.)
+A build is **ACCEPTED** only when the surviving boxes (§1–§5, §8, §10; S1–S3, S6), LP-1–LP-7, SS-1–SS-9, **WS-1–WS-7**, **CR-1–CR-4**, **CC-1**, **LD-1–LD-3**, **TZ-1–TZ-3**, **WK-1–WK-4**, **IN-1–IN-5**, **EC-1**, **WT-1–WT-4**, and **AG-1–AG-3** are all ticked, and amended §2/§3 hold. (§6/§7/§9 + S4/S5 superseded by SS; **SS-6 amended by WK-1…WK-4**; **§2/§3/SS-1/SS-9 amended by N1/N2/N3 — Intel page**; S3/LP-1 amended by H2; **S3/WS-2/CR-1/LD-3 JS-count 4→5 amended by P1 — Workshop live time-state**; **WS-6 is MANUAL**, hardware-verified by the team; **WK/WT session counts 4→11 amended by Q1/Q3 — Feature: Workshop agenda expansion, AG-1–AG-3**.)
 Record the date, the Zola version, and any waived item with its justification.

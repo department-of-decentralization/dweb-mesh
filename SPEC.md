@@ -299,7 +299,7 @@ G6/SS-8 (external links → new tab). **Confirmed 2026-06-24.**
 
 | # | Decision | Choice |
 |---|----------|--------|
-| **L1** | **Sourced, time-ordered session list** *(amends G1)* | `/workshop/` lists the **four** sessions **ordered by schedule start** (Wed Jul 8 → Fri Jul 10), not by supplied-link order. Each = title (`h2`) + a metadata line **`Type · Day Mon D · HH:MM–HH:MM · Room · Speaker`** + a **one-line summary** + a **`Details ↗`** link. **Amends G1**'s `/workshop/` clause *"content TBC; links removed"* → *sourced session details + per-session external link*; *"metadata only"* is extended to **metadata + 1-line summary + link** (full abstract stays behind the link). The metadata line's **date-time and location render in muted blue** (`.sess-hi` → `--cyan-dim`). Prose dashes are plain hyphens `-` (no em/en-dashes — hacker register, [[dashes-plain-hyphens-only]]); `&middot;` stays as the item separator. Order today: (1) **Join the DWeb Camp Mesh + Tech Support** — Wed Jul 8, 13:00–18:00 @ Mesh Nest (5); (2) **Join the DWeb Camp Mesh!** — Thu Jul 9, 09:30–09:40 @ Hacker's Lab (7); (3) **Introduction to Meshtastic and Meshcore (hands-on)** — Thu Jul 9, 15:00–16:00 @ Hacker's Lab (7); (4) **Off the grid: build an app over radio on Reticulum (LoRa)** — Fri Jul 10, 10:30–12:00 @ Hacker's Lab (7). |
+| **L1** | **Sourced, time-ordered session list** *(amends G1)* *[order superseded by Q1 - now 11 sessions]* | `/workshop/` lists the **four** sessions **ordered by schedule start** (Wed Jul 8 → Fri Jul 10), not by supplied-link order. Each = title (`h2`) + a metadata line **`Type · Day Mon D · HH:MM–HH:MM · Room · Speaker`** + a **one-line summary** + a **`Details ↗`** link. **Amends G1**'s `/workshop/` clause *"content TBC; links removed"* → *sourced session details + per-session external link*; *"metadata only"* is extended to **metadata + 1-line summary + link** (full abstract stays behind the link). The metadata line's **date-time and location render in muted blue** (`.sess-hi` → `--cyan-dim`). Prose dashes are plain hyphens `-` (no em/en-dashes — hacker register, [[dashes-plain-hyphens-only]]); `&middot;` stays as the item separator. Order today *(superseded by Q1 - see "Feature: Workshop agenda expansion" below for the current 11-session order)*: (1) **Join the DWeb Camp Mesh + Tech Support** — Wed Jul 8, 13:00–18:00 @ Mesh Nest (5); (2) **Join the DWeb Camp Mesh!** — Thu Jul 9, 09:30–09:40 @ Hacker's Lab (7); (3) **Introduction to Meshtastic and Meshcore (hands-on)** — Thu Jul 9, 15:00–16:00 @ Hacker's Lab (7); (4) **Off the grid: build an app over radio on Reticulum (LoRa)** — Fri Jul 10, 10:30–12:00 @ Hacker's Lab (7). |
 | **L2** | **talx is the live source of truth** *(upholds D5/D12)* | Every rendered value (time, room, type, speaker, summary) is **taken from the linked talx page, never invented**; the `Details ↗` link *is* that page, so a later reschedule is one click from current (the D5 mitigation for a volatile schedule). Session (1) **has no session-type on talx** → rendered **descriptively** ("Drop-in"), **flagged for team confirm**, not given an invented formal label. **Venue numbers** — Mesh Nest **(5)**, Hacker's Lab **(7)** — are **team-supplied camp facts** (D12), exactly like the footer's `tent 5`: not on talx, not invented; a later venue change is a one-line team edit. The one-line summary is a faithful condensation of the talx abstract — no new facts. |
 | **L3** | **External links, new tab, zero new assets** *(upholds D3/§2, G6/SS-8)* | The four links are `<a href="https://talx.dod.ngo/dwebcamp-2026/talk/<ID>/" target="_blank" rel="noopener">…&#8599;</a>` — **hyperlinks, not assets**: `check-offline.sh` stays green; the offline Freifunk copy still renders fully (the links simply don't resolve offline, exactly like matrix.to). Adds exactly one new host — **`talx.dod.ngo`** — to the §2(d) external-link inventory; nothing is auto-fetched at render. |
 | **L4** | **Extensible, honestly non-final** *(upholds D12)* | A short standing line — *"More sessions may be added as the camp approaches."* — keeps the page honestly non-exhaustive (more sessions are expected). Adding a 5th+ session later is just another time-ordered row; any **accepted-but-unscheduled** future session renders its unknown fields with the existing `.tbc` marker (TBC discipline still governs anything not yet sourced). The current four are scheduled, so they carry **no** TBC — which is why **SS-6**'s literal `grep TBC` assertion is amended in Phase 2 (its *intent* — no invented data — is preserved by L2). |
@@ -372,3 +372,51 @@ D5/D12/L2 (times are talx-sourced, not invented), D8 (display-only, no bridges),
 **Confirmation gate:** P1–P4 require explicit sign-off (`confirm all`, or call a number to
 change). On confirmation, the **S3** and **WS-2** rows are annotated `[extended by P1]`; Phase 2
 then appends the workshop-time criteria to `ACCEPTANCE.md` and amends the LD-3 / CR-1 / TZ count lines.
+
+---
+
+## Feature: Workshop agenda expansion (7 more sourced sessions)  *(2026-07-02)*
+
+Added 2026-07-02. Adds **seven** now-scheduled sessions to `/workshop/`, re-merged into one
+schedule-ordered list of **11** (existing 4 + new 7), each sourced from its talx page exactly
+as L1–L4 established. Decisions **Q1–Q4**. **Extends L1** (its 4-session "order today"
+enumeration is superseded by the 11-session order below), **L2/L4** (more talx-sourced sessions;
+the extensibility clause exercised), and **P1–P4** (live time-state now covers 11 sessions;
+`workshop.js` unchanged — it is data-driven). Upholds D3/§2 (links, not assets), D5/D12
+(talx-sourced, never invented — new rooms carry no invented venue number; two missing types
+rendered descriptively / `.tbc`, not fabricated), G6/SS-8 (external links → new tab), D8 (no
+stack bridges — third-party sessions listed, not interop docs), O1 (Sat Jul 11 is within
+`July 8-12`), and the plain-hyphen register ([[dashes-plain-hyphens-only]]). *Pending explicit
+sign-off (gate below).*
+
+### New schedule order (supersedes L1's "order today"; existing 4 marked `*`)
+
+| # | When (CEST) | Session | talx | Room | Type | Speaker |
+|---|---|---|---|---|---|---|
+| 1 | Wed Jul 8 13:00-18:00 | Join the DWeb Camp Mesh + Tech Support `*` | YLKXWX | Mesh Nest (5) | Drop-in | Afri & Lars Gierth |
+| 2 | Wed Jul 8 21:00-23:00 | Berlin Chaos Mesh Meetup (informal) | NSXNYJ | Mesh Nest (5) | Informal meetup | Afri Schoedon |
+| 3 | Thu Jul 9 09:30-09:40 | Join the DWeb Camp Mesh! `*` | ZHGJNM | Hacker's Lab (7) | Lightning talk | Afri Schoedon |
+| 4 | Thu Jul 9 09:40-10:40 | Using Low Power Wireless P2P... Governance | MLFH9Z | Hacker's Lab (7) | Workshop | Paul Fuxjäger |
+| 5 | Thu Jul 9 10:30-11:30 | Cross-Pollination between P2P & Local First... | X9ENCG | P2P Portal | Networking session | Zenna, Mathias Jud |
+| 6 | Thu Jul 9 10:40-11:40 | tinySSB hands-on | XBZFVE | Hacker's Lab (7) | Workshop | Christian Tschudin (cft) |
+| 7 | Thu Jul 9 15:00-16:00 | Introduction to Meshtastic and Meshcore `*` | L9WV3W | Hacker's Lab (7) | Workshop | Afri Schoedon |
+| 8 | Thu Jul 9 15:00-16:00 | The Dark Horizon Simulation... | V9L89B | Resilience Base | Tabletop simulation | Michael Suantak |
+| 9 | Fri Jul 10 10:00-10:30 | Mesh News Network - dWebbing Local Journalism | JFNK39 | Resilience Base | *(TBC)* | Casey Carr |
+| 10 | Fri Jul 10 10:30-12:00 | Off the grid: Reticulum app over LoRa `*` | LBV3GJ | Hacker's Lab (7) | Workshop | Afri Schoedon |
+| 11 | Sat Jul 11 09:30-11:00 | Building & Testing Antennas for LoRa | WNTPQS | Hacker's Lab (7) | Workshop | Mathias Jud |
+
+Tie on start time broken by end time then title, so the two Thu 15:00-16:00 sessions render
+`Introduction to Meshtastic and Meshcore` (7) before `The Dark Horizon Simulation` (8).
+
+| # | Decision | Choice |
+|---|----------|--------|
+| **Q1** | **Seven more sessions, re-merged in schedule order** *(extends L1)* | `/workshop/` lists **11** sessions ordered by schedule start (Wed Jul 8 → Sat Jul 11) per the table above — the existing four re-interleaved with the seven new ones (ties: end time, then title). Each new session matches L1's format exactly: title (`h2`) + a metadata line `Type &middot; Day Mon D &middot; HH:MM-HH:MM &middot; Room &middot; Speaker` (date-time and room in `.sess-hi` muted blue; a hidden `.live-dot` immediately before the date-time span), a **one-line summary**, and a `Details &#8599;` talx link. Plain hyphens only (no em/en dashes); `&` in titles escaped `&amp;`. **Amends L1**'s now-stale 4-item "order today" enumeration → the 11-item order above. |
+| **Q2** | **talx-sourced; rooms normalized; missing types not invented** *(extends L2; upholds D12)* | Every rendered value (title, speaker, day, time, room, type, summary) is taken from the linked talx page via a one-time **authoring** fetch — the same "talx is the source of truth" method as L1/L2; **no runtime egress is added** (the built site still never fetches talx; `Details ↗` is a plain hyperlink). **Rooms** normalized to the existing short-name + team-number style: talx's `Decentralized Hardware @ Hackers Lab` → **`Hacker's Lab (7)`** (same venue, existing team number), `Mesh Nest (tent 5)` → **`Mesh Nest (5)`**. New rooms **`P2P Portal`** and **`Resilience Base`** render **verbatim with no invented venue number** (D12 — numbers are team-supplied; a later team edit adds them). **Two sessions have no type on talx**: `V9L89B` → **`Tabletop simulation`** (the word is in its own abstract — sourced-descriptive, like session 1's `Drop-in`); `JFNK39` → a visible **`.tbc`** type marker (no descriptive word available; flagged for team confirm). Never an invented formal label. |
+| **Q3** | **Live time-state covers all 11; no JS change** *(extends P1–P4; D1/D3)* | Each new session carries `data-start`/`data-end` absolute instants at **`+02:00`** (CEST) matching its visible talx time, so P2/P3's past-dim / live-blink apply automatically. **`workshop.js` is unchanged** — it is data-driven (`querySelectorAll('.session[data-start][data-end]')`), so 11 sessions need no code edit; the repo stays node-free. A **new camp day, Sat Jul 11**, joins the schedule (within O1's `July 8-12`). Each new session keeps its hidden `.live-dot`; the `.sess-hi` invariant scales **8 → 22** (2 spans × 11). |
+| **Q4** | **Scope = all 7 included; D8 register upheld** | All seven listed sessions are added to `/workshop/` (the mesh agenda), including the mesh-adjacent **Cross-Pollination** (P2P / local-first networking) and **Mesh News Network** (local journalism over Meshtastic LoRa relays). They are **third-party program sessions listed in an agenda, not interop documentation** — no rendered summary implies a bridge between Meshcore / Meshtastic / Reticulum, so **D8 holds**. The "build bridges" / "cross-pollination" wording is each session's own community/networking framing. Summaries are faithful one-line condensations of the talx abstracts (no new facts; any em/en dash in an abstract is converted to a plain hyphen). The standing "More sessions may be added as the camp approaches." line (L4) remains. |
+
+**Confirmation gate:** Q1–Q4 require explicit sign-off (`confirm all`, or call out a number to
+change). On confirmation, **L1**'s "order today" enumeration is annotated `[superseded by Q1]`,
+and Phase 2 appends the criteria to `ACCEPTANCE.md` and **re-derives the WK-1/WK-2/WK-3 and
+WT-2/WT-3 counts** (sessions 4→11, `class="sess-hi"` 8→22, `data-start`/`data-end` 4→11,
+`+02:00` 8→22, talx links 4→11, +7 talx IDs) — amend, not replace.
