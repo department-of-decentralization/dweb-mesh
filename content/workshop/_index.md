@@ -11,10 +11,10 @@ Eleven mesh sessions are scheduled - in time order below; full abstracts live on
 <!-- talx gives no session type for this one; "Drop-in" is descriptive - team to confirm -->
 ## Join the DWeb Camp Mesh + Tech Support
 
-<p class="muted">Drop-in &middot; <span class="live-dot" aria-hidden="true"></span><span class="sess-hi">Wed Jul 8 &middot; 13:00-18:00</span> &middot; <span class="sess-hi">Mesh Nest (5)</span> &middot; Afri &amp; Lars Gierth</p>
+<p class="muted">Drop-in &middot; <span class="live-dot" aria-hidden="true"></span><span class="sess-hi">Wed Jul 8 &middot; 13:00-18:00</span> &middot; <span class="sess-hi">Mesh Nest (5)</span> &middot; Afri Blanck &amp; Lars Gierth</p>
 
 Drop by to pick up a pre-ordered mesh device, get WiFi and tech support, and see Reticulum, Meshcore and Meshtastic running on-site.<br>
-<a href="https://talx.dod.ngo/dwebcamp-2026/talk/YLKXWX/" target="_blank" rel="noopener">Details &#8599;</a>
+<a href="https://talx.dod.ngo/dwebcamp-2026/talk/YLKXWX/" target="_blank" rel="noopener">Details &#8599;</a> &middot; [Intel](@/intel/_index.md)
 
 </section>
 
@@ -22,7 +22,7 @@ Drop by to pick up a pre-ordered mesh device, get WiFi and tech support, and see
 
 ## Berlin Chaos Mesh Meetup (informal)
 
-<p class="muted">Informal meetup &middot; <span class="live-dot" aria-hidden="true"></span><span class="sess-hi">Wed Jul 8 &middot; 21:00-23:00</span> &middot; <span class="sess-hi">Mesh Nest (5)</span> &middot; Afri Schoedon</p>
+<p class="muted">Informal meetup &middot; <span class="live-dot" aria-hidden="true"></span><span class="sess-hi">Wed Jul 8 &middot; 21:00-23:00</span> &middot; <span class="sess-hi">Mesh Nest (5)</span> &middot; Afri Blanck</p>
 
 An evening get-together of the Berlin Chaos Mesh crew - Meshtastic, Meshcore, Reticulum and anything else that runs on LoRa.<br>
 <a href="https://talx.dod.ngo/dwebcamp-2026/talk/NSXNYJ/" target="_blank" rel="noopener">Details &#8599;</a>
@@ -33,10 +33,10 @@ An evening get-together of the Berlin Chaos Mesh crew - Meshtastic, Meshcore, Re
 
 ## Join the DWeb Camp Mesh!
 
-<p class="muted">Lightning talk &middot; <span class="live-dot" aria-hidden="true"></span><span class="sess-hi">Thu Jul 9 &middot; 09:30-09:40</span> &middot; <span class="sess-hi">Hacker's Lab (7)</span> &middot; Afri Schoedon</p>
+<p class="muted">Lightning talk &middot; <span class="live-dot" aria-hidden="true"></span><span class="sess-hi">Thu Jul 9 &middot; 09:30-09:40</span> &middot; <span class="sess-hi">Hacker's Lab (7)</span> &middot; Afri Blanck</p>
 
 A quick intro to the camp mesh - Reticulum, Meshcore and Meshtastic are live; devices to inspect and buy right after.<br>
-<a href="https://talx.dod.ngo/dwebcamp-2026/talk/ZHGJNM/" target="_blank" rel="noopener">Details &#8599;</a>
+<a href="https://talx.dod.ngo/dwebcamp-2026/talk/ZHGJNM/" target="_blank" rel="noopener">Details &#8599;</a> &middot; [Intel](@/intel/_index.md)
 
 </section>
 
@@ -77,10 +77,10 @@ Hands-on with tinySSB, a minimal peer-to-peer app platform - try it on your Andr
 
 ## Introduction to Meshtastic and Meshcore (hands-on)
 
-<p class="muted">Workshop &middot; <span class="live-dot" aria-hidden="true"></span><span class="sess-hi">Thu Jul 9 &middot; 15:00-16:00</span> &middot; <span class="sess-hi">Hacker's Lab (7)</span> &middot; Afri Schoedon</p>
+<p class="muted">Workshop &middot; <span class="live-dot" aria-hidden="true"></span><span class="sess-hi">Thu Jul 9 &middot; 15:00-16:00</span> &middot; <span class="sess-hi">Hacker's Lab (7)</span> &middot; Afri Blanck</p>
 
 Hands-on: flash firmware, set channels and keys, and send messages over LoRa across camp - flood vs source routing, the 868 MHz duty cycle, antennas and solar nodes. Devices from &euro;20; bring a phone or tablet.<br>
-<a href="https://talx.dod.ngo/dwebcamp-2026/talk/L9WV3W/" target="_blank" rel="noopener">Details &#8599;</a>
+<a href="https://talx.dod.ngo/dwebcamp-2026/talk/L9WV3W/" target="_blank" rel="noopener">Details &#8599;</a> &middot; [Flasher](@/flash/_index.md) &middot; [Config](@/config/_index.md)
 
 </section>
 
@@ -112,10 +112,10 @@ A community-run news stack for offline or degraded networks - signed bulletins, 
 
 ## Off the grid: build an app over radio on Reticulum (LoRa)
 
-<p class="muted">Workshop &middot; <span class="live-dot" aria-hidden="true"></span><span class="sess-hi">Fri Jul 10 &middot; 10:30-12:00</span> &middot; <span class="sess-hi">Hacker's Lab (7)</span> &middot; Afri Schoedon</p>
+<p class="muted">Workshop &middot; <span class="live-dot" aria-hidden="true"></span><span class="sess-hi">Fri Jul 10 &middot; 10:30-12:00</span> &middot; <span class="sess-hi">Hacker's Lab (7)</span> &middot; Afri Blanck</p>
 
 Build a small, internet-free app on Reticulum, running over LoRa on-site - identities, destinations, links and resources. Coding experience assumed; devices from &euro;20.<br>
-<a href="https://talx.dod.ngo/dwebcamp-2026/talk/LBV3GJ/" target="_blank" rel="noopener">Details &#8599;</a>
+<a href="https://talx.dod.ngo/dwebcamp-2026/talk/LBV3GJ/" target="_blank" rel="noopener">Details &#8599;</a> &middot; [Resources](@/workshop/reticulum.md)
 
 </section>
 

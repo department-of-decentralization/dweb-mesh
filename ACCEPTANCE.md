@@ -273,7 +273,7 @@ Added 2026-06-20. A zero-context reviewer judges the restructure with **SS-1…S
 criteria **superseded** (§6→SS-1, §7→SS-2, §9→SS-5/6, S4→SS-2, S5→SS-5); §2/§3 are
 **amended** (G4 flasher carve-out). Build first: `zola build`.
 
-### SS-1 — Flat 8-page IA; old hierarchy gone  *(G1)*  *[amended by N1: +/intel/]*
+### SS-1 — Flat 8-page IA; old hierarchy gone  *(G1)*  *[amended by N1: +/intel/]*  *[note by R1: /workshop/reticulum/ is a workshop SUB-resource, not a top-level route; top-level /reticulum/ stays gone]*
 ```sh
 for p in "" start hardware flash config intel workshop contact ; do
   test -f "public/${p:+$p/}index.html" && echo "OK  /$p/" || echo "MISSING /$p/"
@@ -282,7 +282,7 @@ for d in settings devices meshcore meshtastic reticulum mesh-nest agenda about ;
   test -e "public/$d" && echo "STALE /$d/" || echo "gone /$d/"
 done            # Expect: 8 lines, all "gone"
 ```
-- **Expect:** the 8 routes exist (INTEL between CONFIG and WORKSHOP); the 8 pre-restructure paths are still deleted; build is clean (§1); every internal nav/footer `get_url` resolves (no broken link).
+- **Expect:** the 8 routes exist (INTEL between CONFIG and WORKSHOP); the 8 pre-restructure paths are still deleted; build is clean (§1); every internal nav/footer `get_url` resolves (no broken link). *(R1 note: `/workshop/reticulum/` is a workshop sub-resource under the workshop section — the second loop's `reticulum` check targets the TOP-LEVEL `public/reticulum`, which stays absent; the sub-resource is judged by RS-1.)*
 - [ ] Pass
 
 ### SS-2 — /start: 4-CTA sitemap + relocated stack note  *(G1/G2)*
@@ -891,7 +891,63 @@ grep -i 'more sessions may be added' public/workshop/index.html  # Expect: prese
 
 ---
 
+## Feature: Workshop cross-links + Reticulum resources subpage  *(SPEC.md → Feature: Workshop cross-links + Reticulum resources subpage, R1–R3)*
+
+Added 2026-07-02. A zero-context reviewer judges this feature with **RS-1…RS-3**, in addition to
+the surviving criteria (regression line below). It adds one page (`/workshop/reticulum/`) and
+internal cross-links on four workshop sessions; **no JS, no asset, no new nav route**. Build first
+(`zola build`), then check `public/`.
+
+### RS-1 — Reticulum resources subpage exists, footer + h1, one line  *(R1)*
+```sh
+test -f public/workshop/reticulum/index.html && echo OK || echo MISSING   # Expect: OK (subpage builds at /workshop/reticulum/)
+test -e public/reticulum && echo STALE || echo "top-level reticulum gone" # Expect: top-level reticulum gone (SS-1 intact — a workshop SUB-resource, not the old stack page)
+grep -F 'Resources for the Reticulum workshop will be available here just in time.' public/workshop/reticulum/index.html   # Expect: the verbatim one-line body
+grep -F '<h1>Reticulum Workshop</h1>' public/workshop/reticulum/index.html   # Expect: h1 = Reticulum Workshop
+grep -ic 'tent 5' public/workshop/reticulum/index.html   # Expect: >=1 (base-template footer present — §5/D7)
+grep -Eoq 'href="https://matrix\.to/#/#dweb-mesh:dod\.ngo"' public/workshop/reticulum/index.html && echo "matrix OK"   # Expect: matrix OK
+```
+- **Expect:** `/workshop/reticulum/` renders the verbatim one line under `<h1>Reticulum Workshop</h1>`, with the base-template footer (tent 5 + Matrix link); the top-level `/reticulum/` route stays absent (workshop sub-resource, not a resurrected stack hub — G2/D8).
+- [ ] Pass
+
+### RS-2 — Internal cross-links on the four sessions  *(R2)*
+```sh
+P=public/workshop/index.html
+grep -oE 'href="/intel/"[^>]*>Intel<' $P | wc -l               # Expect: 2 (both "Join the DWeb Camp Mesh" sessions -> Intel)
+grep -oE 'href="/flash/"[^>]*>Flasher<' $P | wc -l             # Expect: 1 (Introduction to Meshtastic and Meshcore -> Flasher)
+grep -oE 'href="/config/"[^>]*>Config<' $P | wc -l             # Expect: 1 (Introduction to Meshtastic and Meshcore -> Config)
+grep -oE 'href="/workshop/reticulum/"[^>]*>Resources<' $P | wc -l   # Expect: 1 (Off the grid: Reticulum -> Resources)
+grep -oE 'href="/(intel|flash|config|workshop/reticulum)/"[^>]*target="_blank"' $P | wc -l   # Expect: 0 (internal links carry no new tab / no arrow)
+grep -Eo 'href="https://talx\.dod\.ngo/[^"]*"[^>]*target="_blank"[^>]*rel="noopener"' $P | wc -l   # Expect: 11 (the external talx links are unchanged by R2)
+```
+- **Expect:** exactly these internal cross-links after each session's `Details ↗` — Intel×2, Flasher×1, Config×1, Resources×1 — each a host-less internal link (no `target="_blank"`, no `↗`); the 11 external talx links stay new-tab. The other seven sessions are untouched.
+- [ ] Pass
+
+### RS-3 — Subpath-portable, dash-free, offline-safe, no structural regression  *(R3)*
+```sh
+# §4/D2: the new internal links rewrite under the subpath base_url (built to a temp dir):
+zola build --base-url /dweb-mesh/ -o /tmp/rs_sub 2>&1 | tail -1
+grep -Eoq 'href="/dweb-mesh/workshop/reticulum/"' /tmp/rs_sub/workshop/index.html && echo "reticulum link subpath OK"   # Expect: OK
+grep -Eoq 'href="/dweb-mesh/intel/"' /tmp/rs_sub/workshop/index.html && echo "intel link subpath OK"               # Expect: OK
+test -f /tmp/rs_sub/workshop/reticulum/index.html && echo "subpage subpath OK"                                     # Expect: OK
+# WK-1/AG-3 register holds on the workshop page AND the new subpage:
+grep -nE '—|–|&mdash;|&ndash;' public/workshop/index.html public/workshop/reticulum/index.html || echo "no em/en dashes"   # Expect: no em/en dashes
+# no external ASSET anywhere (subpage included):
+scripts/check-offline.sh   # Expect: OK
+# R2 added links only — the workshop page structure is unchanged:
+grep -o 'class="sess-hi"' public/workshop/index.html | wc -l   # Expect: 22 (unchanged)
+grep -c 'class="session"' public/workshop/index.html           # Expect: 11 (unchanged)
+```
+- **Expect:** the subpath build rewrites the new internal links to `/dweb-mesh/…` (D2/§4 hold); no em/en dashes on the workshop page or subpage (WK-1/AG-3); `check-offline.sh` green (no asset); the workshop page's structural counts (sess-hi 22, 11 sessions) are unchanged by the added links.
+- [ ] Pass
+
+### Regression — surviving prior criteria still pass  *(RS feature)*
+**Amended (planned, not a regression):** **SS-1** — annotated that `/workshop/reticulum/` is a workshop sub-resource (a 9th page, not a top-level route); its top-level `reticulum` check is unchanged and still passes (top-level `public/reticulum` stays absent). **Still must pass unchanged:** §1 (clean build — every `@/` link resolves or the build fails), §2/§3 + `check-offline.sh` (no asset; the two scoped iframes remain the only external assets), §4 (subpath build rewrites nav + the new internal links — RS-3), §5/LP-6 (footer on the new subpage and every page), **SS-8** (no external `<a>` without `target="_blank"` — internal links are exempt), **AG-1/AG-3, WK-1/WK-3, WT-1…WT-4** (workshop page: 11 sessions, `sess-hi` 22, 11 talx new-tab links, no dashes, `workshop.js` unchanged — all preserved; R2 only appends internal links), and every other group (LP, WS, CR, CC, LD, TZ, IN, EC, S1–S6).
+- [ ] Pass (no regression in the surviving criteria)
+
+---
+
 ## Verdict
 
-A build is **ACCEPTED** only when the surviving boxes (§1–§5, §8, §10; S1–S3, S6), LP-1–LP-7, SS-1–SS-9, **WS-1–WS-7**, **CR-1–CR-4**, **CC-1**, **LD-1–LD-3**, **TZ-1–TZ-3**, **WK-1–WK-4**, **IN-1–IN-5**, **EC-1**, **WT-1–WT-4**, and **AG-1–AG-3** are all ticked, and amended §2/§3 hold. (§6/§7/§9 + S4/S5 superseded by SS; **SS-6 amended by WK-1…WK-4**; **§2/§3/SS-1/SS-9 amended by N1/N2/N3 — Intel page**; S3/LP-1 amended by H2; **S3/WS-2/CR-1/LD-3 JS-count 4→5 amended by P1 — Workshop live time-state**; **WS-6 is MANUAL**, hardware-verified by the team; **WK/WT session counts 4→11 amended by Q1/Q3 — Feature: Workshop agenda expansion, AG-1–AG-3**.)
+A build is **ACCEPTED** only when the surviving boxes (§1–§5, §8, §10; S1–S3, S6), LP-1–LP-7, SS-1–SS-9, **WS-1–WS-7**, **CR-1–CR-4**, **CC-1**, **LD-1–LD-3**, **TZ-1–TZ-3**, **WK-1–WK-4**, **IN-1–IN-5**, **EC-1**, **WT-1–WT-4**, **AG-1–AG-3**, and **RS-1–RS-3** are all ticked, and amended §2/§3 hold. (§6/§7/§9 + S4/S5 superseded by SS; **SS-6 amended by WK-1…WK-4**; **§2/§3/SS-1/SS-9 amended by N1/N2/N3 — Intel page**; S3/LP-1 amended by H2; **S3/WS-2/CR-1/LD-3 JS-count 4→5 amended by P1 — Workshop live time-state**; **WS-6 is MANUAL**, hardware-verified by the team; **WK/WT session counts 4→11 amended by Q1/Q3 — Feature: Workshop agenda expansion, AG-1–AG-3**; **RS-1–RS-3 — Feature: Workshop cross-links + Reticulum resources subpage (adds /workshop/reticulum/ + internal cross-links)**.)
 Record the date, the Zola version, and any waived item with its justification.

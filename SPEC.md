@@ -393,16 +393,16 @@ sign-off (gate below).*
 
 | # | When (CEST) | Session | talx | Room | Type | Speaker |
 |---|---|---|---|---|---|---|
-| 1 | Wed Jul 8 13:00-18:00 | Join the DWeb Camp Mesh + Tech Support `*` | YLKXWX | Mesh Nest (5) | Drop-in | Afri & Lars Gierth |
-| 2 | Wed Jul 8 21:00-23:00 | Berlin Chaos Mesh Meetup (informal) | NSXNYJ | Mesh Nest (5) | Informal meetup | Afri Schoedon |
-| 3 | Thu Jul 9 09:30-09:40 | Join the DWeb Camp Mesh! `*` | ZHGJNM | Hacker's Lab (7) | Lightning talk | Afri Schoedon |
+| 1 | Wed Jul 8 13:00-18:00 | Join the DWeb Camp Mesh + Tech Support `*` | YLKXWX | Mesh Nest (5) | Drop-in | Afri Blanck & Lars Gierth |
+| 2 | Wed Jul 8 21:00-23:00 | Berlin Chaos Mesh Meetup (informal) | NSXNYJ | Mesh Nest (5) | Informal meetup | Afri Blanck |
+| 3 | Thu Jul 9 09:30-09:40 | Join the DWeb Camp Mesh! `*` | ZHGJNM | Hacker's Lab (7) | Lightning talk | Afri Blanck |
 | 4 | Thu Jul 9 09:40-10:40 | Using Low Power Wireless P2P... Governance | MLFH9Z | Hacker's Lab (7) | Workshop | Paul Fuxjäger |
 | 5 | Thu Jul 9 10:30-11:30 | Cross-Pollination between P2P & Local First... | X9ENCG | P2P Portal | Networking session | Zenna, Mathias Jud |
 | 6 | Thu Jul 9 10:40-11:40 | tinySSB hands-on | XBZFVE | Hacker's Lab (7) | Workshop | Christian Tschudin (cft) |
-| 7 | Thu Jul 9 15:00-16:00 | Introduction to Meshtastic and Meshcore `*` | L9WV3W | Hacker's Lab (7) | Workshop | Afri Schoedon |
+| 7 | Thu Jul 9 15:00-16:00 | Introduction to Meshtastic and Meshcore `*` | L9WV3W | Hacker's Lab (7) | Workshop | Afri Blanck |
 | 8 | Thu Jul 9 15:00-16:00 | The Dark Horizon Simulation... | V9L89B | Resilience Base | Tabletop simulation | Michael Suantak |
 | 9 | Fri Jul 10 10:00-10:30 | Mesh News Network - dWebbing Local Journalism | JFNK39 | Resilience Base | Session *(generic)* | Casey Carr |
-| 10 | Fri Jul 10 10:30-12:00 | Off the grid: Reticulum app over LoRa `*` | LBV3GJ | Hacker's Lab (7) | Workshop | Afri Schoedon |
+| 10 | Fri Jul 10 10:30-12:00 | Off the grid: Reticulum app over LoRa `*` | LBV3GJ | Hacker's Lab (7) | Workshop | Afri Blanck |
 | 11 | Sat Jul 11 09:30-11:00 | Building & Testing Antennas for LoRa | WNTPQS | Hacker's Lab (7) | Workshop | Mathias Jud |
 
 Tie on start time broken by end time then title, so the two Thu 15:00-16:00 sessions render
@@ -420,3 +420,27 @@ change). On confirmation, **L1**'s "order today" enumeration is annotated `[supe
 and Phase 2 appends the criteria to `ACCEPTANCE.md` and **re-derives the WK-1/WK-2/WK-3 and
 WT-2/WT-3 counts** (sessions 4→11, `class="sess-hi"` 8→22, `data-start`/`data-end` 4→11,
 `+02:00` 8→22, talx links 4→11, +7 talx IDs) — amend, not replace.
+
+---
+
+## Feature: Workshop cross-links + Reticulum resources subpage  *(2026-07-02)*
+
+Added 2026-07-02. Adds a one-line **`/workshop/reticulum/`** resources placeholder and appends
+**internal cross-links** to four workshop sessions' link lines (after the external `Details ↗`).
+Decisions **R1–R3**. **Extends G1** (a 9th page as a workshop sub-resource, not a top-level nav
+route) and **L1/L3** (per-session link set grows by internal links). Upholds **G2/D8** (the subpage
+is a workshop-resources placeholder, not a Reticulum stack hub — no stack/protocol docs, no
+bridges), **D2** (internal links via the `@/` convention → base_url-aware, subpath-portable),
+**D7/§5** (subpage carries the base footer), **D3/§2** (no asset), and the plain-hyphen register
+([[dashes-plain-hyphens-only]]). *Pending explicit sign-off (gate below).*
+
+| # | Decision | Choice |
+|---|----------|--------|
+| **R1** | **`/workshop/reticulum/` sub-resource page** *(extends G1; consistent with G2/D8)* | New `content/workshop/reticulum.md` → route **`/workshop/reticulum/`**, rendered by the default **`page.html`** (extends `base.html` → header nav + **footer**; an `<h1>` from the title). Title **`Reticulum Workshop`**; body is the single verbatim line **"Resources for the Reticulum workshop will be available here just in time."** It is a **workshop-resources placeholder, NOT a Reticulum stack hub** — no install/first-node/stack docs, no bridges (G2/D8 upheld). A **9th page but not a top-level nav route**: the 8 top-level routes + the header nav are **unchanged**, and top-level `public/reticulum` stays absent (SS-1's top-level set intact; the "8-page IA" = 8 top-level routes). |
+| **R2** | **Internal cross-links on four sessions** *(extends L1/L3; upholds D2)* | After each listed session's external `<a ...>Details &#8599;</a>`, append ` &middot; ` then internal **`@/` markdown link(s)** — same amber link styling, **no `&#8599;` arrow**, **no** `target=_blank` (internal navigation): **YLKXWX** ("Join the DWeb Camp Mesh + Tech Support") and **ZHGJNM** ("Join the DWeb Camp Mesh!") → `[Intel](@/intel/_index.md)`; **L9WV3W** ("Introduction to Meshtastic and Meshcore (hands-on)") → `[Flasher](@/flash/_index.md) &middot; [Config](@/config/_index.md)`; **LBV3GJ** ("Off the grid: ... Reticulum (LoRa)") → `[Resources](@/workshop/reticulum.md)`. The **11 external talx links stay new-tab and unchanged**; the seven other sessions are untouched. Because the new links are internal `@/` (host-less, base_url-aware — D2), **§4 subpath portability holds** and **SS-8/WK-3** (external-only new-tab) are unaffected. |
+| **R3** | **Honest refs, register, offline** *(upholds D2/§4, WK-1/AG-3, §5, check-offline)* | Every internal link uses the `@/…` convention, so a **broken target fails the build** (§1 keeps refs honest) and the base_url switch rewrites it (§4). Separators are `&middot;`, labels plain (`Resources`/`Flasher`/`Config`/`Intel`) — **no em/en dashes** on `/workshop/` (WK-1/AG-3 hold) and **no `→`**. The subpage adds **no external asset** (`check-offline.sh` green) and carries the base-template **footer** (tent 5 + Matrix — §5/D7); it renders fully offline. |
+
+**Confirmation gate:** R1–R3 require explicit sign-off (`confirm all`, or call out a number to
+change). On confirmation, Phase 2 appends the criteria to `ACCEPTANCE.md` (RS-1…RS-3 + a regression
+line) and annotates **SS-1** (top-level route set unchanged; one workshop sub-resource
+`/workshop/reticulum/` added).
