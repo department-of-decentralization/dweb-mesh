@@ -55,7 +55,7 @@ A workshop exploring low-power LoRa mesh plus self-sovereign identity (DID metho
 
 ## Cross-Pollination between Peer-to-Peer &amp; Local First + Decentralized Hardware/Local Community Networks Tracks
 
-<p class="muted">Networking session &middot; <span class="live-dot" aria-hidden="true"></span><span class="sess-hi">Thu Jul 9 &middot; 10:30-11:30</span> &middot; <span class="sess-hi">P2P Portal</span> &middot; Zenna &amp; Mathias Jud</p>
+<p class="muted">Networking session &middot; <span class="live-dot" aria-hidden="true"></span><span class="sess-hi">Thu Jul 9 &middot; 10:30-11:30</span> &middot; <span class="sess-hi">P2P Portal (11)</span> &middot; Zenna &amp; Mathias Jud</p>
 
 A structured networking session connecting the mesh, P2P and local-first communities - speed-dating conversations plus a Dreams and Seeds reflection.<br>
 <a href="https://talx.dod.ngo/dwebcamp-2026/talk/X9ENCG/" target="_blank" rel="noopener">Details &#8599;</a>
@@ -89,7 +89,7 @@ Hands-on: flash firmware, set channels and keys, and send messages over LoRa acr
 <!-- talx lists no session type; "Tabletop simulation" is the abstract's own word - team to confirm -->
 ## The Dark Horizon Simulation: Architecting Autonomous Comms in an Extreme Conflict Zone
 
-<p class="muted">Tabletop simulation &middot; <span class="live-dot" aria-hidden="true"></span><span class="sess-hi">Thu Jul 9 &middot; 15:00-16:00</span> &middot; <span class="sess-hi">Resilience Base</span> &middot; Michael Suantak</p>
+<p class="muted">Tabletop simulation &middot; <span class="live-dot" aria-hidden="true"></span><span class="sess-hi">Thu Jul 9 &middot; 15:00-16:00</span> &middot; <span class="sess-hi">Resilience Base (10)</span> &middot; Michael Suantak</p>
 
 A high-stakes tabletop simulation building offline comms for a total-blackout conflict zone - tactical LoRa mesh, HF (NVIS) radio and optical cryptography.<br>
 <a href="https://talx.dod.ngo/dwebcamp-2026/talk/V9L89B/" target="_blank" rel="noopener">Details &#8599;</a>
@@ -101,7 +101,7 @@ A high-stakes tabletop simulation building offline comms for a total-blackout co
 <!-- talx lists no session type and the abstract gives no format word; rendered generically as "Session" - team to confirm -->
 ## Mesh News Network - dWebbing Local Journalism
 
-<p class="muted">Session &middot; <span class="live-dot" aria-hidden="true"></span><span class="sess-hi">Fri Jul 10 &middot; 10:00-10:30</span> &middot; <span class="sess-hi">Resilience Base</span> &middot; Casey Carr</p>
+<p class="muted">Session &middot; <span class="live-dot" aria-hidden="true"></span><span class="sess-hi">Fri Jul 10 &middot; 10:00-10:30</span> &middot; <span class="sess-hi">Resilience Base (10)</span> &middot; Casey Carr</p>
 
 A community-run news stack for offline or degraded networks - signed bulletins, a touch of Usenet nostalgia, Meshtastic LoRa relays and local LLM briefings.<br>
 <a href="https://talx.dod.ngo/dwebcamp-2026/talk/JFNK39/" target="_blank" rel="noopener">Details &#8599;</a>

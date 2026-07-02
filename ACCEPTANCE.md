@@ -643,7 +643,7 @@ grep -o 'class="sess-hi"' public/workshop/index.html | wc -l          # Expect: 
 grep -F 'sess-hi' public/css/style.css                                # Expect: present (.sess-hi maps to --cyan-dim, the muted blue)
 grep -nE '—|–|&mdash;|&ndash;' public/workshop/index.html             # Expect: NO output (plain hyphens only - hacker register)
 ```
-- **Expect:** the 11 sessions render **in schedule order**, each = title + a metadata line `Type · Day Mon D · HH:MM–HH:MM · Room · Speaker` + a one-line summary + a `Details ↗` talx link. The **date-time and location are styled muted blue** (`.sess-hi`); venue numbers (Mesh Nest (5), Hacker's Lab (7)) are team-supplied (D12), not from talx; the two genuinely-new rooms (P2P Portal, Resilience Base) carry NO invented number (Q2). Prose uses plain hyphens, no em/en-dashes. *(Manual: the summary is a single line; the full talx abstract is NOT duplicated inline - it lives behind the link.)*
+- **Expect:** the 11 sessions render **in schedule order**, each = title + a metadata line `Type · Day Mon D · HH:MM–HH:MM · Room · Speaker` + a one-line summary + a `Details ↗` talx link. The **date-time and location are styled muted blue** (`.sess-hi`); venue numbers (Mesh Nest (5), Hacker's Lab (7)) are team-supplied (D12), not from talx; the two genuinely-new rooms carry team-supplied numbers (P2P Portal (11), Resilience Base (10); team-supplied 2026-07-03, D12). Prose uses plain hyphens, no em/en-dashes. *(Manual: the summary is a single line; the full talx abstract is NOT duplicated inline - it lives behind the link.)*
 - [ ] Pass
 
 ### WK-2 — Sourced from talx, nothing invented  *(L2; D5/D12)*
@@ -862,16 +862,15 @@ grep -Eo 'talk/(NSXNYJ|MLFH9Z|X9ENCG|XBZFVE|V9L89B|JFNK39|WNTPQS)/"[^>]*target="
 
 ### AG-2 — Rooms normalized, no invented numbers; types sourced or .tbc  *(Q2; D12/L2)*
 ```sh
-grep -Fc 'P2P Portal' public/workshop/index.html                # Expect: >=1 (X9ENCG room, verbatim)
-grep -Fc 'Resilience Base' public/workshop/index.html           # Expect: >=1 (V9L89B + JFNK39 room, verbatim; count is 2)
-grep -E 'P2P Portal \([0-9]|Resilience Base \([0-9]' public/workshop/index.html   # Expect: NO output (no invented venue number on the new rooms)
+grep -Fc 'P2P Portal (11)' public/workshop/index.html          # Expect: 1 (X9ENCG room; venue no. 11 team-supplied 2026-07-03, D12 — not invented)
+grep -Fc 'Resilience Base (10)' public/workshop/index.html     # Expect: 2 (V9L89B + JFNK39 room; venue no. 10 team-supplied 2026-07-03, D12 — not invented)
 grep -Fc 'Decentralized Hardware @' public/workshop/index.html  # Expect: 0 (talx's track-branded room normalized to "Hacker's Lab (7)", Q2)
 for ty in 'Informal meetup' 'Networking session' 'Tabletop simulation' 'Workshop' 'Lightning talk' 'Drop-in'; do grep -qF "$ty" public/workshop/index.html && echo "ok $ty" || echo "MISSING $ty"; done   # Expect: 6× ok (types sourced from talx, or descriptive where talx lists none)
 grep -cF 'muted">Session' public/workshop/index.html            # Expect: 1 (JFNK39 has NO type on talx → rendered with the generic label "Session", not a fabricated format)
 grep -c 'class="tbc"' public/workshop/index.html                # Expect: 0 (workshop page uses no .tbc marker; the generic "Session" label replaced it)
 grep -F '.tbc' public/css/style.css                             # Expect: present (the .tbc CSS class still exists for future unscheduled sessions — WK-4)
 ```
-- **Expect:** the two genuinely-new rooms render verbatim with **no** invented `(n)`; talx's `Decentralized Hardware @ Hackers Lab` is normalized to `Hacker's Lab (7)`; every type is talx-sourced or descriptive (`Tabletop simulation` is the Dark Horizon abstract's own word), and the one session with no type on talx (Mesh News Network, JFNK39) uses the **generic label `Session`** — a neutral placeholder, not a fabricated format.
+- **Expect:** the two genuinely-new rooms carry their **team-supplied** venue numbers (`P2P Portal (11)`, `Resilience Base (10)` — added 2026-07-03, D12, supplied not invented); talx's `Decentralized Hardware @ Hackers Lab` is normalized to `Hacker's Lab (7)`; every type is talx-sourced or descriptive (`Tabletop simulation` is the Dark Horizon abstract's own word), and the one session with no type on talx (Mesh News Network, JFNK39) uses the **generic label `Session`** — a neutral placeholder, not a fabricated format.
 - [ ] Pass
 
 ### AG-3 — No stack-bridge wording; plain hyphens; no JS/asset added  *(Q4; D8/D3)*
@@ -926,7 +925,7 @@ grep -Eo 'href="https://talx\.dod\.ngo/[^"]*"[^>]*target="_blank"[^>]*rel="noope
 ### RS-3 — Subpath-portable, dash-free, offline-safe, no structural regression  *(R3)*
 ```sh
 # §4/D2: the new internal links rewrite under the subpath base_url (built to a temp dir):
-zola build --base-url /dweb-mesh/ -o /tmp/rs_sub 2>&1 | tail -1
+zola build --base-url /dweb-mesh/ -o /tmp/rs_sub --force 2>&1 | tail -1   # --force: re-runnable even if /tmp/rs_sub already exists
 grep -Eoq 'href="/dweb-mesh/workshop/reticulum/"' /tmp/rs_sub/workshop/index.html && echo "reticulum link subpath OK"   # Expect: OK
 grep -Eoq 'href="/dweb-mesh/intel/"' /tmp/rs_sub/workshop/index.html && echo "intel link subpath OK"               # Expect: OK
 test -f /tmp/rs_sub/workshop/reticulum/index.html && echo "subpage subpath OK"                                     # Expect: OK
