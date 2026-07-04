@@ -42,6 +42,7 @@ You have hardware with <span class="hi">Meshcore</span> ready? Let's get you set
 
 <details class="collapse">
 <summary>Meshtastic</summary>
+<p class="muted">Region <code>EU_868</code> &middot; Preset <code>MediumFast</code></p>
 <a class="qr-link" href="https://meshtastic.org/e/?add=true#CgcSAQE6AggNCi4SIDZoexKKD9k7HPu6bz8Fy3BAw7mIZPnwaNhi52wNWNbIGgpCZXJsaW5NZXNoCgkSAQEaBFRFU1QKCBIBARoDU09TCjASIHMvAwYpqMS7ogQ1s_2-3KxOmgkMAsue6BUvBPOnOL1FGghEV2ViQ2FtcCgBMAESIAgBEAQY-gEgCSgFOANAB0gBUBtgAWgBwAYByAYB0AYC" target="_blank" rel="noopener"><img class="qr" src="../img/meshtastic-berlin.png" alt="QR code linking to the Meshtastic preset and channels for DWeb Camp (Berlin)" width="840" height="840"></a>
 <p class="muted">Scan with the Meshtastic app to load the DWeb Camp preset + channels, or <a href="https://meshtastic.org/e/?add=true#CgcSAQE6AggNCi4SIDZoexKKD9k7HPu6bz8Fy3BAw7mIZPnwaNhi52wNWNbIGgpCZXJsaW5NZXNoCgkSAQEaBFRFU1QKCBIBARoDU09TCjASIHMvAwYpqMS7ogQ1s_2-3KxOmgkMAsue6BUvBPOnOL1FGghEV2ViQ2FtcCgBMAESIAgBEAQY-gEgCSgFOANAB0gBUBtgAWgBwAYByAYB0AYC" target="_blank" rel="noopener">open the import link &#8599;</a>.</p>
 <p>Full config: <a href="https://codeberg.org/berlinmesh/meshtastic/src/branch/main/berlin.yml" target="_blank" rel="noopener">Codeberg: meshtastic/berlin.yml &#8599;</a></p>

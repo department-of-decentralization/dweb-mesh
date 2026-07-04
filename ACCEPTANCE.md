@@ -494,8 +494,14 @@ grep -E '<img[^>]+alt="[^"]*Meshtastic[^"]*DWeb' public/config/index.html     # 
 grep -F 'meshtastic.org/e/?add=true' public/config/index.html                # Expect: import link present
 grep -E 'codeberg\.org/berlinmesh/meshtastic[^"]*"[^>]*target="_blank"' public/config/index.html  # Expect: berlin.yml link, new tab
 grep -nE '<img[^>]+src="https?://' public/config/index.html                  # Expect: NO output (no external image)
+# Bugfix 2026-07-04: the region + modem preset must be VISIBLE as text ABOVE the QR. The QR
+# already encodes them (ChannelSet LoRaConfig: region=3 EU_868, modem_preset=4 MEDIUM_FAST),
+# but a reader cannot see them without scanning; I2/CR-2 were silent here, unlike the Meshcore
+# refcard (Frequency/BW/SF/...) and the Reticulum <pre> block that both show their parameters.
+awk '/<summary>Meshtastic/,/<img class="qr"/' public/config/index.html | grep -F 'EU_868'     # Expect: present (region shown above the QR)
+awk '/<summary>Meshtastic/,/<img class="qr"/' public/config/index.html | grep -F 'MediumFast' # Expect: present (preset shown above the QR)
 ```
-- **Expect:** QR is a local relative `<img>` (no `https` image), wrapped in the import link, descriptive alt, + Codeberg link new-tab; `check-offline.sh` still passes.
+- **Expect:** QR is a local relative `<img>` (no `https` image), wrapped in the import link, descriptive alt, + Codeberg link new-tab; `check-offline.sh` still passes. **Bugfix 2026-07-04:** a muted line `Region EU_868 &middot; Preset MediumFast` renders **above** the QR (the two values the QR carries, now human-readable — I2/CR-2 previously surfaced neither).
 - [ ] Pass
 
 ### CR-3 — Reticulum: verbatim RNode config + forum link  *(I3)*
