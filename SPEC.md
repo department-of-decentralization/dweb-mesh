@@ -263,7 +263,7 @@ terminal cursor on the splash title.
 
 | # | Decision | Detail |
 | --- | --- | --- |
-| **J1** | **Remote-first, local fallback, bounded** *[extended by K1]* | `counters.js` fetches stats from `https://dweb.potatomesh.net/api/stats` and recent messages from `…/api/messages?limit=3` (same shapes as the local files), each with a bounded **~2.5 s** `AbortController` timeout; on timeout/error/CORS-block it falls back to local `stats.json` / `messages.json`, then to placeholders / hidden box. 60 s refresh retained; message text still injected via `textContent` (untrusted mesh content). |
+| **J1** | **Remote-first, local fallback, bounded** *[extended by K1, T1]* | `counters.js` fetches stats from `https://dweb.potatomesh.net/api/stats` and recent messages from `…/api/messages?limit=3` (same shapes as the local files), each with a bounded **~2.5 s** `AbortController` timeout; on timeout/error/CORS-block it falls back to local `stats.json` / `messages.json`, then to placeholders / hidden box. 60 s refresh retained; message text still injected via `textContent` (untrusted mesh content). |
 | **J2** | **Amends D3/§2 — assets local; data may fetch-with-fallback** | The no-external-**asset** rule stands for all CSS/JS/fonts/images (still 100% local; `check-offline.sh` green). NEW narrow exception: a runtime **data** fetch to the **already-allowlisted** dashboard host is allowed **iff** a mandatory local-JSON fallback keeps the offline render fully intact. The gate cannot see a `fetch()`, so the offline guarantee rests on the bounded timeout + fallback and an explicit acceptance check — not the gate. |
 | **J3** | **Live is gated by the API's CORS** | Live data needs the dashboard to return `Access-Control-Allow-Origin` (absent as of 2026-06-21 → browser falls back to local). No site change needed when CORS is enabled — it goes live automatically. On offline deployments an external script keeps the local JSON fresh (the fallback source). |
 | **J4** | **Blinking cursor on the splash** | A blinking underscore after “JOIN THE MESH” via a CSS `::after` + `@keyframes` (no JS). Respects `prefers-reduced-motion` (steady underscore, no blink, for users who opt out). |
@@ -364,7 +364,7 @@ D5/D12/L2 (times are talx-sourced, not invented), D8 (display-only, no bridges),
 
 | # | Decision | Choice |
 |---|----------|--------|
-| **P1** | **New page-scoped local JS** *(extends S3/WS-2; amends LD-3/CR-1/TZ count)* | A new hand-written **`static/js/workshop.js`** (local, **no network — `Date` only**), loaded **only on `/workshop/`** via a new **`templates/workshop.html`** (extends `base.html`, renders the section body, fills `{% block scripts %}`), selected by `template = "workshop.html"` in `content/workshop/_index.md`. Mirrors how `counters.js` loads only on `/`. **Repo stays node-free (D1); `zola build` alone builds the site; `check-offline.sh` green (D3).** Bumps the JS inventory 4→5: **amends** LD-3 (`find public -name '*.js' \| wc -l` 4→5), CR-1 (`ls static/js/*.js` 3→4), the S3/WS-2 enumerated list (+`workshop.js`), and the TZ-regression `wc -l` line. |
+| **P1** | **New page-scoped local JS** *(extends S3/WS-2; amends LD-3/CR-1/TZ count)* *[amended by T4: 5→6]* | A new hand-written **`static/js/workshop.js`** (local, **no network — `Date` only**), loaded **only on `/workshop/`** via a new **`templates/workshop.html`** (extends `base.html`, renders the section body, fills `{% block scripts %}`), selected by `template = "workshop.html"` in `content/workshop/_index.md`. Mirrors how `counters.js` loads only on `/`. **Repo stays node-free (D1); `zola build` alone builds the site; `check-offline.sh` green (D3).** Bumps the JS inventory 4→5: **amends** LD-3 (`find public -name '*.js' \| wc -l` 4→5), CR-1 (`ls static/js/*.js` 3→4), the S3/WS-2 enumerated list (+`workshop.js`), and the TZ-regression `wc -l` line. |
 | **P2** | **Past sessions render muted grey** | Each session is wrapped in a per-session container carrying `data-start`/`data-end`. When **now > end**, `workshop.js` adds **`.session--past`**, dimming that whole block (heading + metadata line + summary + `Details ↗`) to the muted treatment (reduced opacity → `--fg-dim`). With **JS off / offline**, no class is added → every session renders normally, so the offline Freifunk copy is unaffected. |
 | **P3** | **Blinking orange square on the live session** *(reuses J4)* | When **start ≤ now ≤ end**, JS reveals a **blinking orange (`--amber`) square** (`■`) immediately **before that session's time** (the first `.sess-hi` of the metadata line). It is a **new, separate element** (`.live-dot`) — **not** a `.sess-hi` span — so **WK-1's `class="sess-hi"`==8 still holds**. It is hidden by default (no spurious square when JS is off / for non-live sessions). **Respects `prefers-reduced-motion`** (steady square, no blink), exactly as J4's cursor does. |
 | **P4** | **"Assume CEST" → absolute-instant data, device-clock compare** *(D5/D12/L2; D3/K-style)* | Start/end come **verbatim from the already-on-page talx-sourced local times** (not invented). **"CEST everywhere"** = encode each as an absolute instant with the **`+02:00`** offset (e.g. `data-start="2026-07-08T13:00:00+02:00"`), compared against the device clock (`Date.now()`, an absolute epoch) — correct regardless of the viewer's own timezone, with **no tz library** (`Date` parsing only, like K2's built-in approach); `check-offline.sh` stays green. Recompute **on load + every 60 s** (matches the counter cadence). The four sessions: Wed Jul 8 13:00-18:00; Thu Jul 9 09:30-09:40; Thu Jul 9 15:00-16:00; Fri Jul 10 10:30-12:00. |
@@ -444,3 +444,56 @@ bridges), **D2** (internal links via the `@/` convention → base_url-aware, sub
 change). On confirmation, Phase 2 appends the criteria to `ACCEPTANCE.md` (RS-1…RS-3 + a regression
 line) and annotates **SS-1** (top-level route set unchanged; one workshop sub-resource
 `/workshop/reticulum/` added).
+
+---
+
+## Feature: Live schedule sync from pretalx (times, not descriptions)  *(2026-07-07)*
+
+Added 2026-07-07. Keeps `/workshop/` **times** accurate against the pretalx (`talx.dod.ngo`)
+backend without weakening the offline-first guarantee. Two parts: a **one-time authoring
+reconcile** (fetch now, correct any drifted hardcoded times) and a **runtime remote-first,
+hardcoded-fallback** live sync in the browser. Decisions **T1–T4** (letter **S** skipped — it
+already names the S1–S6 supplemental acceptance criteria, mirroring the **M** skip in the Intel
+feature). **Extends J1/J2/J3** (the remote-first / bounded-timeout / local-fallback / CORS-gated
+data-fetch pattern, now applied to a *second* host — `talx.dod.ngo`, already a §2(d) hyperlink
+host via L3 — and to the `/workshop` schedule) and **L2** (talx = source of truth; the authoring
+fetch is automated and a reschedule becomes *zero*-click when online). **Extends P1–P4 / WT-1…WT-4**
+(a 6th page-scoped local JS file; `workshop.js` stays Date-only / no-network). **Amends the JS-count
+lines** in S3 / WS-2 / CR-1 / LD-3 / WT-1 (5 → 6). Upholds **D1/H2/D10** (the authoring reconcile
+is a manual step, never wired into `zola build`/CI — the build stays offline-deterministic),
+**D2** (host-less internal links; the fetch endpoint is a necessarily-absolute external URL, as
+with the flasher/intel iframes and the dashboard API), **D3/§2** (a *data* fetch, not an asset —
+`check-offline.sh` green; talx never becomes a `src`), **Q2/D12** (rooms stay team-normalized;
+venue numbers never invented — see T3), and **D5/L2** (titles/summaries/speakers never auto-rewritten).
+*Pending explicit sign-off (gate below).*
+
+> **Verification reality (like WS-6/J3):** whether the *runtime* sync visibly does anything online
+> depends on the pretalx widget API returning `Access-Control-Allow-Origin` (T4) — **verified in the
+> authoring bucket**; absent → the browser blocks the cross-origin read and the page silently keeps
+> its hardcoded times (exactly J3's dashboard situation). Auto-verifiable here: clean build,
+> `check-offline.sh`, JS inventory 5→6, page wiring, the `data-talx`/`data-room-id` attributes, and a
+> static review of `schedule-live.js` against the verified widget shape. The end-to-end DOM patch
+> (a real reschedule flowing to the page) is **MANUAL** — it needs the live API with CORS.
+
+| # | Decision | Choice |
+|---|----------|--------|
+| **T1** | **Two-part sync: authoring reconcile + runtime live** *(extends L2, J1/J2/J3)* | **(a) Authoring reconcile (now, manual):** fetch the pretalx schedule for the 11 `/workshop/` sessions, compare each session's **start/end (and room id)** to the hardcoded `content/workshop/_index.md`, and correct any *real* drift in place. Done with a raw HTTP client + deterministic JSON parse (`curl` + `jq`/`python`) at authoring time — **not** wired into `zola build` (D1/H2/D10 upheld). WebFetch's summarizer is **not** authoritative here (it truncates/mis-attributes on the ~800-session payload); the raw JSON is. **(b) Runtime live sync (in-browser):** on `/workshop/` load, fetch the pretalx **widget** schedule JSON (`schedule/widget/v2.json` — flat `talks[]`, each `{code, start, end, room}` with ISO-8601 `+02:00` instants and a numeric `room` id) and patch each **matched** session's times (+ day/room per T2/T3) to current, falling back to the hardcoded DOM on any failure. The endpoint is single-sourced in `config.toml [extra]` (like `intel_url`/`dashboard_url`). |
+| **T2** | **Runtime patch scope: times + day/room; never titles/summaries; no reorder** *(the confirmed scope)* | Per matched session the live layer updates only: the `data-start`/`data-end` instants, the visible `Day Mon D &middot; HH:MM-HH:MM` text (the **first** `.sess-hi` span), and — only on a genuine venue move (T3) — the room text (the **second** `.sess-hi` span). It **never** touches title, summary, speaker, or the `.live-dot`; **never injects untrusted talx prose** (any patched text via `textContent`, never `innerHTML` — J1's rule for remote/mesh content); and **never reorders** the DOM — a session whose time moved stays in place, its live/past state still correct because it is computed from the patched instants (per the confirmed scope: order stays hardcoded). talx sessions **added/removed** since authoring are ignored at runtime (a new session is added only via a future authoring re-fetch, à la Q1). Sessions are matched by a new **`data-talx="<CODE>"`** attribute on each `<section class="session">` (the code already lives in the `Details` link; the attribute makes matching explicit + testable). |
+| **T3** | **Room updated only on a real venue move, via a baked id→name map** *(upholds Q2/D12)* | talx exposes rooms as **numeric ids** with no name mapping (verified: `31`=Mesh Nest, `105`=Hacker's Lab, `27`=P2P Portal, `26`=Resilience Base). Each `<section>` carries its authoring-time **`data-room-id`**; the runtime compares the widget's room id to it. **Same id → keep the hardcoded, team-normalized room text** (`Hacker's Lab (7)`, venue numbers preserved — D12). **Different id → the session moved:** substitute that id's normalized name from a small **baked-in id→name map**; an **unmapped** new id renders the raw talx-side value with **no invented venue number**, left for the next authoring reconcile (D12 — never invent). The map + each `data-room-id` are authoring-time facts, exactly like the venue numbers themselves. |
+| **T4** | **New page-scoped local JS; ISO instants via `Date`; offline-safe; CORS-gated** *(extends P1/WT; upholds D3/§2, J3)* | A new hand-written **`static/js/schedule-live.js`** (local; network = **one** fetch to the pretalx widget; **no tz library** — the widget's ISO `+02:00` instants are consumed via `Date.parse` only, matching K2/P4/WT-4), loaded **only on `/workshop/`** alongside `workshop.js` via `templates/workshop.html`. It is a **separate file** — it does **not** go inside `workshop.js`, which stays Date-only / no-network so **WT-1/WT-4 hold**. Bounded **`AbortController`** timeout (~2.5 s, like J1); **every** failure caught → the hardcoded DOM stays; after a successful patch it triggers `workshop.js`'s repaint (shared hook / event) so live/past reflect the new times at once. `check-offline.sh` stays green (a data fetch, not an asset; the endpoint rides a `data-*` attribute on the local `<script>`, not a `src`/`href`, so the gate never sees it). **Liveness is gated by the widget API's CORS** (like J3): absent `Access-Control-Allow-Origin` → silent fallback to hardcoded; no site change needed if/when CORS is enabled. **JS inventory grows 5 → 6** — amends the count in S3/WS-2/CR-1/LD-3/WT-1. |
+
+**Confirmation gate:** T1–T4 require explicit sign-off (`confirm all`, or call out a number to
+change). On confirmation, the **J1** row is annotated `[extended by T1]`, the **P1 / S3 / WS-2 /
+CR-1 / LD-3 / WT-1** JS-count lines are annotated `[amended by T4: 5→6]`, and Phase 2 appends the
+criteria to `ACCEPTANCE.md` (PT-1…PT-5 + a regression line) — amend, not replace.
+
+**Reconcile result (2026-07-07, T1a — the "fetch now"):** the widget API returns
+`Access-Control-Allow-Origin: *`, so the runtime sync (T1b) is **live, not latent** (unlike J3's
+dashboard). Of the 11 sessions, **7 matched** and **4 were rescheduled** since the 2026-07-02
+authoring — corrected in `content/workshop/_index.md` and re-sorted into schedule order (per the
+confirmed "re-time + re-sort" choice): **L9WV3W** Thu 15:00-16:00 → Thu 09:40-10:40; **WNTPQS**
+Sat 09:30-11:00 → Thu 16:30-18:00; **MLFH9Z** Thu 09:40-10:40 → Sat 11:30-12:30; **LBV3GJ** Fri
+10:30-12:00 → Sat 16:30-18:00. Titles/summaries/speakers/rooms unchanged. Authoritative **room-id
+→ normalized-name** map (for T3's `data-room-id` + baked map): `26` Resilience Base (10), `27` P2P
+Portal (11), `31` Mesh Nest (5), `105` Hacker's Lab (7) (talx's `Decentralized Hardware @ Hackers
+Lab` → normalized per Q2). WK-1/AG-1 order + WT-2 start/end instant lists re-derived in ACCEPTANCE.

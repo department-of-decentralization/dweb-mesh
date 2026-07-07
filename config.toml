@@ -21,3 +21,8 @@ dashboard_url = "https://dweb.potatomesh.net"
 dashboard_label = "dweb.potatomesh.net"
 tickets_url = "https://dwebcamp.org/tickets"
 dwebcamp_url = "https://dwebcamp.org"
+# Pretalx (talx.dod.ngo) schedule widget JSON - the runtime source for the /workshop
+# live time sync (SPEC T1/T4). Single-sourced here, rendered onto schedule-live.js as a
+# data-endpoint attribute (not an asset src). Data fetch only; the offline copy falls
+# back to the hardcoded sessions, so check-offline.sh never sees this URL.
+pretalx_widget_url = "https://talx.dod.ngo/dwebcamp-2026/schedule/widget/v2.json"

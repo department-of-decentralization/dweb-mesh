@@ -27,4 +27,9 @@
 
   paint();                     // on load
   setInterval(paint, 60000);   // and every 60s, so states flip live during camp
+
+  // schedule-live.js (T4) patches data-start/data-end in place after a live pretalx
+  // fetch, then fires this event so past/live state reflects the new times at once.
+  // No network here - workshop.js stays Date-only (upholds WT-1/WT-4).
+  window.addEventListener("workshop:schedule-updated", paint);
 })();

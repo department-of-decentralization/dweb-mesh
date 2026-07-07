@@ -6,7 +6,7 @@ template = "workshop.html"
 
 Eleven mesh sessions are scheduled - in time order below; full abstracts live on each talk page. More sessions may be added as the camp approaches.
 
-<section class="session" data-start="2026-07-08T13:00:00+02:00" data-end="2026-07-08T18:00:00+02:00">
+<section class="session" data-talx="YLKXWX" data-room-id="31" data-start="2026-07-08T13:00:00+02:00" data-end="2026-07-08T18:00:00+02:00">
 
 <!-- talx gives no session type for this one; "Drop-in" is descriptive - team to confirm -->
 ## Join the DWeb Camp Mesh + Tech Support
@@ -18,7 +18,7 @@ Drop by to pick up a pre-ordered mesh device, get WiFi and tech support, and see
 
 </section>
 
-<section class="session" data-start="2026-07-08T21:00:00+02:00" data-end="2026-07-08T23:00:00+02:00">
+<section class="session" data-talx="NSXNYJ" data-room-id="31" data-start="2026-07-08T21:00:00+02:00" data-end="2026-07-08T23:00:00+02:00">
 
 ## Berlin Chaos Mesh Meetup (informal)
 
@@ -29,7 +29,7 @@ An evening get-together of the Berlin Chaos Mesh crew - Meshtastic, Meshcore, Re
 
 </section>
 
-<section class="session" data-start="2026-07-09T09:30:00+02:00" data-end="2026-07-09T09:40:00+02:00">
+<section class="session" data-talx="ZHGJNM" data-room-id="105" data-start="2026-07-09T09:30:00+02:00" data-end="2026-07-09T09:40:00+02:00">
 
 ## Join the DWeb Camp Mesh!
 
@@ -40,18 +40,18 @@ A quick intro to the camp mesh - Reticulum, Meshcore and Meshtastic are live; de
 
 </section>
 
-<section class="session" data-start="2026-07-09T09:40:00+02:00" data-end="2026-07-09T10:40:00+02:00">
+<section class="session" data-talx="L9WV3W" data-room-id="105" data-start="2026-07-09T09:40:00+02:00" data-end="2026-07-09T10:40:00+02:00">
 
-## Using Low Power Wireless P2P Networking Methods to Enable Robust Models of Local Community Governance
+## Introduction to Meshtastic and Meshcore (hands-on)
 
-<p class="muted">Workshop &middot; <span class="live-dot" aria-hidden="true"></span><span class="sess-hi">Thu Jul 9 &middot; 09:40-10:40</span> &middot; <span class="sess-hi">Hacker's Lab (7)</span> &middot; Paul Fuxj&auml;ger</p>
+<p class="muted">Workshop &middot; <span class="live-dot" aria-hidden="true"></span><span class="sess-hi">Thu Jul 9 &middot; 09:40-10:40</span> &middot; <span class="sess-hi">Hacker's Lab (7)</span> &middot; Afri Blanck</p>
 
-A workshop exploring low-power LoRa mesh plus self-sovereign identity (DID methods) as a base for pseudonymous, democratic local governance.<br>
-<a href="https://talx.dod.ngo/dwebcamp-2026/talk/MLFH9Z/" target="_blank" rel="noopener">Details &#8599;</a>
+Hands-on: flash firmware, set channels and keys, and send messages over LoRa across camp - flood vs source routing, the 868 MHz duty cycle, antennas and solar nodes. Devices from &euro;20; bring a phone or tablet.<br>
+<a href="https://talx.dod.ngo/dwebcamp-2026/talk/L9WV3W/" target="_blank" rel="noopener">Details &#8599;</a> &middot; [Flasher](@/flash/_index.md) &middot; [Config](@/config/_index.md)
 
 </section>
 
-<section class="session" data-start="2026-07-09T10:30:00+02:00" data-end="2026-07-09T11:30:00+02:00">
+<section class="session" data-talx="X9ENCG" data-room-id="27" data-start="2026-07-09T10:30:00+02:00" data-end="2026-07-09T11:30:00+02:00">
 
 ## Cross-Pollination between Peer-to-Peer &amp; Local First + Decentralized Hardware/Local Community Networks Tracks
 
@@ -62,7 +62,7 @@ A structured networking session connecting the mesh, P2P and local-first communi
 
 </section>
 
-<section class="session" data-start="2026-07-09T10:40:00+02:00" data-end="2026-07-09T11:40:00+02:00">
+<section class="session" data-talx="XBZFVE" data-room-id="105" data-start="2026-07-09T10:40:00+02:00" data-end="2026-07-09T11:40:00+02:00">
 
 ## tinySSB hands-on
 
@@ -73,18 +73,7 @@ Hands-on with tinySSB, a minimal peer-to-peer app platform - try it on your Andr
 
 </section>
 
-<section class="session" data-start="2026-07-09T15:00:00+02:00" data-end="2026-07-09T16:00:00+02:00">
-
-## Introduction to Meshtastic and Meshcore (hands-on)
-
-<p class="muted">Workshop &middot; <span class="live-dot" aria-hidden="true"></span><span class="sess-hi">Thu Jul 9 &middot; 15:00-16:00</span> &middot; <span class="sess-hi">Hacker's Lab (7)</span> &middot; Afri Blanck</p>
-
-Hands-on: flash firmware, set channels and keys, and send messages over LoRa across camp - flood vs source routing, the 868 MHz duty cycle, antennas and solar nodes. Devices from &euro;20; bring a phone or tablet.<br>
-<a href="https://talx.dod.ngo/dwebcamp-2026/talk/L9WV3W/" target="_blank" rel="noopener">Details &#8599;</a> &middot; [Flasher](@/flash/_index.md) &middot; [Config](@/config/_index.md)
-
-</section>
-
-<section class="session" data-start="2026-07-09T15:00:00+02:00" data-end="2026-07-09T16:00:00+02:00">
+<section class="session" data-talx="V9L89B" data-room-id="26" data-start="2026-07-09T15:00:00+02:00" data-end="2026-07-09T16:00:00+02:00">
 
 <!-- talx lists no session type; "Tabletop simulation" is the abstract's own word - team to confirm -->
 ## The Dark Horizon Simulation: Architecting Autonomous Comms in an Extreme Conflict Zone
@@ -96,7 +85,18 @@ A high-stakes tabletop simulation building offline comms for a total-blackout co
 
 </section>
 
-<section class="session" data-start="2026-07-10T10:00:00+02:00" data-end="2026-07-10T10:30:00+02:00">
+<section class="session" data-talx="WNTPQS" data-room-id="105" data-start="2026-07-09T16:30:00+02:00" data-end="2026-07-09T18:00:00+02:00">
+
+## Building &amp; Testing Antennas for LoRa Communication
+
+<p class="muted">Workshop &middot; <span class="live-dot" aria-hidden="true"></span><span class="sess-hi">Thu Jul 9 &middot; 16:30-18:00</span> &middot; <span class="sess-hi">Hacker's Lab (7)</span> &middot; Mathias Jud</p>
+
+Learn antenna basics, then build, test and tune your own antenna for the LoRa band - with hands-on soldering and crimping.<br>
+<a href="https://talx.dod.ngo/dwebcamp-2026/talk/WNTPQS/" target="_blank" rel="noopener">Details &#8599;</a>
+
+</section>
+
+<section class="session" data-talx="JFNK39" data-room-id="26" data-start="2026-07-10T10:00:00+02:00" data-end="2026-07-10T10:30:00+02:00">
 
 <!-- talx lists no session type and the abstract gives no format word; rendered generically as "Session" - team to confirm -->
 ## Mesh News Network - dWebbing Local Journalism
@@ -108,24 +108,24 @@ A community-run news stack for offline or degraded networks - signed bulletins, 
 
 </section>
 
-<section class="session" data-start="2026-07-10T10:30:00+02:00" data-end="2026-07-10T12:00:00+02:00">
+<section class="session" data-talx="MLFH9Z" data-room-id="105" data-start="2026-07-11T11:30:00+02:00" data-end="2026-07-11T12:30:00+02:00">
 
-## Off the grid: build an app over radio on Reticulum (LoRa)
+## Using Low Power Wireless P2P Networking Methods to Enable Robust Models of Local Community Governance
 
-<p class="muted">Workshop &middot; <span class="live-dot" aria-hidden="true"></span><span class="sess-hi">Fri Jul 10 &middot; 10:30-12:00</span> &middot; <span class="sess-hi">Hacker's Lab (7)</span> &middot; Afri Blanck</p>
+<p class="muted">Workshop &middot; <span class="live-dot" aria-hidden="true"></span><span class="sess-hi">Sat Jul 11 &middot; 11:30-12:30</span> &middot; <span class="sess-hi">Hacker's Lab (7)</span> &middot; Paul Fuxj&auml;ger</p>
 
-Build a small, internet-free app on Reticulum, running over LoRa on-site - identities, destinations, links and resources. Coding experience assumed; devices from &euro;20.<br>
-<a href="https://talx.dod.ngo/dwebcamp-2026/talk/LBV3GJ/" target="_blank" rel="noopener">Details &#8599;</a> &middot; [Resources](@/workshop/reticulum.md)
+A workshop exploring low-power LoRa mesh plus self-sovereign identity (DID methods) as a base for pseudonymous, democratic local governance.<br>
+<a href="https://talx.dod.ngo/dwebcamp-2026/talk/MLFH9Z/" target="_blank" rel="noopener">Details &#8599;</a>
 
 </section>
 
-<section class="session" data-start="2026-07-11T09:30:00+02:00" data-end="2026-07-11T11:00:00+02:00">
+<section class="session" data-talx="LBV3GJ" data-room-id="105" data-start="2026-07-11T16:30:00+02:00" data-end="2026-07-11T18:00:00+02:00">
 
-## Building &amp; Testing Antennas for LoRa Communication
+## Off the grid: build an app over radio on Reticulum (LoRa)
 
-<p class="muted">Workshop &middot; <span class="live-dot" aria-hidden="true"></span><span class="sess-hi">Sat Jul 11 &middot; 09:30-11:00</span> &middot; <span class="sess-hi">Hacker's Lab (7)</span> &middot; Mathias Jud</p>
+<p class="muted">Workshop &middot; <span class="live-dot" aria-hidden="true"></span><span class="sess-hi">Sat Jul 11 &middot; 16:30-18:00</span> &middot; <span class="sess-hi">Hacker's Lab (7)</span> &middot; Afri Blanck</p>
 
-Learn antenna basics, then build, test and tune your own antenna for the LoRa band - with hands-on soldering and crimping.<br>
-<a href="https://talx.dod.ngo/dwebcamp-2026/talk/WNTPQS/" target="_blank" rel="noopener">Details &#8599;</a>
+Build a small, internet-free app on Reticulum, running over LoRa on-site - identities, destinations, links and resources. Coding experience assumed; devices from &euro;20.<br>
+<a href="https://talx.dod.ngo/dwebcamp-2026/talk/LBV3GJ/" target="_blank" rel="noopener">Details &#8599;</a> &middot; [Resources](@/workshop/reticulum.md)
 
 </section>

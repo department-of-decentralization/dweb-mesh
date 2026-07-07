@@ -178,7 +178,7 @@ grep -rEoq 'href="https://matrix\.to/#/#dweb-mesh:dod\.ngo"' public/ && echo "ma
 |---|-----------|--------|--------|
 | **S1** | Fonts bundled + local (D4) | `ls public/fonts/` ; `grep -rE '@font-face' public/ -l` | ≥2 `woff2` in repo; `@font-face` `url()` are local paths |
 | **S2** | Small payload (D3) | `du -sh public/ ; du -sh public/fonts/` | Total in low MB; fonts subset, not multi-MB |
-| **S3** | No node toolchain in repo (D1) *[amended by H2, P1]* | `! test -e package.json ; ! test -d node_modules ; find public -name '*.js'` | NO `package.json`/`node_modules` in the repo; JS = hand-written + the **vendored** lib: `counters.js`, `copy-code.js`, `mesh-provision.js`, `workshop.js` (page-scoped, `/workshop` only — P1), `vendor/meshcore.min.js` — all local (governs the JS inventory; see **WS-1/WS-2/WT-1**) |
+| **S3** | No node toolchain in repo (D1) *[amended by H2, P1]* | `! test -e package.json ; ! test -d node_modules ; find public -name '*.js'` | NO `package.json`/`node_modules` in the repo; JS = hand-written + the **vendored** lib: `counters.js`, `copy-code.js`, `mesh-provision.js`, `workshop.js` (page-scoped, `/workshop` only — P1), `schedule-live.js` (page-scoped, `/workshop` only — T4), `vendor/meshcore.min.js` — all local (governs the JS inventory; see **WS-1/WS-2/WT-1/PT-1**) |
 | **S4** | Stack hierarchy stated (D8 → G2) | grep `public/start/` | Meshcore PRIMARY + Meshtastic SUPPORTED (no services) + Reticulum EDUCATIONAL/→Workshop stated in the **/start note** (no stack pages) — see **SS-2** |
 | **S5** | AI host = a channel, not a route (D9 → G3) | `! test -e public/meshcore/services` ; grep `public/config/` | no services route; AI host is the `#bot` channel line on `/config` — see **SS-5** |
 | **S6** | CNAME + CI present (D10) | `cat CNAME ; ls .github/workflows/` | `CNAME` = `mesh.dod.ngo`; a workflow builds Zola → Pages; Freifunk noted manual |
@@ -401,9 +401,9 @@ scripts/check-offline.sh                                                        
 ### WS-2 — No node toolchain entered the repo  *(H2; D1)*  *[amended by P1: +workshop.js]*
 ```sh
 ! test -e package.json && ! test -e package-lock.json && ! test -d node_modules && echo "repo node-free"   # Expect: repo node-free
-find public -name '*.js' | sort   # Expect: copy-code.js, counters.js, mesh-provision.js, vendor/meshcore.min.js, workshop.js  (5 — workshop.js added by P1)
+find public -name '*.js' | sort   # Expect: copy-code.js, counters.js, mesh-provision.js, schedule-live.js, vendor/meshcore.min.js, workshop.js  (6 — workshop.js added by P1, schedule-live.js by T4)
 ```
-- **Expect:** no `package.json`/`node_modules` in the repo; `zola build` alone produced the site; the JS inventory is exactly those five local files (incl. the page-scoped `workshop.js`, P1).
+- **Expect:** no `package.json`/`node_modules` in the repo; `zola build` alone produced the site; the JS inventory is exactly those six local files (incl. the page-scoped `workshop.js`, P1, and `schedule-live.js`, T4).
 - [ ] Pass
 
 ### WS-3 — /config page wiring  *(H1/H4)*
@@ -480,7 +480,7 @@ grep -c '<details' public/config/index.html                 # Expect: 2
 grep -Ec '<details[^>]*\bopen\b' public/config/index.html   # Expect: 0 (collapsed by default)
 grep -E '<summary[^>]*>[^<]*Meshtastic' public/config/index.html  # Expect: present
 grep -E '<summary[^>]*>[^<]*Reticulum'  public/config/index.html  # Expect: present
-ls static/js/*.js   # Expect: counters.js, copy-code.js, mesh-provision.js, workshop.js (workshop.js added by P1; the <details> add no JS of their own; copy-code.js is the separate copy-button feature)
+ls static/js/*.js   # Expect: counters.js, copy-code.js, mesh-provision.js, schedule-live.js, workshop.js (workshop.js added by P1, schedule-live.js by T4; the <details> add no JS of their own; copy-code.js is the separate copy-button feature)
 ```
 - **Expect:** both sections present, collapsed, ordered Meshtastic→Reticulum, after Apps; no JS added.
 - [ ] Pass
@@ -577,9 +577,9 @@ A blinking underscore after the splash title via CSS only; steady (no blink) und
 ```sh
 grep -Fc 'splash-title::after' public/css/style.css              # Expect: >=1 (the cursor)
 grep -Fc 'prefers-reduced-motion' public/css/style.css           # Expect: >=1 (steady when reduced)
-find public -name '*.js' | wc -l                                 # Expect: 5 (this LD change added no JS; the +1 is workshop.js, added later by P1)
+find public -name '*.js' | wc -l                                 # Expect: 6 (this LD change added no JS; +1 workshop.js by P1, +1 schedule-live.js by T4)
 ```
-- **Expect:** a CSS-only blinking underscore after “JOIN THE MESH”; honours reduced-motion; the LD change adds no new JS file (the count reads 5 only because P1 later adds `workshop.js`).
+- **Expect:** a CSS-only blinking underscore after “JOIN THE MESH”; honours reduced-motion; the LD change adds no new JS file (the count reads 6 only because P1 later adds `workshop.js` and T4 adds `schedule-live.js`).
 - [ ] Pass
 
 ### Regression — surviving prior criteria still pass  *(LD feature)*
@@ -621,7 +621,7 @@ grep -Ec 'timeZoneName *:' public/js/counters.js # Expect: 0 (the timeZoneName I
 - [ ] Pass
 
 ### Regression — surviving prior criteria still pass  *(TZ feature)*
-**Still must pass:** §1 (clean build); **§2/§3 + `check-offline.sh`** (no new asset; **no tz library** — *at risk* if a library were added); §8 / LD-1 / LD-2 (the box still fetches remote→local→hidden and renders offline); **LD-3** (`find public -name '*.js' | wc -l` is now **5** — P1 added `workshop.js`; the TZ edit itself adds no file); **S3 / WS-2** (JS inventory = the five local files, incl. P1's `workshop.js`); CR-2 (`messages.json` remains the offline fallback). The change is presentation-only inside `fmtTs()`.
+**Still must pass:** §1 (clean build); **§2/§3 + `check-offline.sh`** (no new asset; **no tz library** — *at risk* if a library were added); §8 / LD-1 / LD-2 (the box still fetches remote→local→hidden and renders offline); **LD-3** (`find public -name '*.js' | wc -l` is now **6** — P1 added `workshop.js`, T4 added `schedule-live.js`; the TZ edit itself adds no file); **S3 / WS-2** (JS inventory = the six local files, incl. P1's `workshop.js` + T4's `schedule-live.js`); CR-2 (`messages.json` remains the offline fallback). The change is presentation-only inside `fmtTs()`.
 - [ ] Pass (no regression)
 
 ---
@@ -634,13 +634,13 @@ to the surviving criteria (regression line at end). **[Amended 2026-07-02 by Q1/
 build`), then check `public/workshop/index.html`. The four sessions and their talx IDs:
 (1) **YLKXWX** Join the DWeb Camp Mesh + Tech Support — Wed Jul 8, 13:00–18:00 @ Mesh Nest (5);
 (2) **ZHGJNM** Join the DWeb Camp Mesh! — Thu Jul 9, 09:30–09:40 @ Hacker's Lab (7);
-(3) **L9WV3W** Introduction to Meshtastic and Meshcore — Thu Jul 9, 15:00–16:00 @ Hacker's Lab (7);
-(4) **LBV3GJ** Off the grid: Reticulum app over LoRa — Fri Jul 10, 10:30–12:00 @ Hacker's Lab (7).
+(3) **L9WV3W** Introduction to Meshtastic and Meshcore — Thu Jul 9, 09:40–10:40 @ Hacker's Lab (7) *(reconciled 2026-07-07: was 15:00–16:00)*;
+(4) **LBV3GJ** Off the grid: Reticulum app over LoRa — Sat Jul 11, 16:30–18:00 @ Hacker's Lab (7) *(reconciled 2026-07-07: was Fri Jul 10, 10:30–12:00)*.
 
 ### WK-1 — Eleven sessions, time-ordered, with metadata + summary + link  *(L1)*  *[4→11 sessions: amended by Q1]*
 ```sh
 for id in YLKXWX NSXNYJ ZHGJNM MLFH9Z X9ENCG XBZFVE L9WV3W V9L89B JFNK39 LBV3GJ WNTPQS; do grep -qF "talk/$id/" public/workshop/index.html && echo "ok $id" || echo "MISSING $id"; done   # Expect: 11× ok (one talx link per session; +7 via Q1)
-grep -noE 'YLKXWX|NSXNYJ|ZHGJNM|MLFH9Z|X9ENCG|XBZFVE|L9WV3W|V9L89B|JFNK39|LBV3GJ|WNTPQS' public/workshop/index.html   # Expect: top-to-bottom = YLKXWX, NSXNYJ, ZHGJNM, MLFH9Z, X9ENCG, XBZFVE, L9WV3W, V9L89B, JFNK39, LBV3GJ, WNTPQS (schedule order Wed Jul 8 → Sat Jul 11, NOT supplied-link order; amended by Q1)
+grep -oE 'talk/(YLKXWX|NSXNYJ|ZHGJNM|MLFH9Z|X9ENCG|XBZFVE|L9WV3W|V9L89B|JFNK39|LBV3GJ|WNTPQS)/' public/workshop/index.html | tr '\n' ' '   # Expect: talk/YLKXWX/ talk/NSXNYJ/ talk/ZHGJNM/ talk/L9WV3W/ talk/X9ENCG/ talk/XBZFVE/ talk/V9L89B/ talk/WNTPQS/ talk/JFNK39/ talk/MLFH9Z/ talk/LBV3GJ/ (schedule order Wed Jul 8 → Sat Jul 11, NOT supplied-link order; amended by Q1; re-sorted 2026-07-07 by the pretalx reconcile — T1; anchored on the talk link, one per session, since data-talx now also carries the code — T2)
 grep -Eo 'Jul (8|9|10|11)' public/workshop/index.html | sort -u       # Expect: Jul 8, Jul 9, Jul 10, Jul 11 (all four camp days; Sat Jul 11 added by Q1)
 grep -c 'Mesh Nest'   public/workshop/index.html                      # Expect: >=1 (session 1 room)
 grep -c "Hacker's Lab" public/workshop/index.html                     # Expect: >=6 (Hacker's Lab (7) sessions incl. 3 normalized "@ Hackers Lab" via Q2; team-supplied no. (7), not on talx)
@@ -801,10 +801,10 @@ grep -Ec 'https?://' public/js/workshop.js                   # Expect: 0 (no ext
 grep -Ec 'fetch\(|XMLHttpRequest|import[^;]*https?://' public/js/workshop.js   # Expect: 0 (no network)
 grep -c 'workshop.js' public/workshop/index.html             # Expect: >=1 (loaded on /workshop/)
 grep -rl 'workshop.js' public/ --include='*.html'            # Expect: ONLY public/workshop/index.html (page-scoped, not site-wide)
-find public -name '*.js' | sort                              # Expect: copy-code.js, counters.js, mesh-provision.js, vendor/meshcore.min.js, workshop.js (5)
+find public -name '*.js' | sort                              # Expect: copy-code.js, counters.js, mesh-provision.js, schedule-live.js, vendor/meshcore.min.js, workshop.js (6)
 scripts/check-offline.sh                                     # Expect: OK
 ```
-- **Expect:** `workshop.js` is local, network-free, loaded **only** on `/workshop/` (a dedicated `templates/workshop.html` fills `{% block scripts %}`, exactly as `index.html` loads `counters.js`). The JS inventory is now **5** local files; the repo stays node-free. This is the **amendment** to S3 / WS-2 / CR-1 / LD-3.
+- **Expect:** `workshop.js` is local, network-free, loaded **only** on `/workshop/` (a dedicated `templates/workshop.html` fills `{% block scripts %}`, exactly as `index.html` loads `counters.js`). The JS inventory is now **6** local files (T4 adds `schedule-live.js`, page-scoped to `/workshop/` too); the repo stays node-free. This is the **amendment** to S3 / WS-2 / CR-1 / LD-3.
 - [ ] Pass
 
 ### WT-2 — Each session carries CEST start/end; past sessions dim  *(P2/P4)*
@@ -812,8 +812,8 @@ scripts/check-offline.sh                                     # Expect: OK
 grep -c 'data-start=' public/workshop/index.html             # Expect: 11 (one per session; 4→11 amended by Q3)
 grep -c 'data-end='   public/workshop/index.html             # Expect: 11 (4→11 amended by Q3)
 grep -o '+02:00' public/workshop/index.html | wc -l          # Expect: 22 (CEST offset on every start + end — 11 sessions × 2 attrs; 8→22 amended by Q3)
-for t in 2026-07-08T13:00 2026-07-08T21:00 2026-07-09T09:30 2026-07-09T09:40 2026-07-09T10:30 2026-07-09T10:40 2026-07-09T15:00 2026-07-10T10:00 2026-07-10T10:30 2026-07-11T09:30; do grep -qF "$t" public/workshop/index.html && echo "ok $t" || echo "MISSING $t"; done   # Expect: 10× ok (distinct start instants; the two Thu 15:00 sessions share one; amended by Q3)
-for t in 2026-07-08T18:00 2026-07-08T23:00 2026-07-09T09:40 2026-07-09T10:40 2026-07-09T11:30 2026-07-09T11:40 2026-07-09T16:00 2026-07-10T10:30 2026-07-10T12:00 2026-07-11T11:00; do grep -qF "$t" public/workshop/index.html && echo "ok $t" || echo "MISSING $t"; done   # Expect: 10× ok (distinct end instants; amended by Q3)
+for t in 2026-07-08T13:00 2026-07-08T21:00 2026-07-09T09:30 2026-07-09T09:40 2026-07-09T10:30 2026-07-09T10:40 2026-07-09T15:00 2026-07-09T16:30 2026-07-10T10:00 2026-07-11T11:30 2026-07-11T16:30; do grep -qF "$t" public/workshop/index.html && echo "ok $t" || echo "MISSING $t"; done   # Expect: 11× ok (distinct start instants — all 11 distinct after the 2026-07-07 reconcile re-timed L9WV3W/WNTPQS/MLFH9Z/LBV3GJ; amended by Q3, re-derived by T1)
+for t in 2026-07-08T18:00 2026-07-08T23:00 2026-07-09T09:40 2026-07-09T10:40 2026-07-09T11:30 2026-07-09T11:40 2026-07-09T16:00 2026-07-09T18:00 2026-07-10T10:30 2026-07-11T12:30 2026-07-11T18:00; do grep -qF "$t" public/workshop/index.html && echo "ok $t" || echo "MISSING $t"; done   # Expect: 11× ok (distinct end instants; amended by Q3, re-derived by T1)
 grep -F 'session--past' public/js/workshop.js                # Expect: present (class applied when now > end)
 grep -F 'session--past' public/css/style.css                 # Expect: present (muted-grey styling)
 ```
@@ -860,10 +860,10 @@ talx IDs in **bold**: YLKXWX, **NSXNYJ**, ZHGJNM, **MLFH9Z**, **X9ENCG**, **XBZF
 ```sh
 for id in NSXNYJ MLFH9Z X9ENCG XBZFVE V9L89B JFNK39 WNTPQS; do grep -qF "talk/$id/" public/workshop/index.html && echo "ok $id" || echo "MISSING $id"; done   # Expect: 7× ok (the new talx links)
 grep -c 'class="session"' public/workshop/index.html   # Expect: 11 (one <section class="session"> per session)
-grep -oE 'YLKXWX|NSXNYJ|ZHGJNM|MLFH9Z|X9ENCG|XBZFVE|L9WV3W|V9L89B|JFNK39|LBV3GJ|WNTPQS' public/workshop/index.html | tr '\n' ' '   # Expect: YLKXWX NSXNYJ ZHGJNM MLFH9Z X9ENCG XBZFVE L9WV3W V9L89B JFNK39 LBV3GJ WNTPQS (top-to-bottom = schedule order Wed Jul 8 → Sat Jul 11)
+grep -oE 'talk/(YLKXWX|NSXNYJ|ZHGJNM|MLFH9Z|X9ENCG|XBZFVE|L9WV3W|V9L89B|JFNK39|LBV3GJ|WNTPQS)/' public/workshop/index.html | tr '\n' ' '   # Expect: talk/YLKXWX/ talk/NSXNYJ/ talk/ZHGJNM/ talk/L9WV3W/ talk/X9ENCG/ talk/XBZFVE/ talk/V9L89B/ talk/WNTPQS/ talk/JFNK39/ talk/MLFH9Z/ talk/LBV3GJ/ (top-to-bottom = schedule order Wed Jul 8 → Sat Jul 11; re-sorted 2026-07-07 by the pretalx reconcile — T1; anchored on the talk link since data-talx now also carries each code — T2)
 grep -Eo 'talk/(NSXNYJ|MLFH9Z|X9ENCG|XBZFVE|V9L89B|JFNK39|WNTPQS)/"[^>]*target="_blank"[^>]*rel="noopener"' public/workshop/index.html | wc -l   # Expect: 7 (each new Details link opens a new tab)
 ```
-- **Expect:** the seven new `<section class="session">` blocks render in the L1 format (title `h2` + `Type · Day · Time · Room · Speaker` metadata + one-line summary + `Details ↗`); the full top-to-bottom order is the 11 IDs above, with the two Thu 15:00-16:00 sessions ordered L9WV3W (Introduction) before V9L89B (Dark Horizon).
+- **Expect:** the seven new `<section class="session">` blocks render in the L1 format (title `h2` + `Type · Day · Time · Room · Speaker` metadata + one-line summary + `Details ↗`); the full top-to-bottom order is the 11 IDs above; the former two Thu 15:00-16:00 sessions were split by the 2026-07-07 pretalx reconcile — L9WV3W (Introduction) moved to Thu 09:40-10:40, leaving V9L89B (Dark Horizon) as the sole 15:00-16:00 session.
 - [ ] Pass
 
 ### AG-2 — Rooms normalized, no invented numbers; types sourced or .tbc  *(Q2; D12/L2)*
@@ -883,7 +883,7 @@ grep -F '.tbc' public/css/style.css                             # Expect: presen
 ```sh
 grep -nE '—|–|&mdash;|&ndash;' public/workshop/index.html       # Expect: NO output (plain hyphens across all 11, incl. the new "Mesh News Network - dWebbing" title — hacker register)
 grep -iE 'bridge|gateway|interoperat' public/workshop/index.html   # Expect: NO output (no summary claims a bridge/gateway between Meshcore/Meshtastic/Reticulum — D8; the "cross-pollination"/community framing is phrased without the loaded terms)
-find public -name '*.js' | wc -l                                # Expect: 5 (workshop.js unchanged, data-driven; this feature adds NO JS)
+find public -name '*.js' | wc -l                                # Expect: 6 (AG adds NO JS; workshop.js unchanged, data-driven; the 6th file, schedule-live.js, is added later by T4)
 scripts/check-offline.sh                                         # Expect: OK (7 more talx <a> hyperlinks, no new asset)
 grep -i 'more sessions may be added' public/workshop/index.html  # Expect: present (the L4 standing line kept)
 ```
@@ -952,7 +952,82 @@ grep -c 'class="session"' public/workshop/index.html           # Expect: 11 (unc
 
 ---
 
+## Feature: Live schedule sync from pretalx (times, not descriptions)  *(SPEC.md → Feature: Live schedule sync from pretalx, T1–T4)*
+
+Added 2026-07-07. A zero-context reviewer judges the schedule sync with **PT-1…PT-5**, in addition
+to the surviving criteria (regression line below). Two parts: a **one-time authoring reconcile**
+(the hardcoded `/workshop/` times were checked against the pretalx backend at authoring time and any
+drift corrected) and a **runtime remote-first, hardcoded-fallback** live sync. This feature adds one
+**local** JS file (`schedule-live.js`) — the JS inventory grows **5 → 6** (already amended above in
+S3/WS-2/CR-1/LD-3/WT-1/AG-3) — and **no external asset**. Build first (`zola build`), then check
+`public/workshop/` and `public/js/`. The pretalx widget endpoint (single-sourced in `config.toml`
+`[extra]`) is `https://talx.dod.ngo/dwebcamp-2026/schedule/widget/v2.json` — a flat `{talks:[{code,
+start, end, room}]}` with ISO-8601 `+02:00` instants and a **numeric** `room` id.
+
+### PT-1 — New 6th local JS, page-scoped, config-sourced endpoint  *(T4/T1; D1/D3)*
+```sh
+test -f public/js/schedule-live.js && echo present            # Expect: present (the 6th JS file)
+find public -name '*.js' | wc -l                              # Expect: 6 (schedule-live.js added by T4)
+grep -rl 'schedule-live.js' public/ --include='*.html'        # Expect: ONLY public/workshop/index.html (page-scoped, like workshop.js)
+grep -c 'schedule-live.js' public/workshop/index.html         # Expect: >=1 (loaded on /workshop/)
+grep -Eo 'data-endpoint="https://talx\.dod\.ngo/[^"]*"' public/workshop/index.html   # Expect: the pretalx widget URL (endpoint on a data-* attr, NOT a src/href — so the gate never sees it)
+grep -iF 'pretalx' config.toml                                # Expect: >=1 (the [extra] endpoint key single-sources the URL)
+scripts/check-offline.sh                                      # Expect: OK (a data fetch, not an asset)
+```
+- **Expect:** `schedule-live.js` is a local file, loaded **only** on `/workshop/` (via `templates/workshop.html`, alongside `workshop.js`); the JS inventory is now 6; the widget endpoint is single-sourced from `config.toml [extra]` and rides a `data-endpoint` attribute on the local `<script>` (so `check-offline.sh` stays green — it is data, not an asset).
+- [ ] Pass
+
+### PT-2 — The fetch lives ONLY in schedule-live.js; workshop.js stays pure  *(T4; WT-1/WT-4 preserved)*
+```sh
+grep -Ec 'https?://' public/js/workshop.js                    # Expect: 0 (workshop.js unchanged — still Date-only, no network; WT-1 holds)
+grep -Ec 'fetch\(|XMLHttpRequest' public/js/workshop.js       # Expect: 0 (WT-4 holds)
+grep -c 'fetch(' public/js/schedule-live.js                   # Expect: >=1 (the ONE widget fetch lives here)
+grep -c 'AbortController' public/js/schedule-live.js          # Expect: >=1 (bounded ~2.5s timeout, like J1)
+grep -c 'catch' public/js/schedule-live.js                    # Expect: >=1 (every failure caught -> hardcoded DOM stays)
+grep -Eic 'moment|luxon|dayjs|date-fns|spacetime|js-joda|timezone-js|tz\.min' public/js/schedule-live.js   # Expect: 0 (no tz library; ISO +02:00 via Date.parse, K2/P4/WT-4-style)
+```
+- **Expect:** `workshop.js` is unchanged in its network-free invariant (no `https`, no `fetch`/`XHR` — WT-1/WT-4 still pass); the single bounded widget fetch, its catch-to-fallback, and the ISO-instant handling all live in `schedule-live.js`; no timezone library is added.
+- [ ] Pass
+
+### PT-3 — Sessions matchable by code; room-move detectable; untrusted-text safe  *(T2/T3; Q2/D12, J1 rule)*
+```sh
+grep -c 'data-talx="'    public/workshop/index.html           # Expect: 11 (one talx code per session, for matching)
+grep -c 'data-room-id="' public/workshop/index.html           # Expect: 11 (authoring-time room id, for move detection)
+for id in YLKXWX NSXNYJ ZHGJNM MLFH9Z X9ENCG XBZFVE L9WV3W V9L89B JFNK39 LBV3GJ WNTPQS; do grep -qF "data-talx=\"$id\"" public/workshop/index.html && echo "ok $id" || echo "MISSING $id"; done   # Expect: 11x ok
+grep -F "Hacker's Lab (7)" public/js/schedule-live.js         # Expect: present (baked id->name map keeps the team venue number on a move — 105)
+grep -F 'Mesh Nest (5)'    public/js/schedule-live.js         # Expect: present (id 31)
+grep -c 'textContent' public/js/schedule-live.js              # Expect: >=1 (patched text via textContent — untrusted-content safe)
+grep -c 'innerHTML'   public/js/schedule-live.js              # Expect: 0 (never innerHTML)
+```
+- **Expect:** every session carries `data-talx="<CODE>"` (matches the widget's `code`) and `data-room-id="<n>"` (its authoring-time room id); the room id→normalized-name map baked into `schedule-live.js` preserves the team-supplied venue numbers (Q2/D12) when a session moves, and leaves an **unmapped** new id without an invented number; all patched text is written via `textContent`, never `innerHTML` (J1's untrusted-content rule). *(Manual: on a same-id fetch the hardcoded room text is left verbatim.)*
+- [ ] Pass
+
+### PT-4 — No external asset; no reorder; structure + register intact  *(T2/T4; D3/§2, WK-1/AG-3, WT-2/WT-3)*
+```sh
+grep -nE '<(link|script|img|source|video|audio|iframe|embed)\b[^>]*\bsrc="https?://talx' public/workshop/index.html   # Expect: NO output (talx stays a data fetch + <a> links, never an asset src)
+grep -c 'class="session"' public/workshop/index.html          # Expect: 11 (unchanged — no reorder, no add/remove at build)
+grep -o 'class="sess-hi"' public/workshop/index.html | wc -l  # Expect: 22 (unchanged — the live layer patches text in-place, adds no sess-hi span; WK-1/WT-3 hold)
+grep -c 'data-start=' public/workshop/index.html              # Expect: 11 (WT-2 hold)
+grep -oE 'talk/(YLKXWX|NSXNYJ|ZHGJNM|MLFH9Z|X9ENCG|XBZFVE|L9WV3W|V9L89B|JFNK39|LBV3GJ|WNTPQS)/' public/workshop/index.html | tr '\n' ' '   # Expect: talk/YLKXWX/ talk/NSXNYJ/ talk/ZHGJNM/ talk/L9WV3W/ talk/X9ENCG/ talk/XBZFVE/ talk/V9L89B/ talk/WNTPQS/ talk/JFNK39/ talk/MLFH9Z/ talk/LBV3GJ/ (schedule order per the 2026-07-07 reconcile; the live layer does NOT reorder — matches WK-1/AG-1; anchored on the talk link, one per session, since data-talx also carries the code)
+grep -nE '—|–|&mdash;|&ndash;' public/workshop/index.html public/js/schedule-live.js   # Expect: NO output (plain hyphens; hacker register holds on page + new JS)
+scripts/check-offline.sh                                       # Expect: OK
+```
+- **Expect:** the feature adds **no external asset** (talx never becomes a `src`; it remains the `<a>` Details links + a runtime data fetch); the workshop page's structural counts (11 sessions, 22 `sess-hi`, 11 `data-start`, schedule order) are **unchanged** — the live layer patches text/attributes in place and never reorders; no em/en dashes on the page or in `schedule-live.js`.
+- [ ] Pass
+
+### PT-5 — Runtime liveness is CORS-gated; offline keeps hardcoded  *(T1/T4; J3-style — MANUAL end-to-end)*
+- **Build/static:** the widget endpoint returns valid JSON shaped `{talks:[{code, start, end, room}]}`; whether it sends `Access-Control-Allow-Origin` is **recorded at authoring time** (verified via `curl -I`). Absent CORS → the browser blocks the cross-origin read → the page keeps its hardcoded times (accepted, exactly as J3's dashboard).
+- **Verify (MANUAL — online, CORS present, in a browser):** load `/workshop/`. A session whose talx time changed since authoring shows the **updated** `HH:MM-HH:MM` and its `data-start`/`data-end` are rewritten, and its live/past state (P2/P3) recomputes from the new instant. A session moved to a different **mapped** venue shows the new normalized room name (venue number preserved). Titles, summaries, speakers and list order are **untouched**.
+- **Verify (MANUAL — offline / network blocked / CORS absent):** `/workshop/` renders **all 11 hardcoded** sessions exactly as built; the fetch fails within ~2.5 s and is caught; nothing hangs, no console error spew. The offline Freifunk copy is unaffected.
+- [ ] Pass (MANUAL for the online DOM-patch + the offline fallback behaviours)
+
+### Regression — surviving prior criteria still pass  *(PT feature)*
+**Amended (planned, not a regression):** the JS-count lines in **S3, WS-2, CR-1, LD-3, WT-1, AG-3** and the **TZ-3** regression note — inventory 5 → 6 with the **local** `schedule-live.js` (repo still node-free; `check-offline.sh` green). **Still must pass unchanged:** §1 (clean build), **§2/§3 + `check-offline.sh`** (the runtime fetch is *data*, not an asset — the two scoped iframes on /flash + /intel remain the only external assets; the offline render is held by the bounded timeout + hardcoded DOM, not the gate — same guarantee as LD-2/J2), §2(d) inventory (**no new host** — `talx.dod.ngo` was already added by L3; this feature only adds a *data-fetch* use of it), §4 (internal links + subpath build; the `<script src>` is host-less `get_url`, the endpoint is a necessarily-absolute external URL like the flasher/intel/dashboard), §5/LP-6 (footer on /workshop untouched), **WK-1/WK-2/WK-3, AG-1/AG-2/AG-3, WT-1/WT-2/WT-3/WT-4** (11 sessions, 22 `sess-hi`, 11 talx new-tab links, `workshop.js` still Date-only/network-free — all preserved; PT-2/PT-4 re-assert the at-risk ones), **RS-1/RS-2/RS-3** (the workshop sub-resource + internal cross-links unaffected), and every other group (LP, WS, CR, CC, LD, TZ, IN, EC, S1–S6).
+- [ ] Pass (no regression in the surviving criteria)
+
+---
+
 ## Verdict
 
-A build is **ACCEPTED** only when the surviving boxes (§1–§5, §8, §10; S1–S3, S6), LP-1–LP-7, SS-1–SS-9, **WS-1–WS-7**, **CR-1–CR-4**, **CC-1**, **LD-1–LD-3**, **TZ-1–TZ-3**, **WK-1–WK-4**, **IN-1–IN-5**, **EC-1**, **WT-1–WT-4**, **AG-1–AG-3**, and **RS-1–RS-3** are all ticked, and amended §2/§3 hold. (§6/§7/§9 + S4/S5 superseded by SS; **SS-6 amended by WK-1…WK-4**; **§2/§3/SS-1/SS-9 amended by N1/N2/N3 — Intel page**; S3/LP-1 amended by H2; **S3/WS-2/CR-1/LD-3 JS-count 4→5 amended by P1 — Workshop live time-state**; **WS-6 is MANUAL**, hardware-verified by the team; **WK/WT session counts 4→11 amended by Q1/Q3 — Feature: Workshop agenda expansion, AG-1–AG-3**; **RS-1–RS-3 — Feature: Workshop cross-links + Reticulum resources subpage (adds /workshop/reticulum/ + internal cross-links)**.)
+A build is **ACCEPTED** only when the surviving boxes (§1–§5, §8, §10; S1–S3, S6), LP-1–LP-7, SS-1–SS-9, **WS-1–WS-7**, **CR-1–CR-4**, **CC-1**, **LD-1–LD-3**, **TZ-1–TZ-3**, **WK-1–WK-4**, **IN-1–IN-5**, **EC-1**, **WT-1–WT-4**, **AG-1–AG-3**, **RS-1–RS-3**, and **PT-1–PT-5** are all ticked, and amended §2/§3 hold. (§6/§7/§9 + S4/S5 superseded by SS; **SS-6 amended by WK-1…WK-4**; **§2/§3/SS-1/SS-9 amended by N1/N2/N3 — Intel page**; S3/LP-1 amended by H2; **S3/WS-2/CR-1/LD-3 JS-count 4→5 amended by P1 — Workshop live time-state**; **WS-6 is MANUAL**, hardware-verified by the team; **WK/WT session counts 4→11 amended by Q1/Q3 — Feature: Workshop agenda expansion, AG-1–AG-3**; **RS-1–RS-3 — Feature: Workshop cross-links + Reticulum resources subpage (adds /workshop/reticulum/ + internal cross-links)**; **PT-1–PT-5 — Feature: Live schedule sync from pretalx (runtime /workshop schedule fetch, remote-first with hardcoded fallback; JS inventory 5→6 via `schedule-live.js` — T4)**.)
 Record the date, the Zola version, and any waived item with its justification.

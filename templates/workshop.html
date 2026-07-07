@@ -9,4 +9,5 @@
 {% endblock content %}
 {% block scripts %}
 <script src="{{ get_url(path='js/workshop.js') }}"></script>
+<script src="{{ get_url(path='js/schedule-live.js') }}" data-endpoint="{{ config.extra.pretalx_widget_url | safe }}"></script>
 {% endblock scripts %}
