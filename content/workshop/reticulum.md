@@ -99,6 +99,24 @@ STRUCTURE
   `[lxmf@<hash>]        open conversation with an LXMF peer
 ~~~
 
+### Dynamic Content
+
+Create a `rand.mu` and make it executable, link it, share it.
+
+```python
+#!/usr/bin/env python3
+import random, time
+
+tick = int(time.time()) % 60
+roll = random.randint(0, 99)
+
+print(">Dynamic Python demo\n")
+print("Hello, World!\n")
+print(f"Unix seconds mod 60: `!{tick}`!\n")
+print(f"Random roll (0-99): `!{roll}`!\n")
+print("Reload the page. The node reruns the script, the numbers change.")
+```
+
 ### Terminology
 
 - **LXMF**: lightweight extensible message format (message transport layer)
