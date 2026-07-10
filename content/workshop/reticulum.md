@@ -64,13 +64,40 @@ propagation_cost = 16
 
 ### Tools
 
-- `rnstatus`
-- `rnpath -t`
-- `rnodeprobe <hash>`
+- `rnstatus`: status of your reticulum network stack interfaces
+- `rnpath -t`: list known nodes and paths by hashs and hops
+- `rnodeprobe <hash>`: check connection and path to node by hash
 
 ### Micron
 
+Micron is the markup for Nomad pages (`.mu` files). Every tag begins with a
+backtick `` ` ``.
 
+~~~
+FORMATTING              (toggles: same tag opens and closes)
+  `!bold`!              bold
+  `_underline`_         underline
+  `*italic`*            italic
+  ``                    reset ALL formatting  (two backticks)
+
+COLOR                   three hex digits, one per R/G/B channel — like CSS #rgb
+  `Ff00 text            red foreground
+  `f                    reset foreground
+  `B002 text            dark-blue background
+  `b                    reset background
+
+ALIGNMENT               put at the start of the line
+  `c                    center
+  `l                    left
+  `r                    right
+  `a                    default
+
+STRUCTURE
+  >Heading              section heading   (>> deeper, >>> deeper still)
+  -                     horizontal divider (alone on its line)
+  `[label`dest]         link  ->  dest = <hash>:/page/index.mu  or  #anchor
+  `[lxmf@<hash>]        open conversation with an LXMF peer
+~~~
 
 ### Terminology
 
